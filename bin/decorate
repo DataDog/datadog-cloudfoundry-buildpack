@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+DATADOG_DIR="/var/vcap/app/datadog"
+
+cd $DATADOG_DIR
+
+export log_file=$DATADOG_DIR/dogstatsd.log
+export api_key=$DATADOG_API_KEY
+
+./dogstatsd start

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+BIN_DIR=$(cd $(dirname $0); pwd)
+ROOT_DIR=$(dirname $BIN_DIR)
+BUILD_DIR=$1
+CACHE_DIR=$2
+ENV_DIR=$3
+
+mkdir -p $BUILD_DIR/datadog
+
+cp -r $ROOT_DIR/lib/* $BUILD_DIR/datadog/
