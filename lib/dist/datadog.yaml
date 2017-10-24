@@ -9,6 +9,8 @@ dd_url: https://app.datadoghq.com
 # https://app.datadoghq.com/account/settings
 api_key:
 
+tags:
+
 # If you need a proxy to connect to the Internet, provide it here (default:
 # disabled). You can use the 'no_proxy' list to specify hosts that should bypass the
 # proxy. These settings might impact your checks requests, please refer to the
