@@ -30,8 +30,7 @@ start_datadog() {
     export DD_DD_URL=https://app.datadoghq.com
     datadog_tags="[\"application_id:$app_id\",\"application_name:$app_name\",\"instance_index:$instance_index\",\"space_name:$space_name\"]"
     sed -i "s/# tags:.*/tags: $datadog_tags/" $DATADOG_DIR/dist/datadog.yaml
-    echo $DD_TAGS
-    ./dogstatsd start --cfgpath $DATADOG_DIR/dist &
+    ./dogstatsd start --cfgpath $DATADOG_DIR/dist/datadog.yaml &
   popd
 }
 
