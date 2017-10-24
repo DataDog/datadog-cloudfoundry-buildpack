@@ -15,5 +15,6 @@ mkdir -p $BUILD_DIR/.profile.d
 
 cp -r $ROOT_DIR/lib/dist $BUILD_DIR/datadog/
 cp $ROOT_DIR/lib/dogstatsd $BUILD_DIR/datadog/dogstatsd
+cp $ROOT_DIR/lib/jq $BUILD_DIR/datadog/jq
 
 cp -r $ROOT_DIR/lib/run-datadog.sh $BUILD_DIR/.profile.d/run-datadog.sh
