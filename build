@@ -1,0 +1,11 @@
+#!/bin/bash
+
+SRCDIR=$(cd "$(dirname $0)/." && pwd)
+NAME="datadog-cloudfoundry-buildpack"
+ZIPFILE="$NAME.zip"
+
+rm -f $ZIPFILE
+
+pushd $SRCDIR
+  zip -r "$ZIPFILE" lib bin
+popd

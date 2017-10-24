@@ -1,0 +1,7 @@
+#!/bin/bash
+
+NAME="datadog-cloudfoundry-buildpack"
+ZIPFILE="$NAME.zip"
+
+cf delete-buildpack -f $NAME
+cf create-buildpack $NAME $ZIPFILE 99 --enable

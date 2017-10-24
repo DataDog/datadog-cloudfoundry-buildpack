@@ -144,7 +144,7 @@ metadata_collectors:
 # Logging
 #
 # log_level: info
-# log_file: /var/log/datadog/agent.log
+log_file: /home/vcap/app/datadog/dogstatsd.log
 
 # Autodiscovery
 #
