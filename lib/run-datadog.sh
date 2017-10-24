@@ -10,6 +10,6 @@ else
   echo "starting datadog"
 
   pushd $DATADOG_DIR
-  DD_LOG_FILE=$DATADOG_DIR/dogstatsd.log DD_API_KEY=$DATADOG_API_KEY DD_DD_URL=https://app.datadoghq.com ./dogstatsd start &
+    DD_LOG_FILE=$DATADOG_DIR/dogstatsd.log DD_API_KEY=$DATADOG_API_KEY DD_DD_URL=https://app.datadoghq.com ./dogstatsd start &
   popd
 fi
