@@ -1,3 +1,6 @@
+# This is kept here to provide some sane defaults.
+# All settings must be set through environment variables
+
 # The host of the Datadog intake server to send Agent data to
 dd_url: https://app.datadoghq.com
 

@@ -1,8 +1,18 @@
 #!/usr/bin/env bash
 
-DATADOG_DIR="/var/vcap/app/datadog"
+# DATADOG_DIR="/var/vcap/app/datadog"
+BIN_DIR=$(cd $(dirname $0); pwd)
+ROOT_DIR=$(dirname $BIN_DIR)
+BUILD_DIR=$1
+DATADOG_DIR="$ROOT_DIR/datadog"
+
 
 cd $DATADOG_DIR
+
+if [ -z ${DATADOG_API_KEY+x} ]; then
+  echo "Datadog API Key not set, not starting Datadog"
+  exit 0
+fi
 
 export log_file=$DATADOG_DIR/dogstatsd.log
 export api_key=$DATADOG_API_KEY

@@ -6,6 +6,8 @@ BUILD_DIR=$1
 CACHE_DIR=$2
 ENV_DIR=$3
 
-mkdir -p $BUILD_DIR/datadog
+echo "Installing Datadog Dogstatsd"
 
-cp -r $ROOT_DIR/lib/* $BUILD_DIR/datadog/
+mkdir -p $BUILD_DIR/datadog
+cp -r $ROOT_DIR/lib/dist $BUILD_DIR/datadog/
+cp $ROOT_DIR/lib/dogstatsd $BUILD_DIR/datadog/dogstatsd
