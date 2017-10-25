@@ -8,8 +8,6 @@ ENV_DIR=$3
 
 echo "Installing Datadog Dogstatsd"
 
-ls $ROOT_DIR
-
 mkdir -p $BUILD_DIR/datadog/scripts
 mkdir -p $BUILD_DIR/.profile.d
 
