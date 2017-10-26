@@ -15,7 +15,7 @@ start_datadog() {
   popd
 }
 
-if [ -z ${DD_API_KEY+x} ]; then
+if [ -z $DD_API_KEY ]; then
   echo "Datadog API Key not set, not starting Datadog"
 else
   echo "starting datadog"
