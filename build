@@ -3,7 +3,7 @@
 SRCDIR=$(cd "$(dirname $0)/." && pwd)
 NAME="datadog-cloudfoundry-buildpack"
 ZIPFILE="$NAME.zip"
-DOWNLOAD_URL="https://s3.amazonaws.com/dd-agent/dsd6/static"
+DOWNLOAD_URL="https://s3.amazonaws.com/dd-agent/dsd6/dogstatsd/linux/"
 
 if [ ! -f ./lib/dogstatsd ]; then
   DOWNLOAD="true"
@@ -17,9 +17,11 @@ if [ -n "$DOWNLOAD" ]; then
     exit 1
   fi
 
-  # Set the download url from the version number
-  # we only allow versioned downloads for this
-  DOWNLOAD_URL="$DOWNLOAD_URL/dogstatsd-$VERSION"
+  if [ -n $VERSION]; then
+    DOWNLOAD_URL="$DOWNLOAD_URL/dogstatsd-$VERSION"
+  else
+    DOWNLOAD_URL="$DOWNLOAD_URL/dogstatsd-latest"
+  fi
 
   curl $DOWNLOAD_URL -o ./lib/dogstatsd
 fi
