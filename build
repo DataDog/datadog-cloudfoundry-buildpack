@@ -12,11 +12,6 @@ if [ -n "$REFRESH_ASSETS" ]; then
   DOWNLOAD="true"
 fi
 if [ -n "$DOWNLOAD" ]; then
-  if [ -z "$VERSION" ]; then
-    echo 'You need to set the $VERSION in order to download dogstatsd, exiting...'
-    exit 1
-  fi
-
   if [ -n $VERSION]; then
     DOWNLOAD_URL="$DOWNLOAD_URL/dogstatsd-$VERSION"
   else
