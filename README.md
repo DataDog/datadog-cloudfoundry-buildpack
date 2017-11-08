@@ -1,6 +1,6 @@
 # Datadog Cloud Foundry Buildpack
 
-This is a [decorator buildpack](https://github.com/cf-platform-eng/meta-buildpack/blob/master/README.md#decorators) for Cloud Foundry. It will install a Datadog Dogstatsd binary on the container your app is running on. It uses the new Agent 6 build of Dogstatsd, which is very light weight and powerful. You should barely notice it running on your container.
+This is a [decorator buildpack](https://github.com/cf-platform-eng/meta-buildpack/blob/master/README.md#decorators) for Cloud Foundry. It will install a Datadog DogStatsD binary in the container your app is running on. This only contains the DogStatsd components of Datadog Agent, which has limited overhead.
 
 ## Use
 
@@ -8,7 +8,7 @@ This is a [decorator buildpack](https://github.com/cf-platform-eng/meta-buildpac
 First, you will have to [install the Meta Buildpack](https://github.com/cf-platform-eng/meta-buildpack#how-to-install-the-meta-buildpack). This enables apps to use decorator buildpacks. Follow the instructions to get the buildpack and upload it if you don't already have it.
 
 ### Upload the Datadog Cloud Foundry Buildpack
-You can get it from the [releases page](https://github.com/DataDog/datadog-cloudfoundry-buildpack/releases) here, or you can just [download the latest version directly from us](https://cloudfoundry.datadoghq.com/datadog-cloudfoundry-buildpack/datadog-cloudfoundry-buildpack-latest.zip). After you download the zipfile, you will have to upload it to Cloud Foundry:
+Download the latest Datadog [build pack release] (https://cloudfoundry.datadoghq.com/datadog-cloudfoundry-buildpack/datadog-cloudfoundry-buildpack-latest.zip). After you download the zipfile, you will have to upload it to Cloud Foundry environment.
 
 ```shell
 cf create-buildpack datadog-cloudfoundry-buildpack datadog-cloudfoundry-buildpack.zip 99 --enable
@@ -24,8 +24,8 @@ cf set-env $YOUR_APP_NAME DD_API_KEY $YOUR_DATADOG_API_KEY
 cf restage $YOUR_APP_NAME
 ```
 
-### Statsd Away!
-You're all set up to use Dogstatsd. Import the relevant library and start sending data! To learn more, [check our our documentation](https://docs.datadoghq.com/guides/dogstatsd/).
+### DogStatsD Away!
+You're all set up to use DogStatsD. Import the relevant library and start sending data! To learn more, [check our our documentation](https://docs.datadoghq.com/guides/DogStatsD/). Additionally, we have [a list of DogStatsD libraries](https://docs.datadoghq.com/libraries/) you can check out to find one that's compatible with your application.
 
 
 ## Building
