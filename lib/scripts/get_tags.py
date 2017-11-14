@@ -22,8 +22,20 @@ if uris:
 
 user_tags = os.environ.get('TAGS', None)
 if user_tags:
-    user_tags = user_tags.split(',')
-    for tag in user_tags:
-        tags.append(tag)
+    try:
+        user_tags = user_tags.split(',')
+        for tag in user_tags:
+            tags.append(tag)
+    except Exception as e:
+        print "there was an issue parsing the tags in TAGS: {}".format(e)
+
+user_tags = os.environ.get('DD_TAGS', None)
+if user_tags:
+    try:
+        user_tags = user_tags.split(',')
+        for tag in user_tags:
+            tags.append(tag)
+    except Exception as e:
+        print "there was an issue parsing the tags in DD_TAGS: {}".format(e)
 
 print json.dumps(tags)
