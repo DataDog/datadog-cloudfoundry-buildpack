@@ -20,4 +20,10 @@ if uris:
     for uri in uris:
         tags.append("uri:{0}".format(uri))
 
+user_tags = os.environ.get('TAGS', None)
+if user_tags:
+    user_tags = user_tags.split(',')
+    for tag in user_tags:
+        tags.append(tag)
+
 print json.dumps(tags)
