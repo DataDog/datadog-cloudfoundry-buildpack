@@ -3,7 +3,7 @@
 SRCDIR=$(cd "$(dirname $0)/." && pwd)
 NAME="datadog-cloudfoundry-buildpack"
 ZIPFILE="$NAME.zip"
-DOWNLOAD_URL="https://s3.amazonaws.com/dd-agent/dsd6/dogstatsd/linux/"
+DOWNLOAD_URL="https://s3.amazonaws.com/dd-agent/dsd6/dogstatsd/linux"
 
 if [ ! -f ./lib/dogstatsd ]; then
   DOWNLOAD="true"
@@ -12,7 +12,7 @@ if [ -n "$REFRESH_ASSETS" ]; then
   DOWNLOAD="true"
 fi
 if [ -n "$DOWNLOAD" ]; then
-  if [ -n $VERSION]; then
+  if [ -n "$VERSION" ]; then
     DOWNLOAD_URL="$DOWNLOAD_URL/dogstatsd-$VERSION"
   else
     DOWNLOAD_URL="$DOWNLOAD_URL/dogstatsd-latest"
