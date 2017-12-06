@@ -22,6 +22,8 @@ if [ -n "$DOWNLOAD" ]; then
   curl $DOGSTATSD_DOWNLOAD_URL -o ./lib/dogstatsd
   # Does not support versioning for now, keep it dumb until trace-agent merge with the Agent6
   curl -L $TRACEAGENT_DOWNLOAD_URL -o ./lib/trace-agent
+  chmod +x ./lib/dogstatsd
+  chmod +x ./lib/trace-agent
 fi
 
 rm -f $ZIPFILE
