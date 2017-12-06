@@ -11,9 +11,11 @@ start_datadog() {
     export DD_DD_URL=https://app.datadoghq.com
     datadog_tags=$(python $DATADOG_DIR/scripts/get_tags.py)
     sed -i "s/# tags:.*/tags: $datadog_tags/" $DATADOG_DIR/dist/datadog.yaml
-    # Override user set tags so the tags set in the yaml file are used insted 
+    sed -i "s/# tags:.*/tags: $datadog_tags/" $DATADOG_DIR/dist/datadog.conf
+    # Override user set tags so the tags set in the yaml file are used instead
     export DD_TAGS=""
     ./dogstatsd start --cfgpath $DATADOG_DIR/dist/datadog.yaml &
+    ./trace-agent -config $DATADOG_DIR/dist/datadog.conf &
   popd
 }
 
