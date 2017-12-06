@@ -3,9 +3,10 @@
 SRCDIR=$(cd "$(dirname $0)/." && pwd)
 NAME="datadog-cloudfoundry-buildpack"
 ZIPFILE="$NAME.zip"
-DOWNLOAD_URL="https://s3.amazonaws.com/dd-agent/dsd6/dogstatsd/linux"
+DOGSTATSD_DOWNLOAD_URL="https://s3.amazonaws.com/dd-agent/dsd6/dogstatsd/linux"
+TRACEAGENT_DOWNLOAD_URL="https://github.com/DataDog/datadog-trace-agent/releases/download/5.20.0/trace-agent-linux"
 
-if [ ! -f ./lib/dogstatsd ]; then
+if [ ! -f ./lib/dogstatsd ] || [ ! -f ./lib/trace-agent ]; then
   DOWNLOAD="true"
 fi
 if [ -n "$REFRESH_ASSETS" ]; then
@@ -13,12 +14,14 @@ if [ -n "$REFRESH_ASSETS" ]; then
 fi
 if [ -n "$DOWNLOAD" ]; then
   if [ -n "$VERSION" ]; then
-    DOWNLOAD_URL="$DOWNLOAD_URL/dogstatsd-$VERSION"
+    DOGSTATSD_DOWNLOAD_URL="$DOGSTATSD_DOWNLOAD_URL/dogstatsd-$VERSION"
   else
-    DOWNLOAD_URL="$DOWNLOAD_URL/dogstatsd-latest"
+    DOGSTATSD_DOWNLOAD_URL="$DOGSTATSD_DOWNLOAD_URL/dogstatsd-latest"
   fi
 
-  curl $DOWNLOAD_URL -o ./lib/dogstatsd
+  curl $DOGSTATSD_DOWNLOAD_URL -o ./lib/dogstatsd
+  # Does not support versioning for now, keep it dumb until trace-agent merge with the Agent6
+  curl -L $TRACEAGENT_DOWNLOAD_URL -o ./lib/trace-agent
 fi
 
 rm -f $ZIPFILE

@@ -6,13 +6,14 @@ BUILD_DIR=$1
 CACHE_DIR=$2
 ENV_DIR=$3
 
-echo "Installing Datadog Dogstatsd"
+echo "Installing Datadog Dogstatsd and Trace Agent"
 
 mkdir -p $BUILD_DIR/datadog/scripts
 mkdir -p $BUILD_DIR/.profile.d
 
 cp -r $ROOT_DIR/lib/dist $BUILD_DIR/datadog/
 cp $ROOT_DIR/lib/dogstatsd $BUILD_DIR/datadog/dogstatsd
+cp $ROOT_DIR/lib/trace-agent $BUILD_DIR/datadog/trace-agent
 cp $ROOT_DIR/lib/scripts/get_tags.py $BUILD_DIR/datadog/scripts/get_tags.py
 
 cp -r $ROOT_DIR/lib/run-datadog.sh $BUILD_DIR/.profile.d/run-datadog.sh
