@@ -5,7 +5,7 @@ NAME="datadog-cloudfoundry-buildpack"
 ZIPFILE="$NAME.zip"
 PUPPY_DOWNLOAD_URL="https://s3.amazonaws.com/dd-agent/agent6/puppy/linux"
 DOGSTATSD_DOWNLOAD_URL="https://s3.amazonaws.com/dd-agent/dsd6/dogstatsd/linux"
-TRACEAGENT_DOWNLOAD_URL="https://s3.amazonaws.com/apt.datadoghq.com/pool/d/da/datadog-agent_5.23.0-1_amd64.deb"
+TRACEAGENT_DOWNLOAD_URL="https://s3.amazonaws.com/apt.datadoghq.com/pool/d/da/datadog-agent_5.22.3-1_amd64.deb"
 
 TMPDIR="$SRCDIR/tmp"
 
