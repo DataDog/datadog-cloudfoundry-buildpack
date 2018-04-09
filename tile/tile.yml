@@ -1,0 +1,13 @@
+---
+name: datadog-cloudfoundry-buildpack # By convention lowercase with dashes
+icon_file: resources/icon.png
+label: Datadog Cloud Foundry Buildpack
+description: Send Cloud Foundry Application Metrics and Traces to Datadog!
+
+apply_open_security_group: false
+
+packages:
+- name: datadog-cloudfoundry-buildpack
+  type: decorator
+  path: resources/datadog-cloudfoundry-buildpack.zip
+  buildpack_order: 99
