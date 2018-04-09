@@ -5,19 +5,36 @@ NAME="datadog-cloudfoundry-buildpack"
 ZIPFILE="$NAME.zip"
 PUPPY_DOWNLOAD_URL="https://s3.amazonaws.com/dd-agent/agent6/puppy/linux"
 DOGSTATSD_DOWNLOAD_URL="https://s3.amazonaws.com/dd-agent/dsd6/dogstatsd/linux"
-TRACEAGENT_DOWNLOAD_URL="https://s3.amazonaws.com/apt.datadoghq.com/pool/d/da/datadog-agent_5.22.3-1_amd64.deb"
+TRACEAGENT_DOWNLOAD_URL_HEAD="https://s3.amazonaws.com/apt.datadoghq.com/pool/d/da/datadog-agent_"
+TRACEAGENT_DOWNLOAD_URL_TAIL="-1_amd64.deb"
+TRACE_DEFAULT_VERSION="6.1.2"
 
 TMPDIR="$SRCDIR/tmp"
 
 
+
 function download_trace_agent() {
+  local trace_version="${1:-$TRACE_DEFAULT_VERSION}"
+  local trace_agent_download_url="$TRACEAGENT_DOWNLOAD_URL_HEAD$trace_version$TRACEAGENT_DOWNLOAD_URL_TAIL"
+
+  local archiver="tar"
+  if command -v gtar > /dev/null 2>&1; then
+    archiver="gtar"
+  else
+    if [[ `uname` == 'Darwin' ]]; then
+      echo "On OSX you might see some errors from untarring the deb package"
+      echo "Using gnu tar will resolve them"
+      echo "However, they should be okay to ignore"
+    fi
+  fi
+
   mkdir -p $TMPDIR
-  curl -L $TRACEAGENT_DOWNLOAD_URL -o ./tmp/datadog-agent.deb
+  curl -L $trace_agent_download_url -o ./tmp/datadog-agent.deb
   pushd $TMPDIR
     ar x datadog-agent.deb
-    tar -xzf data.tar.gz
+    $archiver -xzf data.tar.gz
   popd
-  cp $TMPDIR/opt/datadog-agent/bin/trace-agent $SRCDIR/lib/trace-agent
+  cp $TMPDIR/opt/datadog-agent/embedded/bin/trace-agent $SRCDIR/lib/trace-agent
   rm -rf $TMPDIR/*
 }
 
@@ -55,7 +72,7 @@ function main() {
 
     # Does not support versioning for now, keep it dumb until trace-agent merge with the Agent6
     # curl -L $TRACEAGENT_DOWNLOAD_URL -o ./lib/trace-agent
-    download_trace_agent
+    download_trace_agent $VERSION
     chmod +x $SRCDIR/lib/trace-agent
   fi
 
