@@ -3,3 +3,4 @@
 # do not save the dogstatsd binary
 lib/dogstatsd
 lib/trace-agent
+venv
