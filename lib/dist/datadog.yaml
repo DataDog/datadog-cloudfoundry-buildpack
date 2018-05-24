@@ -1,6 +1,3 @@
-# This is kept here to provide some sane defaults.
-# All settings must be set through environment variables
-
 # The host of the Datadog intake server to send Agent data to
 dd_url: https://app.datadoghq.com
 
@@ -9,25 +6,64 @@ dd_url: https://app.datadoghq.com
 # https://app.datadoghq.com/account/settings
 api_key:
 
-# tags:
-
 # If you need a proxy to connect to the Internet, provide it here (default:
 # disabled). You can use the 'no_proxy' list to specify hosts that should bypass the
 # proxy. These settings might impact your checks requests, please refer to the
 # specific check documentation for more details.
 #
 # proxy:
-#   http: http(s)://user:password@proxy_for_http:port
-#   https: http(s)://user:password@proxy_for_https:port
+#   http: HTTP_PROXY
+#   https: HTTPS_PROXY
 #   no_proxy:
 #     - host1
 #     - host2
 
-# If you run the agent behind haproxy, you might want to set this to yes
+# Setting this option to "yes" will tell the agent to skip validation of SSL/TLS certificates.
+# This may be necessary if the agent is running behind a proxy. See this page for details:
+# https://github.com/DataDog/dd-agent/wiki/Proxy-Configuration#using-haproxy-as-a-proxy
 # skip_ssl_validation: no
+
+# Setting this option to "yes" will force the agent to only use TLS 1.2 when
+# pushing data to the url specified in "dd_url".
+# force_tls_12: no
 
 # Force the hostname to whatever you want. (default: auto-detected)
 # hostname: mymachine.mydomain
+
+# Set the host's tags (optional)
+# tags:
+#   - mytag
+#   - env:prod
+#   - role:database
+
+# Histogram and Historate configuration
+#
+# Configure which aggregated value to compute. Possible values are: min, max,
+# median, avg, sum and count.
+#
+# histogram_aggregates: ["max", "median", "avg", "count"]
+#
+# Configure which percentiles will be computed. Must be a list of float
+# between 0 and 1.
+# Warning: percentiles must be specified as yaml strings
+#
+# histogram_percentiles: ["0.95"]
+
+# Forwarder timeout in seconds
+# forwarder_timeout: 20
+
+# The forwarder retries failed requests. Use this setting to change the
+# maximum length of the forwarder's retry queue (each request in the queue
+# takes no more than 2MB in memory)
+# forwarder_retry_queue_max_size: 30
+
+# The number of workers used by the forwarder. Please note each worker will
+# open an outbound HTTP connection towards Datadog's metrics intake at every
+# flush.
+# forwarder_num_workers: 1
+
+# Collect AWS EC2 custom tags as agent tags
+# collect_ec2_tags: false
 
 # The path containing check configuration files
 # By default, uses the conf.d folder located in the agent configuration folder.
@@ -40,39 +76,37 @@ api_key:
 # The port for the go_expvar server
 # expvar_port: 5000
 
+# The port on which the IPC api listens
+# cmd_port: 5001
+
 # The port for the browser GUI to be served
 # Setting 'GUI_port: -1' turns off the GUI completely
-# GUI_port: 8080
+# Default is '5002' on Windows and macOS ; turned off on Linux
+# GUI_port: -1
 
-# The path to the Unix Socket where the IPC api listens on *nix
-# cmd_sock: /tmp/agent.sock
-
-# The path of the Named Pipe the IPC api uses on Windows
-# cmd_pipe_name: \\.\pipe\ddagent
-
-# How many workers will be used to run the checks
-# check_runners: 4
-
-# Forwarder timeout in seconds
-# forwarder_timeout: 20
-
-# The forwarder retries failed requests. Use this setting to change the
-# maximum length of the forwarder's retry queue (each request in the queue
-# takes no more than 2MB in memory)
-# forwarder_retry_queue_max_size: 30
+# The Agent runs workers in parallel to execute checks. By default the number
+# of workers is set to 1. If set to 0 the agent will automatically determine
+# the best number of runners needed based on the number of checks running. This
+# would optimize the check collection time but may produce CPU spikes.
+# check_runners: 1
 
 # Metadata collection should always be enabled, except if you are running several
 # agents/dsd instances per host. In that case, only one agent should have it on.
 # WARNING: disabling it on every agent will lead to display and billing issues
 # enable_metadata_collection: true
 
-# Metadata collectors, add or remove from the list to enable or disable collection.
-# Intervals are expressed in seconds.
+# Enable the gohai collection of systems data
+# enable_gohai: true
+
+# IPC api server timeout in seconds
+# server_timeout: 15
+
+# Metadata providers, add or remove from the list to enable or disable collection.
+# Intervals are expressed in seconds. You can also set a provider's interval to 0
+# to disable it.
 metadata_collectors:
   - name: 'resources'
     interval: 60
-#  - name: k8s
-#    interval: 60
 
 # DogStatsd
 #
@@ -81,6 +115,11 @@ metadata_collectors:
 #
 # Make sure your client is sending to the same UDP port
 # dogstatsd_port: 8125
+#
+# The host to bind to receive external metrics (used only by the dogstatsd
+# server for now). For dogstatsd this is ignored if
+# 'dogstatsd_non_local_traffic' is set to true
+# bind_host: localhost
 #
 # Whether dogstatsd should listen to a Unix Socket instead of UDP (*nix only).
 # Set to a valid filesystem path to enable
@@ -97,131 +136,81 @@ metadata_collectors:
 # Whether dogstatsd should listen to non local UDP traffic
 # dogstatsd_non_local_traffic: no
 #
-# Publish dogstatsd's internal stats as Go epxvars
+# Publish dogstatsd's internal stats as Go expvars
 # dogstatsd_stats_enable: no
 #
 # How many items in the dogstatsd's stats circular buffer
 # dogstatsd_stats_buffer: 10
-
-# JMX
 #
-# jmx_pipe_path:
-# jmx_pipe_name: dd-auto_discovery
-
-# Autoconfig
+# The port for the go_expvar server
+# dogstatsd_stats_port: 5000
 #
-# Directory containing configuration templates
-# autoconf_template_dir: /datadog/check_configs
+# If you want to forward every packet received by the dogstatsd server
+# to another statsd server, uncomment these lines.
+# WARNING: Make sure that forwarded packets are regular statsd packets and not "dogstatsd" packets,
+# as your other statsd server might not be able to handle them.
+# statsd_forward_host: address_of_own_statsd_server
+# statsd_forward_port: 8125
 #
-# The providers the Agent should call to collect checks configurations.
-# Please note the File Configuration Provider is enabled by default and cannot
-# be configured.
-# config_providers:
-#   - name: etcd
-#     polling: true
-#     template_dir: /datadog/check_configs
-#     template_url: http://127.0.0.1
-#     username:
-#     password:
-
-#   - name: consul
-#     polling: true
-#     template_dir: /datadog/check_configs
-#     template_url: http://127.0.0.1
-#     ca_file:
-#     ca_path:
-#     cert_file:
-#     key_file:
-#     username:
-#     password:
-#     token:
-
-#   - name: zookeeper
-#     polling: true
-#     template_dir: /datadog/check_configs
-#     template_url: 127.0.0.1
-#     username:
-#     password:
+# If you want all statsd metrics coming from this host to be namespaced
+# you can configure the namspace below. Each metric received will be prefixed
+# with the namespace before it's sent to Datadog.
+# statsd_metric_namespace:
 
 # Logging
 #
 # log_level: info
-log_file: /home/vcap/app/datadog/dogstatsd.log
+log_file: AGENT_LOG_FILE
 
-# Autodiscovery
-#
-# Change the root directory to look at to get cgroup statistics. Useful when running inside a
-# container with host directories mounted on a different folder.
-# Default if environment variable "DOCKER_DD_AGENT" is set to "yes"
-# "/host/sys/fs/cgroup" and "/sys/fs/cgroup" if not.
-#
-# container_cgroup_root: /host/sys/fs/cgroup/
-#
-# Change the root directory to look at to get proc statistics. Useful when running inside a
-# container with host directories mounted on a different folder.
-# Default if environment variable "DOCKER_DD_AGENT" is set to "yes"
-# "/host/proc" and "/proc" if not.
-#
-# container_proc_root: /host/proc
-#
-# listeners:
-#   - name: docker
-#
-# Exclude containers based on their name or image
-# An excluded container will not get any individual container metric reported for it.
-# However it will still appear in the container count since ignoring it here would give
-# a wrong impression about the docker daemon load.
-#
-# How it works: exclude first.
-# If a container matches an exclude rule, it won't be included unless it also matches an include rule.
-#
-# Rules are regexp.
-#
-# Examples:
-# exclude all, except containers based on the 'ubuntu' image or the 'debian' image.
-# ac_exclude: ["image:.*"]
-# ac_include: ["image:ubuntu", "image:debian"]
-#
-# include all, except containers based on the 'ubuntu' image.
-# ac_exclude: ["image:ubuntu"]
-# ac_include: []
-#
-# exclude all debian images except containers with a name starting with 'frontend'.
-# ac_exclude: ["image:debian"]
-# ac_include: ["name:frontend.*"]
-#
-# ac_exclude: []
-# ac_include: []
-#
-#
-# Exclude default pause containers from orchestrators.
-#
-# By default the agent will not monitor kubernetes/openshift pause
-# container. They will still be counted in the container count (just like
-# excluded containers) since ignoring them would give a wrong impression
-# about the docker daemon load.
-#
-# exclude_pause_container: true
+# Set to 'yes' to output logs in JSON format
+# log_format_json: no
 
-# Docker tag extraction
+# Set to 'no' to disable logging to stdout
+# log_to_console: yes
+
+# Set to 'yes' to disable logging to the log file
+# disable_file_logging: no
+
+# Set to 'yes' to enable logging to syslog.
 #
-# We can extract container label or environment variables
-# as metric tags. If you prefix your tag name with +, it
-# will only be added to high cardinality metrics (docker check)
+# log_to_syslog: no
 #
-# docker_labels_as_tags:
-#   label_name:                  tag_name
-#   high_cardinality_label_name: +tag_name
-# docker_env_as_tags:
-#   ENVVAR_NAME: tag_name
+# If 'syslog_uri' is left undefined/empty, a local domain socket connection will be attempted
 #
-# Example:
-# docker_labels_as_tags:
-#   com.docker.compose.service: service_name
-#   com.docker.compose.project: +project_name
+# syslog_uri:
+#
+# Set to 'yes' to output in an RFC 5424-compliant format
+#
+# syslog_rfc: no
+#
+# If connecting through a TCP socket, set to 'yes' to enable TLS
+#
+# syslog_tls: no
 #
 
-# Kubernetes tag extraction
+# Trace Agent Specific Settings
 #
-# kubernetes_pod_label_to_tag_prefix: "kube_"
-#
+apm_config:
+#   Whether or not the APM Agent should run
+  enabled: true
+  log_file: TRACE_LOG_FILE
+#   The environment tag that Traces should be tagged with
+#   Will inherit from "env" tag if none is applied here
+#   env: none
+#   The port that the Receiver should listen on
+#   receiver_port: 8126
+#   Whether the Trace Agent should listen for non local traffic
+#   Only enable if Traces are being sent to this Agent from another host/container
+#   apm_non_local_traffic: false
+#   Extra global sample rate to apply on all the traces
+#   This sample rate is combined to the sample rate from the sampler logic, still promoting interesting traces
+#   From 1 (no extra rate) to 0 (don't sample at all)
+#   extra_sample_rate: 1.0
+#   Maximum number of traces per second to sample.
+#   The limit is applied over an average over a few minutes ; much bigger spikes are possible.
+#   Set to 0 to disable the limit.
+#   max_traces_per_second: 10
+#   A blacklist of regular expressions can be provided to disable certain traces based on their resource name
+#   all entries must be surrounded by double quotes and separated by commas
+#   Example: ["(GET|POST) /healthcheck", "GET /V1"]
+#   ignore_resources: []
