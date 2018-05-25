@@ -2,4 +2,8 @@
 
 # As this is a decorator, this should always exit 1
 
+echo "test"
+echo $0
+ls $0
+
 exit 1
