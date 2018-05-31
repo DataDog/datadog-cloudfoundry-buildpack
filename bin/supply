@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo "-----> DatadogBuildpack/compile"
+echo "-----> DatadogBuildpack/supply"
 
 BIN_DIR=$(cd $(dirname $0); pwd)
 ROOT_DIR=$(dirname $BIN_DIR)
@@ -8,7 +8,7 @@ BUILD_DIR=$1
 CACHE_DIR=$2
 ENV_DIR=$3
 
-echo "       Installing Datadog Dogstatsd and Trace Agent"
+echo "Installing Datadog Dogstatsd and Trace Agent"
 
 mkdir -p $BUILD_DIR/datadog/scripts
 mkdir -p $BUILD_DIR/.profile.d
