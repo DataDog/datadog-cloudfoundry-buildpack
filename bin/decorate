@@ -3,4 +3,4 @@
 # Dogstatsd cannot be started from here, so this script cannot do anything
 
 echo "-----> DatadogBuildpack/decorate"
-echo "       \033[0;31mATTENTION: meta-buildpack is getting deprecated by pivotal, please load this buildpack using the multi-buildpack instead.
+echo "       \033[0;31mATTENTION: meta-buildpack is getting deprecated by pivotal, please load this buildpack using the multi-buildpack instead.\e[0m"
