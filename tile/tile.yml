@@ -8,6 +8,6 @@ apply_open_security_group: false
 
 packages:
 - name: datadog-application-monitoring
-  type: decorator
+  type: buildpack
   path: resources/datadog-cloudfoundry-buildpack.zip
   buildpack_order: 99
