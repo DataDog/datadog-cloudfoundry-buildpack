@@ -28,20 +28,20 @@ start_datadog() {
     # Override user set tags so the tags set in the yaml file are used instead
     export DD_TAGS=""
 
-    if [ -n "DD_HTTP_PROXY" ]; then
+    if [ -n "$DD_HTTP_PROXY" ]; then
       sed -i "s~# proxy:~proxy:~" $DATADOG_DIR/dist/datadog.yaml
       sed -i "s~#   http: HTTP_PROXY~  http: $DD_HTTP_PROXY~" $DATADOG_DIR/dist/datadog.yaml
     else
-      if [ -n "HTTP_PROXY" ]; then
+      if [ -n "$HTTP_PROXY" ]; then
         sed -i "s~# proxy:~proxy:~" $DATADOG_DIR/dist/datadog.yaml
         sed -i "s~#   http: HTTP_PROXY~  http: $HTTP_PROXY~" $DATADOG_DIR/dist/datadog.yaml
       fi
     fi
-    if [ -n "DD_HTTPS_PROXY" ]; then
+    if [ -n "$DD_HTTPS_PROXY" ]; then
       sed -i "s~# proxy:~proxy:~" $DATADOG_DIR/dist/datadog.yaml
       sed -i "s~#   https: HTTPS_PROXY~  https: $DD_HTTPS_PROXY~" $DATADOG_DIR/dist/datadog.yaml
     else
-      if [ -n "DD_HTTPS_PROXY" ]; then
+      if [ -n "$HTTPS_PROXY" ]; then
         sed -i "s~# proxy:~proxy:~" $DATADOG_DIR/dist/datadog.yaml
         sed -i "s~#   https: HTTPS_PROXY~  https: $HTTPS_PROXY~" $DATADOG_DIR/dist/datadog.yaml
       fi
