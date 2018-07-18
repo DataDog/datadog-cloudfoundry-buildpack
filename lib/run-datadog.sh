@@ -11,6 +11,9 @@ start_datadog() {
     export DD_DD_URL=${DD_DD_URL:-https://app.datadoghq.com}
     export DD_ENABLE_CHECKS="${DD_ENABLE_CHECKS:-true}"
     export DOCKER_DD_AGENT=yes
+    # log-collection
+    export DD_LOGS_ENABLED
+    export DD_LOGS_CONFIG_TCP_FORWARD_PORT
 
     if [ "$DD_ENABLE_CHECKS" = "true" ]; then
       sed -i "s~# confd_path:.*~confd_path: $DATADOG_DIR/conf.d~" $DATADOG_DIR/dist/datadog.yaml

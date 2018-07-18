@@ -24,6 +24,14 @@ cf set-env $YOUR_APP_NAME DD_API_KEY $YOUR_DATADOG_API_KEY
 cf restage $YOUR_APP_NAME
 ```
 
+You can also enable log collection, you will need to provide a TCP to forward logs to the agent:
+```shell
+# set the environment variables
+cf set-env $YOUR_APP_NAME DD_API_KEY $YOUR_DATADOG_API_KEY DD_LOGS_ENABLED $LOGS_ENABLED DD_LOGS_CONFIG_TCP_FORWARD_PORT $TCP_FORWARD_PORT
+# restage the application to get it to pick up the new environment variable and use the buildpack
+cf restage $YOUR_APP_NAME
+```
+
 ### DogStatsD Away!
 You're all set up to use DogStatsD. Import the relevant library and start sending data! To learn more, [check our our documentation](https://docs.datadoghq.com/guides/DogStatsD/). Additionally, we have [a list of DogStatsD libraries](https://docs.datadoghq.com/libraries/) you can check out to find one that's compatible with your application.
 
