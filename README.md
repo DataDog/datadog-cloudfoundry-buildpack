@@ -24,10 +24,15 @@ cf set-env $YOUR_APP_NAME DD_API_KEY $YOUR_DATADOG_API_KEY
 cf restage $YOUR_APP_NAME
 ```
 
-You can also enable log collection, you will need to provide a TCP to forward logs to the agent:
+You can also enable log collection, you will need to provide a TCP port to forward logs to the agent:
 ```shell
 # set the environment variables
-cf set-env $YOUR_APP_NAME DD_API_KEY $YOUR_DATADOG_API_KEY DD_LOGS_ENABLED $LOGS_ENABLED DD_LOGS_CONFIG_TCP_FORWARD_PORT $TCP_FORWARD_PORT
+cf set-env $YOUR_APP_NAME DD_API_KEY $YOUR_DATADOG_API_KEY
+cf set-env $YOUR_APP_NAME RUN_PUPPY true
+cf set-env $YOUR_APP_NAME DD_LOGS_ENABLED true
+cf set-env $YOUR_APP_NAME DD_LOGS_CONFIG_TCP_FORWARD_PORT 10514
+# prevent collecting all logs from stdout
+cf set-env $YOUR_APP_NAME COLLECT_FROM_STD false
 # restage the application to get it to pick up the new environment variable and use the buildpack
 cf restage $YOUR_APP_NAME
 ```
