@@ -1,5 +1,3 @@
-# do not save the completed zip files
-*.zip
 # do not save the dogstatsd binary
 lib/dogstatsd
 lib/puppy
