@@ -2,7 +2,7 @@
 
 redirect() {
   while true; do
-    nc localhost $DD_LOGS_CONFIG_TCP_FORWARD_PORT
+    nc localhost $DD_LOGS_CONFIG_TCP_FORWARD_PORT || true
   done
 }
 
