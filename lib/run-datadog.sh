@@ -64,8 +64,6 @@ start_datadog() {
 
 if [ -z $DD_API_KEY ]; then
   echo "Datadog API Key not set, not starting Datadog"
-elif [ "$DD_LOGS_ENABLED" = "true" -a -z $DD_LOGS_CONFIG_TCP_FORWARD_PORT ]; then
-  echo "TCP forward port is not set, not starting Datadog"
 else
   echo "starting datadog"
   start_datadog
