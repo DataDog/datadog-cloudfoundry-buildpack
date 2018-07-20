@@ -47,10 +47,6 @@ start_datadog() {
       fi
     fi
 
-    if [ "$DD_LOGS_ENABLED" = "true" -a "$COLLECT_FROM_STD" != "false" ]; then
-      exec &> >(nc localhost $DD_LOGS_CONFIG_TCP_FORWARD_PORT)
-    fi
-
     # DSD requires its own config file
     cp $DATADOG_DIR/dist/datadog.yaml $DATADOG_DIR/dist/dogstatsd.yaml
     if [ -n "$RUN_AGENT" -a -f ./puppy ]; then
