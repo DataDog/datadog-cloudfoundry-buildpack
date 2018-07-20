@@ -9,7 +9,7 @@ start_datadog() {
     export DD_LOG_FILE=$DATADOG_DIR/dogstatsd.log
     export DD_API_KEY
     export DD_DD_URL=${DD_DD_URL:-https://app.datadoghq.com}
-    export DD_ENABLE_CHECKS="${DD_ENABLE_CHECKS:-false}"
+    export DD_ENABLE_CHECKS="${DD_ENABLE_CHECKS:-true}"
     export DOCKER_DD_AGENT=yes
 
     if [ "$DD_ENABLE_CHECKS" = "true" ]; then
