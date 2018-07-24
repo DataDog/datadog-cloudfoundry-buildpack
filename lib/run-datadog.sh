@@ -11,6 +11,7 @@ start_datadog() {
     export DD_DD_URL=${DD_DD_URL:-https://app.datadoghq.com}
     export DD_ENABLE_CHECKS="${DD_ENABLE_CHECKS:-true}"
     export DOCKER_DD_AGENT=yes
+    export DD_LOGS_CONFIG_TCP_FORWARD_PORT="${DD_LOGS_CONFIG_TCP_FORWARD_PORT:-10514}"
 
     if [ "$DD_ENABLE_CHECKS" = "true" ]; then
       sed -i "s~# confd_path:.*~confd_path: $DATADOG_DIR/conf.d~" $DATADOG_DIR/dist/datadog.yaml
@@ -66,6 +67,5 @@ if [ -z $DD_API_KEY ]; then
   echo "Datadog API Key not set, not starting Datadog"
 else
   echo "starting datadog"
-
   start_datadog
 fi

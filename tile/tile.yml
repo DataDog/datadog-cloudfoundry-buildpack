@@ -2,7 +2,7 @@
 name: datadog-application-monitoring # By convention lowercase with dashes
 icon_file: resources/icon.png
 label: Datadog Application Monitoring for PCF
-description: Send Cloud Foundry Application Metrics and Traces to Datadog!
+description: Send Cloud Foundry Application Metrics, Logs and Traces to Datadog!
 
 apply_open_security_group: false
 

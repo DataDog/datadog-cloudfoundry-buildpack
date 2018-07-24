@@ -24,6 +24,22 @@ cf set-env $YOUR_APP_NAME DD_API_KEY $YOUR_DATADOG_API_KEY
 cf restage $YOUR_APP_NAME
 ```
 
+You can also enable log collection.
+By default, all logs from stdout and stderr are collected and forwarded to the agent by TCP on port 10514.
+You can disable stdout/stderr log collection if you just want to collect your application logs, you'll need to manage log-TCP-forwarding on your own.
+```shell
+# set the environment variables
+cf set-env $YOUR_APP_NAME DD_API_KEY $YOUR_DATADOG_API_KEY
+cf set-env $YOUR_APP_NAME RUN_PUPPY true
+cf set-env $YOUR_APP_NAME DD_LOGS_ENABLED true
+# override the TCP port
+cf set-env $YOUR_APP_NAME DD_LOGS_CONFIG_TCP_FORWARD_PORT 10514
+# disable log collection on stdout/stderr
+cf set-env $YOUR_APP_NAME DISABLE_STD_LOG_COLLECTION true
+# restage the application to get it to pick up the new environment variable and use the buildpack
+cf restage $YOUR_APP_NAME
+```
+
 ### DogStatsD Away!
 You're all set up to use DogStatsD. Import the relevant library and start sending data! To learn more, [check our our documentation](https://docs.datadoghq.com/guides/DogStatsD/). Additionally, we have [a list of DogStatsD libraries](https://docs.datadoghq.com/libraries/) you can check out to find one that's compatible with your application.
 
