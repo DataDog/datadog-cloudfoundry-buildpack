@@ -29,7 +29,7 @@ cf restage $YOUR_APP_NAME
 
 #### Log Collection
 
-To start collecting logs from your application in CloudFoundry, the puppy-agent contained in the buildpack needs to be run and log collection enabled.
+To start collecting logs from your application in CloudFoundry, the puppy-agent contained in the buildpack needs to be run and log collection enabled. Note that DogStatsD is automatically enabled with the puppy-agent.
 
 ```
 cf set-env $YOUR_APP_NAME RUN_PUPPY true
@@ -47,6 +47,12 @@ To disable log collection from `stdout`/`stderr`, use the following configuratio
 cf set-env $YOUR_APP_NAME DD_LOGS_CONFIG_TCP_FORWARD_PORT 10514
 # disable log collection on stdout/stderr
 cf set-env $YOUR_APP_NAME DISABLE_STD_LOG_COLLECTION true
+```
+
+To collect metrics with DogStatsD only, it is possible to disable metric collection in the puppy agent by adding:
+
+```
+cf set-env $YOUR_APP_NAME DD_ENABLE_CHECKS false
 ```
 
 ### DogStatsD Away!
