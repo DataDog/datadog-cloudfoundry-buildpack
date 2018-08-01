@@ -34,7 +34,7 @@ To start collecting logs from your application in CloudFoundry, the agent contai
 ```
 cf set-env $YOUR_APP_NAME RUN_PUPPY true
 cf set-env $YOUR_APP_NAME DD_LOGS_ENABLED true
-# Activate log collection only on the enabled agent
+# Disable the Agent core checks to disable system metrics collection
 cf set-env $YOUR_APP_NAME DD_ENABLE_CHECKS false
 # restage the application to get it to pick up the new environment variable and use the buildpack
 cf restage $YOUR_APP_NAME
