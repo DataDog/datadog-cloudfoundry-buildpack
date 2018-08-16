@@ -7,7 +7,7 @@ PUPPY_DOWNLOAD_URL="https://s3.amazonaws.com/dd-agent/agent6/puppy/linux"
 DOGSTATSD_DOWNLOAD_URL="https://s3.amazonaws.com/dd-agent/dsd6/dogstatsd/linux"
 TRACEAGENT_DOWNLOAD_URL_HEAD="https://s3.amazonaws.com/apt.datadoghq.com/pool/d/da/datadog-agent_"
 TRACEAGENT_DOWNLOAD_URL_TAIL="-1_amd64.deb"
-TRACE_DEFAULT_VERSION="6.4.1"
+TRACE_DEFAULT_VERSION="6.4.2"
 
 TMPDIR="$SRCDIR/tmp"
 
