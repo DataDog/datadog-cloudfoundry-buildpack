@@ -50,11 +50,11 @@ start_datadog() {
     
     #Override default EXPVAR Port
     if [ -n "$DD_EXPVAR_PORT" ]; then
-      sed -i "s~# expvar_port: 5000~expvar_port:$DD_EXPVAR_PORT~" $DATADOG_DIR/dist/datadog.yaml
+      sed -i "s~# expvar_port: 5000~expvar_port: $DD_EXPVAR_PORT~" $DATADOG_DIR/dist/datadog.yaml
     fi
     #Override default CMD Port
     if [ -n "$DD_CMD_PORT" ]; then
-      sed -i "s~# cmd_port: 5001~cmd_port:$DD_CMD_PORT~" $DATADOG_DIR/dist/datadog.yaml
+      sed -i "s~# cmd_port: 5001~cmd_port: $DD_CMD_PORT~" $DATADOG_DIR/dist/datadog.yaml
     fi
     
     # DSD requires its own config file
