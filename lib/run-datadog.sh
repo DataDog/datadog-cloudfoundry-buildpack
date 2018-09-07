@@ -47,7 +47,16 @@ start_datadog() {
         sed -i "s~#   https: HTTPS_PROXY~  https: $HTTPS_PROXY~" $DATADOG_DIR/dist/datadog.yaml
       fi
     fi
-
+    
+    #Override default EXPVAR Port
+    if [ -n "$DD_EXPVAR_PORT" ]; then
+      sed -i "s~# expvar_port: 5000~expvar_port:$DD_EXPVAR_PORT~" $DATADOG_DIR/dist/datadog.yaml
+    fi
+    #Override default CMD Port
+    if [ -n "$DD_CMD_PORT" ]; then
+      sed -i "s~# cmd_port: 5001~cmd_port:$DD_CMD_PORT~" $DATADOG_DIR/dist/datadog.yaml
+    fi
+    
     # DSD requires its own config file
     cp $DATADOG_DIR/dist/datadog.yaml $DATADOG_DIR/dist/dogstatsd.yaml
     if [ -n "$RUN_AGENT" -a -f ./puppy ]; then
