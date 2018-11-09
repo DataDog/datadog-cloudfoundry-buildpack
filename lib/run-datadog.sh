@@ -11,7 +11,10 @@ start_datadog() {
     export DD_DD_URL=${DD_DD_URL:-https://app.datadoghq.com}
     export DD_ENABLE_CHECKS="${DD_ENABLE_CHECKS:-true}"
     export DOCKER_DD_AGENT=yes
-    export DD_LOGS_CONFIG_TCP_FORWARD_PORT="${DD_LOGS_CONFIG_TCP_FORWARD_PORT:-10514}"
+    # use only this parameter to configure the stdout/stderr forward,
+    # the agent tcp forwarding must be properly set in DD_LOGS_CONFIG_CUSTOM_CONFIG
+    # and must match with DD_LOGS_CONFIG_TCP_FORWARD_PORT.
+    export DD_LOGS_CONFIG_TCP_FORWARD_PORT=""
 
     if [ "$DD_ENABLE_CHECKS" = "true" ]; then
       sed -i "s~# confd_path:.*~confd_path: $DATADOG_DIR/conf.d~" $DATADOG_DIR/dist/datadog.yaml
