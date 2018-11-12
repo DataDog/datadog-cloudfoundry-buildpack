@@ -36,8 +36,8 @@ To start collecting logs from your application in CloudFoundry, use the followin
 cf set-env $YOUR_APP_NAME RUN_AGENT true
 # enable log collection
 cf set-env $YOUR_APP_NAME DD_LOGS_ENABLED true
-# configure the agent to forward logs from stderr and stderr
-cf set-env $YOUR_APP_NAME DD_LOGS_CONFIG_TCP_FORWARD_PORT 10514
+# configure the agent to collect logs from stderr and stderr
+cf set-env $YOUR_APP_NAME STD_LOG_COLLECTION_PORT 10514
 cf set-env $YOUR_APP_NAME DD_LOGS_CONFIG_CUSTOM_CONFIG '[{"type":"tcp","port":"10514","source":"<SOURCE>","service":"<SERVICE>"}]'
 # disable the Agent core checks to disable system metrics collection
 cf set-env $YOUR_APP_NAME DD_ENABLE_CHECKS false
@@ -54,9 +54,10 @@ cf set-env $YOUR_APP_NAME DISABLE_STD_LOG_COLLECTION true
 ```
 
 Whether you need to send your logs directly from your application, use the following configuration:
+
 ```
 # add custom TCP listener with stdout/stderr forwarding
-cf set-env $YOUR_APP_NAME DD_LOGS_CONFIG_TCP_FORWARD_PORT 10514
+cf set-env $YOUR_APP_NAME STD_LOG_COLLECTION_PORT 10514
 cf set-env $YOUR_APP_NAME DD_LOGS_CONFIG_CUSTOM_CONFIG '[{"type":"tcp","port":"10514","source":"<SOURCE>","service":"<SERVICE>"},{"type":"tcp","port":"<PORT>","source":"<SOURCE>","service":"<SERVICE>"}]'
 # add custom TCP listener without stdout/stderr forwarding
 cf set-env $YOUR_APP_NAME DD_LOGS_CONFIG_CUSTOM_CONFIG '[{"type":"tcp","port":"<PORT>","source":"<SOURCE>","service":"<SERVICE>"}]'
