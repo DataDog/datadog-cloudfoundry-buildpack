@@ -6,8 +6,7 @@ LOGS_CONFIG = os.environ['LOGS_CONFIG']
 config = "{\"logs\":" + LOGS_CONFIG + "}" 
 path = LOGS_CONFIG_DIR + "/logs.yaml"
 
-file = open(path, 'w')
-
-print "writing {} to {}".format(config, path)
-file.write(config)
-file.write("\n")
+with open(path, 'w') as f:
+  print "writing {} to {}".format(config, path)
+  f.write(config)
+  f.write("\n")

@@ -11,6 +11,7 @@ start_datadog() {
     export DD_DD_URL=${DD_DD_URL:-https://app.datadoghq.com}
     export DD_ENABLE_CHECKS="${DD_ENABLE_CHECKS:-true}"
     export DOCKER_DD_AGENT=yes
+    export LOGS_CONFIG_DIR=$DATADOG_DIR/dist/conf.d/logs.d
     export LOGS_CONFIG
 
     # create and configure set /conf.d if integrations are enabled
@@ -26,8 +27,7 @@ start_datadog() {
 
     # add logs configs
     if [ -n "$LOGS_CONFIG" ]; then
-      export LOGS_CONFIG_DIR=$DATADOG_DIR/dist/conf.d/logs.d
-      mkdir $LOGS_CONFIG_DIR
+      mkdir -p $LOGS_CONFIG_DIR
       python $DATADOG_DIR/scripts/create_logs_config.py
     fi
 
