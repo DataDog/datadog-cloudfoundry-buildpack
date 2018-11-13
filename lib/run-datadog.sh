@@ -11,9 +11,24 @@ start_datadog() {
     export DD_DD_URL=${DD_DD_URL:-https://app.datadoghq.com}
     export DD_ENABLE_CHECKS="${DD_ENABLE_CHECKS:-true}"
     export DOCKER_DD_AGENT=yes
+    export LOGS_CONFIG
 
+    # create and configure set /conf.d if integrations are enabled
+    if [ "$DD_ENABLE_CHECKS" = "true" ] || [ -n "$LOGS_CONFIG" ] ; then
+      mkdir $DATADOG_DIR/dist/conf.d
+      sed -i "s~# confd_path:.*~confd_path: $DATADOG_DIR/dist/conf.d~" $DATADOG_DIR/dist/datadog.yaml
+    fi
+
+    # add checks configs
     if [ "$DD_ENABLE_CHECKS" = "true" ]; then
-      sed -i "s~# confd_path:.*~confd_path: $DATADOG_DIR/conf.d~" $DATADOG_DIR/dist/datadog.yaml
+      mv $DATADOG_DIR/conf.d/* $DATADOG_DIR/dist/conf.d
+    fi
+
+    # add logs configs
+    if [ -n "$LOGS_CONFIG" ]; then
+      export LOGS_CONFIG_DIR=$DATADOG_DIR/dist/conf.d/logs.d
+      mkdir $LOGS_CONFIG_DIR
+      python $DATADOG_DIR/scripts/create_logs_config.py
     fi
 
     # The yaml file requires the tags to be an array,
@@ -55,7 +70,7 @@ start_datadog() {
     if [ -n "$DD_CMD_PORT" ]; then
       sed -i "s~# cmd_port: 5001~cmd_port: $DD_CMD_PORT~" $DATADOG_DIR/dist/datadog.yaml
     fi
-    
+
     # DSD requires its own config file
     cp $DATADOG_DIR/dist/datadog.yaml $DATADOG_DIR/dist/dogstatsd.yaml
     if [ -n "$RUN_AGENT" -a -f ./puppy ]; then

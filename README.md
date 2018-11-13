@@ -37,7 +37,7 @@ cf set-env $YOUR_APP_NAME RUN_AGENT true
 # enable log collection
 cf set-env $YOUR_APP_NAME DD_LOGS_ENABLED true
 # add a custom config
-cf set-env $YOUR_APP_NAME DD_LOGS_CONFIG_CUSTOM_CONFIG '[{"type":"tcp","port":"<PORT>","source":"<SOURCE>","service":"<SERVICE>"}]'
+cf set-env $YOUR_APP_NAME LOGS_CONFIG '[{"type":"tcp","port":"<PORT>","source":"<SOURCE>","service":"<SERVICE>"}]'
 # disable the Agent core checks to disable system metrics collection
 cf set-env $YOUR_APP_NAME DD_ENABLE_CHECKS false
 # restage the application to get it to pick up the new environment variable and use the buildpack
@@ -49,10 +49,10 @@ Collect logs from stdout/stderr:
 ```
 # stdout/stderr forwarding only
 cf set-env $YOUR_APP_NAME STD_LOG_COLLECTION_PORT 10514
-cf set-env $YOUR_APP_NAME DD_LOGS_CONFIG_CUSTOM_CONFIG '[{"type":"tcp","port":"<PORT>","source":"<SOURCE>","service":"<SERVICE>"}]'
+cf set-env $YOUR_APP_NAME LOGS_CONFIG '[{"type":"tcp","port":"<PORT>","source":"<SOURCE>","service":"<SERVICE>"}]'
 # stdout/stderr forwarding with additional config
 cf set-env $YOUR_APP_NAME STD_LOG_COLLECTION_PORT 10514
-cf set-env $YOUR_APP_NAME DD_LOGS_CONFIG_CUSTOM_CONFIG '[{"type":"tcp","port":"10514","source":"<SOURCE>","service":"<SERVICE>"},{"type":"tcp","port":"<PORT>","source":"<SOURCE>","service":"<SERVICE>"}]'
+cf set-env $YOUR_APP_NAME LOGS_CONFIG '[{"type":"tcp","port":"10514","source":"<SOURCE>","service":"<SERVICE>"},{"type":"tcp","port":"<PORT>","source":"<SOURCE>","service":"<SERVICE>"}]'
 ```
 
 ### DogStatsD Away!
