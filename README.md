@@ -29,26 +29,30 @@ cf restage $YOUR_APP_NAME
 
 #### Log Collection (Beta - No official release yet)
 
-To start collecting logs from your application in CloudFoundry, the agent contained in the buildpack needs to be activated and log collection enabled.
+To start collecting logs from your application in CloudFoundry, use the following configuration:
 
 ```
+# activate the agent
 cf set-env $YOUR_APP_NAME RUN_AGENT true
+# enable log collection
 cf set-env $YOUR_APP_NAME DD_LOGS_ENABLED true
-# Disable the Agent core checks to disable system metrics collection
+# add a custom config
+cf set-env $YOUR_APP_NAME LOGS_CONFIG '[{"type":"tcp","port":"<PORT>","source":"<SOURCE>","service":"<SERVICE>"}]'
+# disable the Agent core checks to disable system metrics collection
 cf set-env $YOUR_APP_NAME DD_ENABLE_CHECKS false
 # restage the application to get it to pick up the new environment variable and use the buildpack
 cf restage $YOUR_APP_NAME
 ```
 
-By default, the Agent collects logs from `stdout`/`stderr` and listens to TCP port 10514.
-It is possible to ask the Agent to listen on a different TCP port if you are streaming logs from your application in TCP.
-To disable log collection from `stdout`/`stderr`, use the following configuration:
+Collect logs from stdout/stderr:
 
 ```
-# override the TCP port
-cf set-env $YOUR_APP_NAME DD_LOGS_CONFIG_TCP_FORWARD_PORT 10514
-# disable log collection on stdout/stderr
-cf set-env $YOUR_APP_NAME DISABLE_STD_LOG_COLLECTION true
+# stdout/stderr forwarding only
+cf set-env $YOUR_APP_NAME STD_LOG_COLLECTION_PORT 10514
+cf set-env $YOUR_APP_NAME LOGS_CONFIG '[{"type":"tcp","port":"<PORT>","source":"<SOURCE>","service":"<SERVICE>"}]'
+# stdout/stderr forwarding with additional config
+cf set-env $YOUR_APP_NAME STD_LOG_COLLECTION_PORT 10514
+cf set-env $YOUR_APP_NAME LOGS_CONFIG '[{"type":"tcp","port":"10514","source":"<SOURCE>","service":"<SERVICE>"},{"type":"tcp","port":"<PORT>","source":"<SOURCE>","service":"<SERVICE>"}]'
 ```
 
 ### DogStatsD Away!

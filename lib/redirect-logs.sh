@@ -1,19 +1,24 @@
 #!/usr/bin/env bash
 
-export DD_LOGS_CONFIG_TCP_FORWARD_PORT="${DD_LOGS_CONFIG_TCP_FORWARD_PORT:-10514}"
-export DISABLE_STD_LOG_COLLECTION="${DISABLE_STD_LOG_COLLECTION:-false}"
+export LOGS_CONFIG
+export STD_LOG_COLLECTION_PORT
 
+# redirect forwards all standard inputs to a TCP socket listening on port STD_LOG_COLLECTION_PORT.
 redirect() {
   while true; do
-    nc localhost $DD_LOGS_CONFIG_TCP_FORWARD_PORT || true
+    nc localhost $STD_LOG_COLLECTION_PORT || true
   done
 }
 
+# setup the redirection from stdout/stderr to the logs-agent.
 if [ "$DD_LOGS_ENABLED" = "true" ]; then
-  if [ "$DISABLE_STD_LOG_COLLECTION" != "true" ]; then
-    echo "collect all logs forwarded to stdout/stderr"
-    exec &> >(tee >(redirect))
+  if [ -z "LOGS_CONFIG" ]; then
+    echo "can't collect logs, LOGS_CONFIG is not set"
   else
-    echo "collect all logs forwarded to port $DD_LOGS_CONFIG_TCP_FORWARD_PORT"
+    echo "collect all logs for config $LOGS_CONFIG"
+    if [ -n "$STD_LOG_COLLECTION_PORT" ]; then
+      echo "forward all logs from stdout/stderr to agent port $STD_LOG_COLLECTION_PORT"
+      exec &> >(tee >(redirect))
+    fi
   fi
 fi
