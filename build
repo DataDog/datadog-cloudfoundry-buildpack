@@ -62,10 +62,8 @@ function main() {
       DOGSTATSD_DOWNLOAD_URL="$DOGSTATSD_DOWNLOAD_URL/dogstatsd-latest"
     fi
 
-    if [ -n "$PUPPY" ]; then
-      curl $PUPPY_DOWNLOAD_URL -o $SRCDIR/lib/puppy
-      chmod +x $SRCDIR/lib/puppy
-    fi
+    curl $PUPPY_DOWNLOAD_URL -o $SRCDIR/lib/puppy
+    chmod +x $SRCDIR/lib/puppy
 
     curl $DOGSTATSD_DOWNLOAD_URL -o ./lib/dogstatsd
     chmod +x $SRCDIR/lib/dogstatsd
