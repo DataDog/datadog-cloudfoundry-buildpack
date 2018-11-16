@@ -27,7 +27,7 @@ cf set-env $YOUR_APP_NAME DD_API_KEY $YOUR_DATADOG_API_KEY
 cf restage $YOUR_APP_NAME
 ```
 
-#### Log Collection (Beta - No official release yet)
+#### Log Collection
 
 **Enable log collection**:
 
