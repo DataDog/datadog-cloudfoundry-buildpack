@@ -29,30 +29,39 @@ cf restage $YOUR_APP_NAME
 
 #### Log Collection (Beta - No official release yet)
 
-To start collecting logs from your application in CloudFoundry, use the following configuration:
+**Enable log collection**:
+
+To start collecting logs from your application in CloudFoundry, the Agent contained in the buildpack needs to be activated and log collection enabled.
 
 ```
-# activate the agent
 cf set-env $YOUR_APP_NAME RUN_AGENT true
-# enable log collection
 cf set-env $YOUR_APP_NAME DD_LOGS_ENABLED true
-# add a custom config
-cf set-env $YOUR_APP_NAME LOGS_CONFIG '[{"type":"tcp","port":"<PORT>","source":"<SOURCE>","service":"<SERVICE>"}]'
-# disable the Agent core checks to disable system metrics collection
+# Disable the Agent core checks to disable system metrics collection
 cf set-env $YOUR_APP_NAME DD_ENABLE_CHECKS false
+# Redirect Container Stdout/Stderr to a local port so the agent can collect the logs
+cf set-env $YOUR_APP_NAME STD_LOG_COLLECTION_PORT <PORT>
+# Configure the agent to collect logs from the wanted port and set the value for source and service
+cf set-env $YOUR_APP_NAME LOGS_CONFIG '[{"type":"tcp","port":"<PORT>","source":"<SOURCE>","service":"<SERVICE>"}]'
 # restage the application to get it to pick up the new environment variable and use the buildpack
 cf restage $YOUR_APP_NAME
 ```
 
-Collect logs from stdout/stderr:
+**Configure log collection**:
+
+The following parameters can be used to configure log collection:
+
+- `STD_LOG_COLLECTION_PORT`: Must be used when collecting logs from `stdout`/`stderr`. It redirects the `stdout`/`stderr` stream to the corresponding local port value.
+- `LOGS_CONFIG`: Use this option to configure the agent to listen to a local TCP port and set the value for the `service` and `source` parameters.
+
+**Example**:
+
+An `app01` Java application is running in Cloud Foundry. The following configuration redirects the container `stdout`/`stderr` to the local port 10514. It then configures the Agent to collect logs from that port while setting the proper value for `service` and `source`:
 
 ```
-# stdout/stderr forwarding only
+# Redirect Stdout/Stderr to port 10514
 cf set-env $YOUR_APP_NAME STD_LOG_COLLECTION_PORT 10514
-cf set-env $YOUR_APP_NAME LOGS_CONFIG '[{"type":"tcp","port":"<PORT>","source":"<SOURCE>","service":"<SERVICE>"}]'
-# stdout/stderr forwarding with additional config
-cf set-env $YOUR_APP_NAME STD_LOG_COLLECTION_PORT 10514
-cf set-env $YOUR_APP_NAME LOGS_CONFIG '[{"type":"tcp","port":"10514","source":"<SOURCE>","service":"<SERVICE>"},{"type":"tcp","port":"<PORT>","source":"<SOURCE>","service":"<SERVICE>"}]'
+# Configure the agent to listen to that port
+cf set-env $YOUR_APP_NAME LOGS_CONFIG '[{"type":"tcp","port":"10514","source":"java","service":"app01"}]'
 ```
 
 ### DogStatsD Away!
