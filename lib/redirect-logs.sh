@@ -6,8 +6,7 @@ export STD_LOG_COLLECTION_PORT
 # redirect forwards all standard inputs to a TCP socket listening on port STD_LOG_COLLECTION_PORT.
 redirect() {
   while true; do
-    nc localhost $STD_LOG_COLLECTION_PORT || true
-    sleep 0.5
+    nc localhost $STD_LOG_COLLECTION_PORT || sleep 0.5
   done
 }
 
