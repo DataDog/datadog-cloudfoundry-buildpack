@@ -7,6 +7,7 @@ export STD_LOG_COLLECTION_PORT
 redirect() {
   while true; do
     nc localhost $STD_LOG_COLLECTION_PORT || true
+    sleep 0.5
   done
 }
 
