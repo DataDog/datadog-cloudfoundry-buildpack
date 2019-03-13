@@ -1,13 +1,18 @@
 ---
-name: datadog-application-monitoring # By convention lowercase with dashes
+name: datadog_application_monitoring # By convention lowercase with underscores
 icon_file: resources/icon.png
 label: Datadog Application Monitoring for PCF
 description: Send Cloud Foundry Application Metrics, Logs and Traces to Datadog!
 
 apply_open_security_group: false
 
+stemcell_criteria:
+  os: ubuntu-xenial
+  requires_cpi: false
+  version: '170'
+
 packages:
-- name: datadog-application-monitoring
+- name: datadog_application_monitoring
   type: buildpack
   path: resources/datadog-cloudfoundry-buildpack.zip
   buildpack_order: 99
