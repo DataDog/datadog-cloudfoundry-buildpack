@@ -3,10 +3,21 @@
 export LOGS_CONFIG
 export STD_LOG_COLLECTION_PORT
 
+DATADOG_DIR="/home/vcap/app/datadog"
+
 # redirect forwards all standard inputs to a TCP socket listening on port STD_LOG_COLLECTION_PORT.
 redirect() {
   while true; do
     nc localhost $STD_LOG_COLLECTION_PORT || sleep 0.5
+    echo "Resetting buildpack log redirection"
+    curl  -X POST -H "Content-type: application/json" \
+    -d "{
+          \"title\": \"Resetting buildpack log redirection\",
+          \"text\": \"TCP socket on port $STD_LOG_COLLECTION_PORT for log redirection closed. Restarting it.\",
+          \"priority\": \"normal\",
+          \"tags\": $(python $DATADOG_DIR/scripts/get_tags.py),
+          \"alert_type\": \"info\"
+    }" "https://api.datadoghq.com/api/v1/events?api_key=$DD_API_KEY"
   done
 }
 
