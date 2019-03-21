@@ -10,14 +10,16 @@ redirect() {
   while true; do
     nc localhost $STD_LOG_COLLECTION_PORT || sleep 0.5
     echo "Resetting buildpack log redirection"
-    curl  -X POST -H "Content-type: application/json" \
-    -d "{
-          \"title\": \"Resetting buildpack log redirection\",
-          \"text\": \"TCP socket on port $STD_LOG_COLLECTION_PORT for log redirection closed. Restarting it.\",
-          \"priority\": \"normal\",
-          \"tags\": $(python $DATADOG_DIR/scripts/get_tags.py),
-          \"alert_type\": \"info\"
-    }" "https://api.datadoghq.com/api/v1/events?api_key=$DD_API_KEY"
+    if [ "$DD_DEBUG_STD_REDIRECTION" = "true" ]; then
+      curl  -X POST -H "Content-type: application/json" \
+      -d "{
+            \"title\": \"Resetting buildpack log redirection\",
+            \"text\": \"TCP socket on port $STD_LOG_COLLECTION_PORT for log redirection closed. Restarting it.\",
+            \"priority\": \"normal\",
+            \"tags\": $(python $DATADOG_DIR/scripts/get_tags.py),
+            \"alert_type\": \"info\"
+      }" "https://api.datadoghq.com/api/v1/events?api_key=$DD_API_KEY"
+    fi
   done
 }
 
