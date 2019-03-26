@@ -11,8 +11,6 @@ TRACE_DEFAULT_VERSION="6.10.0"
 
 TMPDIR="$SRCDIR/tmp"
 
-
-
 function download_trace_agent() {
   local trace_version="${1:-$TRACE_DEFAULT_VERSION}"
   local trace_agent_download_url="$TRACEAGENT_DOWNLOAD_URL_HEAD$trace_version$TRACEAGENT_DOWNLOAD_URL_TAIL"
@@ -77,7 +75,9 @@ function main() {
   rm -f $ZIPFILE
 
   pushd $SRCDIR
-    zip -r "$ZIPFILE" lib bin
+    if [ ! "$NO_ZIP" ]; then
+      zip -r "$ZIPFILE" lib bin
+    fi
   popd
 }
 
