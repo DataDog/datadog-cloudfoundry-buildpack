@@ -3,7 +3,7 @@
 export LOGS_CONFIG
 export STD_LOG_COLLECTION_PORT
 
-DATADOG_DIR="{$DATADOG_DIR:-/home/vcap/app/datadog}"
+DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/datadog}"
 
 
 # redirect forwards all standard inputs to a TCP socket listening on port STD_LOG_COLLECTION_PORT.

@@ -10,7 +10,7 @@ def hello():
     return "Hello World!"
 
 @app.route("/error")
-def hello():
+def error():
     statsd.increment('request.error.number', 1, tags=["test", "foo:bar", "my:app"])
 
     raise Exception()

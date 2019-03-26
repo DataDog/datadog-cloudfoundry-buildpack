@@ -2,7 +2,7 @@
 
 # Start dogstatsd
 
-DATADOG_DIR="{$DATADOG_DIR:-/home/vcap/app/datadog}"
+DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/datadog}"
 
 start_datadog() {
   pushd $DATADOG_DIR
