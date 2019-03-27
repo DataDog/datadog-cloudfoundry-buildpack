@@ -4,6 +4,9 @@ import logging
 
 import os
 
+# This is a small example application
+# It uses tracing and dogstatsd on a sample flask application
+
 log = logging.getLogger("app")
 
 app = Flask(__name__)
