@@ -11,6 +11,7 @@ log = logging.getLogger("app")
 
 app = Flask(__name__)
 
+# The app has two routes, a basic endpoint and an exception endpoint
 @app.route("/")
 def hello():
     statsd.increment('request.number', 1, tags=["test", "foo:bar", "my:app"])
@@ -23,7 +24,9 @@ def error():
     log.info("Got a request at error")
     raise Exception()
 
+# This is meant to be run directly, instead of executed through flask run
 if __name__ == '__main__':
+    # It grabs the host and port from the environment
     port = 5001
     host = '0.0.0.0'
     if os.environ.get('HOST'):

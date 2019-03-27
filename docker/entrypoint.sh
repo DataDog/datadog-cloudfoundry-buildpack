@@ -4,4 +4,5 @@
 source $DATADOG_DIR/run-datadog.sh
 source $DATADOG_DIR/redirect-logs.sh
 
+# Run the Docker command
 exec "$@"

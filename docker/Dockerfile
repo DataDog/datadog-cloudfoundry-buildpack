@@ -20,11 +20,13 @@ RUN apt-get update && apt-get install -y python python-pip \
 # Copy the datadog binaries and scripts into the image
 COPY ./lib /datadog
 
+# Add the requirements file with Flask and the datadog requirements
 COPY ./docker/app/requirements.txt /app/requirements.txt
 
 # Install the python requirements
 RUN pip install -r /app/requirements.txt
 
+# Add the flask app itself
 COPY ./docker/app/app.py /app/app.py
 
 # Copy the entrypoint and the flask app

@@ -1,6 +1,6 @@
 # Using Datadog with Docker in Cloud Foundry
 
-Cloud Foundry also supports running Docker containers. Setting up Datadog to monitor your Docker containers is done via the Dockerfile instead of a buildpack.
+Cloud Foundry also supports running Docker containers. Setting up Datadog to monitor your Docker containers is done via the Dockerfile instead of a buildpack, as buildpacks are unsupported.
 
 The following example coveres a simple flask app and provides more detail on how to get started.
 
