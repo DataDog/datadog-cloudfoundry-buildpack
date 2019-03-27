@@ -6,11 +6,11 @@ The following example coveres a simple flask app and provides more detail on how
 
 ## [Dockerfile](Dockerfile)
 
-This Dockerfile demonstrates setting up the Datadog assets, sample flask app, and an entrypoint file.
+This Dockerfile demonstrates setting up the Datadog assets, sample flask app, and an entrypoint file. As a note, the buildpack requires Python in order to work correctly.
 
 ## [Flask app](app)
 
-A simple flask application demonstrating examples on tracing, dogstatsd and logs. The requirements.txt file contains the dependencies.
+A simple flask application demonstrating examples on tracing, dogstatsd and logs. The requirements.txt file contains the dependencies. This method will work with any kind of application, not just Flask or Python applications. It's just a very simple example to see how it works.
 
 ## [Entrypoint](entrypoint.sh)
 
