@@ -12,4 +12,4 @@ This is a simple flask application demonstrating examples on tracing, dogstatsd 
 
 ## Entrypoint
 
-The entrypoint file has the two datadog scripts sourced, instead of them being run directly. They need to be sourced because sourcing them means that they aren't blocking on the main script.
+The entrypoint file has the two Datadog scripts sourced, instead of them being run directly. Having them sourced means that they aren't blocking on the main script.
