@@ -8,7 +8,7 @@ The dockerfile contains both the datadog assets as well as a small flask app, an
 
 ## Flask app
 
-The application is a simple flask application. It contains both tracing, dogstatsd and logs. The requirements.txt file contians the requirements
+This is a simple flask application demonstrating examples on tracing, dogstatsd and logs. The requirements.txt file contains the dependencies.
 
 ## Entrypoint
 
