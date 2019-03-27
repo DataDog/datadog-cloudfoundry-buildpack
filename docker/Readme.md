@@ -10,7 +10,7 @@ This Dockerfile demonstrates setting up the Datadog assets, sample flask app, an
 
 ## [Flask app](app)
 
-A simple flask application demonstrating examples on tracing, dogstatsd and logs. The requirements.txt file contains the dependencies. This method will work with any kind of application, not just Flask or Python applications. It's just a very simple example to see how it works.
+A simple flask application demonstrating examples on tracing, dogstatsd and logs. The requirements.txt file contains the dependencies.
 
 ## [Entrypoint](entrypoint.sh)
 
