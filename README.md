@@ -73,4 +73,4 @@ To build this buildpack, simply edit the relevant files and run the `./build` sc
 
 ## Docker
 
-If you're running docker on Cloud Foundry, you can look at [this readme](docker/README.md) to see how to adapt this buildpack to use in a dockerfile
+If you're running docker on Cloud Foundry, you can look at [the docker directory](docker/) to see how to adapt this buildpack to use in a dockerfile
