@@ -4,14 +4,14 @@ Cloud Foundry also supports running Docker containers. Setting up Datadog to mon
 
 The following example coveres a simple flask app and provides more detail on how to get started.
 
-## Dockerfile
+## [Dockerfile](Dockerfile)
 
 This Dockerfile demonstrates setting up the Datadog assets, sample flask app, and an entrypoint file.
 
-## Flask app
+## [Flask app](app)
 
 A simple flask application demonstrating examples on tracing, dogstatsd and logs. The requirements.txt file contains the dependencies.
 
-## Entrypoint
+## [Entrypoint](entrypoint.sh)
 
 The entrypoint file has the two Datadog scripts sourced, instead of them being run directly. By having them sourced, they aren't blocking on the main script.
