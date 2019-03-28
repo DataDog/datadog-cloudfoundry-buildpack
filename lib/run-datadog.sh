@@ -2,7 +2,7 @@
 
 # Start dogstatsd
 
-DATADOG_DIR="/home/vcap/app/datadog"
+DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/datadog}"
 
 start_datadog() {
   pushd $DATADOG_DIR
@@ -61,7 +61,7 @@ start_datadog() {
         sed -i "s~#   https: HTTPS_PROXY~  https: $HTTPS_PROXY~" $DATADOG_DIR/dist/datadog.yaml
       fi
     fi
-    
+
     #Override default EXPVAR Port
     if [ -n "$DD_EXPVAR_PORT" ]; then
       sed -i "s~# expvar_port: 5000~expvar_port: $DD_EXPVAR_PORT~" $DATADOG_DIR/dist/datadog.yaml

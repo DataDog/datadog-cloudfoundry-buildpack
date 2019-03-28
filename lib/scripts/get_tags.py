@@ -1,7 +1,11 @@
+from __future__ import print_function
+
 import os
 import json
 
-vcap_application = json.loads(os.environ['VCAP_APPLICATION'])
+vcap_app_string = os.environ.get('VCAP_APPLICATION', '{}')
+
+vcap_application = json.loads(vcap_app_string)
 
 vcap_variables = ["application_id", "name", "instance_index", "space_name"]
 
@@ -27,7 +31,7 @@ if user_tags:
         for tag in user_tags:
             tags.append(tag)
     except Exception as e:
-        print "there was an issue parsing the tags in TAGS: {}".format(e)
+        print("there was an issue parsing the tags in TAGS: {}".format(e))
 
 user_tags = os.environ.get('DD_TAGS', None)
 if user_tags:
@@ -36,10 +40,10 @@ if user_tags:
         for tag in user_tags:
             tags.append(tag)
     except Exception as e:
-        print "there was an issue parsing the tags in DD_TAGS: {}".format(e)
+        print("there was an issue parsing the tags in DD_TAGS: {}".format(e))
 
 legacy_tags = os.environ.get('LEGACY_TAGS_FORMAT', False)
 if legacy_tags:
-    print ','.join(tags)
+    print(','.join(tags))
 else:
-    print json.dumps(tags)
+    print(json.dumps(tags))
