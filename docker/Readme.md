@@ -2,11 +2,14 @@
 
 Cloud Foundry also supports running Docker containers. Setting up Datadog to monitor your Docker containers is done via the Dockerfile instead of a buildpack, as buildpacks are unsupported. This provides a mechanism to add the buildpack to the dockerfile.
 
-The following example coveres a simple flask app and provides more detail on how to get started.
+The following example covers a simple flask app and provides more detail on how to get started.
 
 ## [Dockerfile](Dockerfile)
 
 This Dockerfile demonstrates setting up the Datadog assets, sample flask app, and an entrypoint file. As a note, the buildpack requires Python in order to work correctly.
+To build your image, run the [`build.sh`](build.sh) script. You can edit this script to customize the name of the resulting docker image.
+
+Once the image is built, you need to push it to your Docker registry.
 
 ## [Flask app](app)
 
@@ -15,3 +18,8 @@ A simple flask application demonstrating examples on tracing, dogstatsd and logs
 ## [Entrypoint](entrypoint.sh)
 
 The entrypoint file has the two Datadog scripts sourced, instead of them being run directly. By having them sourced, they aren't blocking on the main script.
+
+## [Manifest](manifest.yaml)
+
+The manifest file contains the minimal parameters required to push your docker app to your cloudfoundry: `cf push -f manifest.yaml`.
+Be sure to configure your Datadog API key in the `env` section.

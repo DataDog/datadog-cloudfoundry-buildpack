@@ -1,0 +1,7 @@
+applications:
+- name: buildpack-docker
+  docker:
+    image: docker_app_with_buildpack
+  env:
+    # Specify the environment variables that will be set in the container
+    DD_API_KEY: <API_KEY>
