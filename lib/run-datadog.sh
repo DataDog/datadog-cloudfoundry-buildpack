@@ -76,7 +76,7 @@ start_datadog() {
     if [ -n "$RUN_AGENT" -a -f ./puppy ]; then
       export DD_LOG_FILE=$DATADOG_DIR/agent.log
       sed -i "s~log_file: AGENT_LOG_FILE~log_file: $DD_LOG_FILE~" $DATADOG_DIR/dist/datadog.yaml
-      ./puppy start --cfgpath $DATADOG_DIR/dist/ &
+      ./puppy run --cfgpath $DATADOG_DIR/dist/ &
     else
       export DD_LOG_FILE=$DATADOG_DIR/dogstatsd.log
       sed -i "s~log_file: AGENT_LOG_FILE~log_file: $DD_LOG_FILE~" $DATADOG_DIR/dist/datadog.yaml
