@@ -81,6 +81,20 @@ VERSION=<AGENT_VERSION> REFRESH_ASSETS=1 ./build
 
 This produces a `datadog-cloudfoundry-buildpack.zip` file at the root of the repository that you can use directly with the CF CLI, or to build the [datadog-application-monitoring tile](https://github.com/DataDog/pcf-datadog-application-monitoring).
 
+## Uploading the buildpack to CF
+
+Create the buildpack in CF if it does not exist
+
+```bash
+cf create-buildpack datadog-cloudfoundry-buildpack datadog-cloudfoundry-buildpack.zip 99 --enable
+```
+
+or update it if it already exists
+
+```bash
+cf update-buildpack datadog-cloudfoundry-buildpack -p datadog-cloudfoundry-buildpack.zip
+```
+
 ## Docker
 
 If you're running docker on Cloud Foundry, you can look at [the docker directory](docker/) to see how to adapt this buildpack to use in a dockerfile
