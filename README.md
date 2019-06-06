@@ -7,12 +7,17 @@ This is a [decorator buildpack](https://github.com/cf-platform-eng/meta-buildpac
 ### Install the [Meta Buildpack](https://github.com/cf-platform-eng/meta-buildpack#how-to-install-the-meta-buildpack)
 First, you will have to [install the Meta Buildpack](https://github.com/cf-platform-eng/meta-buildpack#how-to-install-the-meta-buildpack). This enables apps to use decorator buildpacks. Follow the instructions to get the buildpack and upload it if you don't already have it.
 
-### Upload the Datadog Cloud Foundry Buildpack
-Download the latest Datadog [build pack release](https://cloudfoundry.datadoghq.com/datadog-cloudfoundry-buildpack/datadog-cloudfoundry-buildpack-latest.zip). After you download the zipfile, you will have to upload it to Cloud Foundry environment.
+### Upload the buildpack to CF
+- Download the latest Datadog [build pack release](https://cloudfoundry.datadoghq.com/datadog-cloudfoundry-buildpack/datadog-cloudfoundry-buildpack-latest.zip) or [build it](#building). After you have the zipfile, you will have to upload it to Cloud Foundry environment.
 
-```shell
-cf create-buildpack datadog-cloudfoundry-buildpack datadog-cloudfoundry-buildpack.zip 99 --enable
-```
+- Create the buildpack in CF if it does not exist
+    ```bash
+    cf create-buildpack datadog-cloudfoundry-buildpack datadog-cloudfoundry-buildpack.zip 99 --enable
+    ```
+    or update it if it already exists
+    ```bash
+    cf update-buildpack datadog-cloudfoundry-buildpack -p datadog-cloudfoundry-buildpack.zip
+    ```
 
 ### Configuration
 
@@ -80,20 +85,6 @@ VERSION=<AGENT_VERSION> REFRESH_ASSETS=1 ./build
 ```
 
 This produces a `datadog-cloudfoundry-buildpack.zip` file at the root of the repository that you can use directly with the CF CLI, or to build the [datadog-application-monitoring tile](https://github.com/DataDog/pcf-datadog-application-monitoring).
-
-## Uploading the buildpack to CF
-
-Create the buildpack in CF if it does not exist
-
-```bash
-cf create-buildpack datadog-cloudfoundry-buildpack datadog-cloudfoundry-buildpack.zip 99 --enable
-```
-
-or update it if it already exists
-
-```bash
-cf update-buildpack datadog-cloudfoundry-buildpack -p datadog-cloudfoundry-buildpack.zip
-```
 
 ## Docker
 
