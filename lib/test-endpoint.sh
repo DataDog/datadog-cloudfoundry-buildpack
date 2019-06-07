@@ -3,8 +3,13 @@
 unset DD_LOGS_VALID_ENDPOINT
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/datadog}"
 
-if [ "$DD_LOGS_VALIDATE_ENDPOINT" = "true" ]; then
-  echo "Validating endpoint $DD_LOGS_CONFIG_LOGS_DD_URL"
+if [ -z $DD_LOGS_CONFIG_LOGS_DD_URL ]; then
+  # Initialize to default value
+  DD_LOGS_CONFIG_LOGS_DD_URL="agent-intake.logs.datadoghq.com:10516"
+fi
+
+if [ "$DD_LOGS_ENABLED" = "true" -a -n $DD_LOGS_CONFIG_LOGS_DD_URL ]; then
+  echo "Validating log endpoint $DD_LOGS_CONFIG_LOGS_DD_URL"
   LOGS_ENDPOINT=`echo $DD_LOGS_CONFIG_LOGS_DD_URL | cut -d ":" -f1`
   LOGS_PORT=`echo $DD_LOGS_CONFIG_LOGS_DD_URL | cut -d ":" -f2`
 

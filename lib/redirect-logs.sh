@@ -25,10 +25,10 @@ redirect() {
 }
 
 # setup the redirection from stdout/stderr to the logs-agent.
-if [ "$DD_LOGS_VALIDATE_ENDPOINT" = "true" -a "$DD_LOGS_VALID_ENDPOINT" = "false" ]; then
-  echo "Log endpoint not valid, not starting log redirection"
-else
-  if [ "$DD_LOGS_ENABLED" = "true" ]; then
+if [ "$DD_LOGS_ENABLED" = "true" ]; then
+  if [ "$DD_LOGS_VALID_ENDPOINT" = "false" ]; then
+    echo "Log endpoint not valid, not starting log redirection"
+  else
     if [ -z "LOGS_CONFIG" ]; then
       echo "can't collect logs, LOGS_CONFIG is not set"
     else
