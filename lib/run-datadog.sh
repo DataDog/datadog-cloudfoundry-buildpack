@@ -74,9 +74,13 @@ start_datadog() {
     # DSD requires its own config file
     cp $DATADOG_DIR/dist/datadog.yaml $DATADOG_DIR/dist/dogstatsd.yaml
     if [ -n "$RUN_AGENT" -a -f ./puppy ]; then
-      export DD_LOG_FILE=$DATADOG_DIR/agent.log
-      sed -i "s~log_file: AGENT_LOG_FILE~log_file: $DD_LOG_FILE~" $DATADOG_DIR/dist/datadog.yaml
-      ./puppy run --cfgpath $DATADOG_DIR/dist/ &
+      if [ "$DD_LOGS_VALIDATE_ENDPOINT" = "true" -a "$DD_LOGS_VALID_ENDPOINT" = "false" ]; then
+        echo "Log endpoint not valid, not starting agent"
+      else
+        export DD_LOG_FILE=$DATADOG_DIR/agent.log
+        sed -i "s~log_file: AGENT_LOG_FILE~log_file: $DD_LOG_FILE~" $DATADOG_DIR/dist/datadog.yaml
+        ./puppy run --cfgpath $DATADOG_DIR/dist/ &
+      fi
     else
       export DD_LOG_FILE=$DATADOG_DIR/dogstatsd.log
       sed -i "s~log_file: AGENT_LOG_FILE~log_file: $DD_LOG_FILE~" $DATADOG_DIR/dist/datadog.yaml
