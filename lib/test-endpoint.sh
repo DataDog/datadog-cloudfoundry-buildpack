@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 unset DD_LOGS_VALID_ENDPOINT
+DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/datadog}"
 
 if [ "$DD_LOGS_VALIDATE_ENDPOINT" = "true" ]; then
   echo "Validating endpoint $DD_LOGS_CONFIG_LOGS_DD_URL"
