@@ -5,7 +5,6 @@ export STD_LOG_COLLECTION_PORT
 
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/datadog}"
 
-
 # redirect forwards all standard inputs to a TCP socket listening on port STD_LOG_COLLECTION_PORT.
 redirect() {
   while true; do
@@ -27,13 +26,17 @@ redirect() {
 
 # setup the redirection from stdout/stderr to the logs-agent.
 if [ "$DD_LOGS_ENABLED" = "true" ]; then
-  if [ -z "LOGS_CONFIG" ]; then
-    echo "can't collect logs, LOGS_CONFIG is not set"
+  if [ "$DD_LOGS_VALID_ENDPOINT" = "false" ]; then
+    echo "Log endpoint not valid, not starting log redirection"
   else
-    echo "collect all logs for config $LOGS_CONFIG"
-    if [ -n "$STD_LOG_COLLECTION_PORT" ]; then
-      echo "forward all logs from stdout/stderr to agent port $STD_LOG_COLLECTION_PORT"
-      exec &> >(tee >(redirect))
+    if [ -z "LOGS_CONFIG" ]; then
+      echo "can't collect logs, LOGS_CONFIG is not set"
+    else
+      echo "collect all logs for config $LOGS_CONFIG"
+      if [ -n "$STD_LOG_COLLECTION_PORT" ]; then
+        echo "forward all logs from stdout/stderr to agent port $STD_LOG_COLLECTION_PORT"
+        exec &> >(tee >(redirect))
+      fi
     fi
   fi
 fi
