@@ -6,3 +6,4 @@ lib/puppy
 lib/trace-agent
 venv
 tmp
+.DS_Store
