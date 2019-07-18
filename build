@@ -1,85 +1,25 @@
 #!/bin/bash
 
 SRCDIR=$(cd "$(dirname $0)/." && pwd)
-NAME="datadog-cloudfoundry-buildpack"
-ZIPFILE="$NAME.zip"
-PUPPY_DOWNLOAD_URL="https://s3.amazonaws.com/dd-agent/agent6/puppy/linux"
-DOGSTATSD_DOWNLOAD_URL="https://s3.amazonaws.com/dd-agent/dsd6/dogstatsd/linux"
-TRACEAGENT_DOWNLOAD_URL_HEAD="https://s3.amazonaws.com/apt.datadoghq.com/pool/d/da/datadog-agent_"
-TRACEAGENT_DOWNLOAD_URL_TAIL="-1_amd64.deb"
-TRACE_DEFAULT_VERSION="6.12.0"
+ZIPFILE="datadog-cloudfoundry-buildpack.zip"
 
-TMPDIR="$SRCDIR/tmp"
+AGENT_DEFAULT_VERSION="6.12.0"
 
-function download_trace_agent() {
-  local trace_version="${1:-$TRACE_DEFAULT_VERSION}"
-  local trace_agent_download_url="$TRACEAGENT_DOWNLOAD_URL_HEAD$trace_version$TRACEAGENT_DOWNLOAD_URL_TAIL"
+AGENT_VERSION=${AGENT_VERSION:-$AGENT_DEFAULT_VERSION}
+AGENT_DOWNLOAD_URL="https://s3.amazonaws.com/apt.datadoghq.com/pool/d/da/datadog-agent_${AGENT_VERSION}-1_amd64.deb"
 
-  local archiver="tar"
-  if command -v gtar > /dev/null 2>&1; then
-    archiver="gtar"
-  else
-    if [[ `uname` == 'Darwin' ]]; then
-      echo "On OSX you might see some errors from untarring the deb package"
-      echo "Using gnu tar will resolve them"
-      echo "However, they should be okay to ignore"
-    fi
+if [ ! -f $SRCDIR/lib/trace-agent ] || [ -n "$REFRESH_ASSETS" ]; then
+  # Delete the old one
+  rm -f $SRCDIR/lib/datadog-agent.deb
+  # Download the new one
+  curl $AGENT_DOWNLOAD_URL -o ./lib/datadog-agent.deb
+fi
+
+# Remove old zipfile
+rm -f $ZIPFILE
+
+pushd $SRCDIR
+  if [ ! "$NO_ZIP" ]; then
+    zip -r "$ZIPFILE" lib bin
   fi
-
-  mkdir -p $TMPDIR
-  curl -L $trace_agent_download_url -o ./tmp/datadog-agent.deb
-  pushd $TMPDIR
-    ar x datadog-agent.deb
-    $archiver -xzf data.tar.gz
-  popd
-  cp $TMPDIR/opt/datadog-agent/embedded/bin/trace-agent $SRCDIR/lib/trace-agent
-  rm -rf $TMPDIR/*
-}
-
-function main() {
-  if [ ! -f $SRCDIR/lib/dogstatsd ] || [ ! -f $SRCDIR/lib/trace-agent ]; then
-    DOWNLOAD="true"
-  fi
-  if [ -n "$PUPPY" ] && [ ! -f $SRCDIR/lib/puppy ]; then
-    DOWNLOAD="true"
-  fi
-  if [ -n "$REFRESH_ASSETS" ]; then
-    DOWNLOAD="true"
-  fi
-  if [ -n "$DOWNLOAD" ]; then
-    # Delete the old ones
-    rm -f $SRCDIR/lib/puppy
-    rm -f $SRCDIR/lib/dogstatsd
-    rm -f $SRCDIR/lib/trace-agent
-
-    if [ -n "$VERSION" ]; then
-      PUPPY_DOWNLOAD_URL="$PUPPY_DOWNLOAD_URL/agent-$VERSION"
-      DOGSTATSD_DOWNLOAD_URL="$DOGSTATSD_DOWNLOAD_URL/dogstatsd-$VERSION"
-    else
-      PUPPY_DOWNLOAD_URL="$PUPPY_DOWNLOAD_URL/agent-latest"
-      DOGSTATSD_DOWNLOAD_URL="$DOGSTATSD_DOWNLOAD_URL/dogstatsd-latest"
-    fi
-
-    curl $PUPPY_DOWNLOAD_URL -o $SRCDIR/lib/puppy
-    chmod +x $SRCDIR/lib/puppy
-
-    curl $DOGSTATSD_DOWNLOAD_URL -o ./lib/dogstatsd
-    chmod +x $SRCDIR/lib/dogstatsd
-
-    # Does not support versioning for now, keep it dumb until trace-agent merge with the Agent6
-    # curl -L $TRACEAGENT_DOWNLOAD_URL -o ./lib/trace-agent
-    download_trace_agent $VERSION
-    chmod +x $SRCDIR/lib/trace-agent
-  fi
-
-  rm -f $ZIPFILE
-
-  pushd $SRCDIR
-    if [ ! "$NO_ZIP" ]; then
-      zip -r "$ZIPFILE" lib bin
-    fi
-  popd
-}
-
-
-main
+popd

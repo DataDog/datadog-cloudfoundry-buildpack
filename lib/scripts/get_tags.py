@@ -37,13 +37,8 @@ user_tags = os.environ.get('DD_TAGS', None)
 if user_tags:
     try:
         user_tags = user_tags.split(',')
-        for tag in user_tags:
-            tags.append(tag)
+        tags.extend(user_tags)
     except Exception as e:
         print("there was an issue parsing the tags in DD_TAGS: {}".format(e))
 
-legacy_tags = os.environ.get('LEGACY_TAGS_FORMAT', False)
-if legacy_tags:
-    print(','.join(tags))
-else:
-    print(json.dumps(tags))
+print(','.join(tags))

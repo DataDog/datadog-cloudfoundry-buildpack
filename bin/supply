@@ -8,33 +8,26 @@ BUILD_DIR=$1
 CACHE_DIR=$2
 ENV_DIR=$3
 
-echo "Installing Datadog Puppy Agent, Dogstatsd and Trace Agent"
+echo "       Installing Datadog Agent"
+
 
 mkdir -p $BUILD_DIR/datadog/scripts
+mkdir -p $BUILD_DIR/datadog/extracted-agent
 mkdir -p $BUILD_DIR/.profile.d
 
-cp -r $ROOT_DIR/lib/dist $BUILD_DIR/datadog/
-cp -r $ROOT_DIR/lib/conf.d $BUILD_DIR/datadog/
-if [ -f $ROOT_DIR/lib/puppy ]; then
-  cp $ROOT_DIR/lib/puppy $BUILD_DIR/datadog/puppy
-fi
-if [ -f $ROOT_DIR/lib/dogstatsd ]; then
-  cp $ROOT_DIR/lib/dogstatsd $BUILD_DIR/datadog/dogstatsd
-fi
-cp $ROOT_DIR/lib/trace-agent $BUILD_DIR/datadog/trace-agent
+# Extract agent
+dpkg -x $ROOT_DIR/lib/datadog-agent.deb $BUILD_DIR/datadog/extracted-agent
+mv $BUILD_DIR/datadog/extracted-agent/opt $BUILD_DIR/datadog/opt
+mv $BUILD_DIR/datadog/extracted-agent/etc $BUILD_DIR/datadog/etc
+rm -rf $BUILD_DIR/datadog/extracted-agent
+mv $BUILD_DIR/datadog/etc/datadog-agent/datadog.yaml.example $BUILD_DIR/datadog/etc/datadog-agent/datadog.yaml
+
 cp $ROOT_DIR/lib/scripts/get_tags.py $BUILD_DIR/datadog/scripts/get_tags.py
 cp $ROOT_DIR/lib/scripts/create_logs_config.py $BUILD_DIR/datadog/scripts/create_logs_config.py
 cp -r $ROOT_DIR/lib/test-endpoint.sh $BUILD_DIR/.profile.d/00-test-endpoint.sh # Make sure this is sourced first
 cp $ROOT_DIR/lib/redirect-logs.sh $BUILD_DIR/.profile.d/01-redirect-logs.sh
 cp $ROOT_DIR/lib/run-datadog.sh $BUILD_DIR/.profile.d/02-run-datadog.sh
 
-if [ -f $BUILD_DIR/datadog/puppy ]; then
-  chmod +x $BUILD_DIR/datadog/puppy
-fi
-if [ -f $BUILD_DIR/datadog/dogstatsd ]; then
-  chmod +x $BUILD_DIR/datadog/dogstatsd
-fi
-chmod +x $BUILD_DIR/datadog/trace-agent
 chmod +x $BUILD_DIR/.profile.d/00-test-endpoint.sh
 chmod +x $BUILD_DIR/.profile.d/01-redirect-logs.sh
 chmod +x $BUILD_DIR/.profile.d/02-run-datadog.sh

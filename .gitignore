@@ -7,3 +7,4 @@ lib/trace-agent
 venv
 tmp
 .DS_Store
+**/*.deb
