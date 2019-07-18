@@ -8,6 +8,7 @@ export LOGS_CONFIG
 export STD_LOG_COLLECTION_PORT
 
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/datadog}"
+source $DATADOG_DIR/scripts/setup.sh
 
 DD_EU_API_SITE="https://api.datadoghq.eu/api/"
 DD_US_API_SITE="https://api.datadoghq.com/api/"
@@ -29,7 +30,7 @@ redirect() {
             \"title\": \"Resetting buildpack log redirection\",
             \"text\": \"TCP socket on port $STD_LOG_COLLECTION_PORT for log redirection closed. Restarting it.\",
             \"priority\": \"normal\",
-            \"tags\": $(python $DATADOG_DIR/scripts/get_tags.py),
+            \"tags\": $($DD_AGENT_PYTHON $DATADOG_DIR/scripts/get_tags.py),
             \"alert_type\": \"info\"
       }" "${DD_API_SITE}v1/events?api_key=$DD_API_KEY"
     fi

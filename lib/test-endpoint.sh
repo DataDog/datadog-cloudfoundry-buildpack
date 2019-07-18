@@ -22,6 +22,8 @@ DD_PROXY_HTTPS_VAR=${DD_PROXY_HTTPS_VAR:-$HTTPS_PROXY}
 DD_STRIPPED_PROXY_HTTPS="${DD_PROXY_HTTPS_VAR//https:\/\/}"
 DD_STRIPPED_PROXY_HTTPS="${DD_STRIPPED_PROXY_HTTPS//http:\/\/}"
 
+source $DATADOG_DIR/scripts/setup.sh
+
 # Default endpoints can be found in DD Docs - https://docs.datadoghq.com/agent/logs/
 DD_DEFAULT_HTTPS_EU_ENDPOINT="agent-http-intake.logs.datadoghq.eu:443"
 DD_DEFAULT_HTTPS_US_ENDPOINT="agent-http-intake.logs.datadoghq.com:443"
@@ -83,7 +85,7 @@ if [ "$DD_LOGS_ENABLED" = "true" -a -n $DD_LOGS_CONFIG_LOGS_DD_URL -a "$DD_SKIP_
             \"title\": \"Log endpoint cannot be reached - Log collection not started\",
             \"text\": \"Could not establish a connection to $DD_LOGS_CONFIG_LOGS_DD_URL after 5 seconds. Log collection has not been started.\",
             \"priority\": \"normal\",
-            \"tags\": $(python $DATADOG_DIR/scripts/get_tags.py),
+            \"tags\": $($DD_AGENT_PYTHON $DATADOG_DIR/scripts/get_tags.py),
             \"alert_type\": \"error\"
       }" "${DD_API_SITE}v1/events?api_key=$DD_API_KEY"
   else

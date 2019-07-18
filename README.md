@@ -1,6 +1,6 @@
 # Datadog Cloud Foundry Buildpack
 
-This is a [decorator buildpack](https://github.com/cf-platform-eng/meta-buildpack/blob/master/README.md#decorators) for Cloud Foundry. It will install a Datadog DogStatsD binary in the container your app is running on. This only contains the DogStatsd components of Datadog Agent, which has limited overhead.
+This is a [supply buildpack](https://docs.cloudfoundry.org/buildpacks/understand-buildpacks.html#supply-script) for Cloud Foundry. It will install a Datadog DogStatsD binary in the container your app is running on. This only contains the DogStatsd components of Datadog Agent, which has limited overhead.
 
 ## Use
 
@@ -71,6 +71,21 @@ cf set-env $YOUR_APP_NAME LOGS_CONFIG '[{"type":"tcp","port":"10514","source":"j
 
 #### General configuration of the Datadog Agent
 All the options supported by the Agent in the main configuration file (`lib/dist/datadog.yaml`) can also be set through environment variables as described in the [documentation of the Agent](https://github.com/DataDog/datadog-agent/blob/master/docs/agent/config.md#environment-variables).
+
+#### Integrations
+To enable and configure integrations, set the environment variable `DD_ENABLE_CHECKS` to `true`, and put your configuration files under a `datadog_integrations` folder at the root of your app.
+
+**Example**
+
+The following setup allows you to enable and configure the prometheus integration.
+
+```
+├── myApp
+│   ├── datadog_integrations
+│   |   └── prometheus.d
+|   |       └── conf.yaml
+...
+```
 
 ### DogStatsD Away!
 You're all set up to use DogStatsD. Import the relevant library and start sending data! To learn more, [check our our documentation](https://docs.datadoghq.com/guides/DogStatsD/). Additionally, we have [a list of DogStatsD libraries](https://docs.datadoghq.com/libraries/) you can check out to find one that's compatible with your application.

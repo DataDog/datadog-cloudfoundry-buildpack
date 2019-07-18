@@ -13,6 +13,6 @@ config = "{\"logs\":" + LOGS_CONFIG + "}"
 path = LOGS_CONFIG_DIR + "/logs.yaml"
 
 with open(path, 'w') as f:
-  print("writing {} to {}".format(config, path))
-  f.write(config)
-  f.write("\n")
+    print("writing {} to {}".format(config, path))
+    f.write(config)
+    f.write("\n")
