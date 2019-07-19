@@ -41,7 +41,7 @@ start_datadog() {
 
     # configure confd and checksd
     export DD_CONFD_PATH=${DD_CONFD_PATH:-"$DATADOG_DIR/etc/datadog-agent/conf.d"}
-  	export DD_ADDITIONAL_CHECKSD=${DD_ADDITIONAL_CHECKSD:-"$DATADOG_DIR/etc/datadog-agent/checks.d"}
+    export DD_ADDITIONAL_CHECKSD=${DD_ADDITIONAL_CHECKSD:-"$DATADOG_DIR/etc/datadog-agent/checks.d"}
 
     # Setup PYTHONPATH and PYTHONHOME
     PYTHONPATH="$DATADOG_DIR/opt/datadog-agent/embedded/lib/python2.7:$PYTHONPATH"
