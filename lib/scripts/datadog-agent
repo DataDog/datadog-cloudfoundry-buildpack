@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
 
-source ./setup.sh
+DATADOG_DIR=${DATADOG_DIR:-"/home/vcap/app/datadog"}
+
+source $DATADOG_DIR/scripts/setup.sh
 $DATADOG_DIR/opt/datadog-agent/bin/agent/agent "$@"
