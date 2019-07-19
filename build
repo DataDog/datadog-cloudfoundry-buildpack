@@ -8,7 +8,7 @@ AGENT_DEFAULT_VERSION="6.12.0"
 AGENT_VERSION=${AGENT_VERSION:-$AGENT_DEFAULT_VERSION}
 AGENT_DOWNLOAD_URL="https://s3.amazonaws.com/apt.datadoghq.com/pool/d/da/datadog-agent_${AGENT_VERSION}-1_amd64.deb"
 
-if [ ! -f $SRCDIR/lib/trace-agent ] || [ -n "$REFRESH_ASSETS" ]; then
+if [ ! -f $SRCDIR/lib/datadog-agent.deb ] || [ -n "$REFRESH_ASSETS" ]; then
   # Delete the old one
   rm -f $SRCDIR/lib/datadog-agent.deb
   # Download the new one
