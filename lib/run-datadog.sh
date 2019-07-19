@@ -26,7 +26,12 @@ start_datadog() {
 
     source $DATADOG_DIR/scripts/setup.sh
 
+    # Fix datadog.yaml for apm log file since it cannot be set via env vars currently
+    echo "apm_config:" >> $DD_CONF_PATH/datadog.yaml
+    echo "  log_file: $DATADOG_DIR/trace.log" >> $DD_CONF_PATH/datadog.yaml
+
     $DATADOG_DIR/opt/datadog-agent/bin/agent/agent run --cfgpath $DD_CONF_PATH &
+
     $DATADOG_DIR/opt/datadog-agent/embedded/bin/trace-agent --config $DD_CONF_PATH/datadog.yaml &
   popd
 }

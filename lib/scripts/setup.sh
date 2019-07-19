@@ -52,4 +52,4 @@ export DD_TAGS=$(python $DATADOG_DIR/scripts/get_tags.py)
 export DD_APM_CONFIG_LOG_FILE=${DD_APM_CONFIG_LOG_FILE:-"$DATADOG_DIR/trace.log"}
 export DD_LOG_FILE=${DD_LOG_FILE:-"$DATADOG_DIR/agent.log"}
 
-export DD_CONF_PATH=${DD_CONF_PATH:-"$DATADOG_DIR/etc/datadog-agent/"}
+export DD_CONF_PATH=${DD_CONF_PATH:-"$DATADOG_DIR/etc/datadog-agent"}
