@@ -30,6 +30,12 @@ start_datadog() {
     echo "apm_config:" >> $DD_CONF_PATH/datadog.yaml
     echo "  log_file: $DATADOG_DIR/trace.log" >> $DD_CONF_PATH/datadog.yaml
 
+    # add logs configs
+    if [ -n "$LOGS_CONFIG" ]; then
+        mkdir -p $LOGS_CONFIG_DIR
+        python $DATADOG_DIR/scripts/create_logs_config.py
+    fi
+
     $DATADOG_DIR/opt/datadog-agent/bin/agent/agent run --cfgpath $DD_CONF_PATH &
 
     $DATADOG_DIR/opt/datadog-agent/embedded/bin/trace-agent --config $DD_CONF_PATH/datadog.yaml &

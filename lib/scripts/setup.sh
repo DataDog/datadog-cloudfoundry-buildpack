@@ -9,12 +9,6 @@ export LOGS_CONFIG_DIR=$DATADOG_DIR/etc/datadog-agent/conf.d/logs.d
 export LOGS_CONFIG
 export DD_LOGS_CONFIG_RUN_PATH=${DD_LOGS_CONFIG_RUN_PATH:-"$DATADOG_DIR/opt/datadog-agent/run"}
 
-# add logs configs
-if [ -n "$LOGS_CONFIG" ]; then
-    mkdir -p $LOGS_CONFIG_DIR
-    python $DATADOG_DIR/scripts/create_logs_config.py
-fi
-
 # Setup LD_LIBRARY_PATH
 LD_LIBRARY_PATH="$DATADOG_DIR/opt/datadog-agent/embedded/lib:$LD_LIBRARY_PATH"
 for package_lib_dir in $(ls -d $DATADOG_DIR/opt/datadog-agent/embedded/lib 2>/dev/null); do
