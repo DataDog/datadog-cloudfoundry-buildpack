@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+source ./setup.sh
+$DATADOG_DIR/opt/datadog-agent/bin/agent/agent "$@"
