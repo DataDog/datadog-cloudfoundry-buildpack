@@ -27,6 +27,8 @@ if uris:
 user_tags = os.environ.get('TAGS', None)
 if user_tags:
     try:
+        # The separator that the agent understands for DD_TAGS is space, not comma
+        # To be consistent, allow using spaces as separator, but keep backward compatibility
         user_tags = user_tags.replace(" ", ",")
         user_tags = user_tags.split(',')
         tags.extend(user_tags)
@@ -34,10 +36,10 @@ if user_tags:
         print("there was an issue parsing the tags in TAGS: {}".format(e))
 
 user_tags = os.environ.get('DD_TAGS', None)
-# The separator that the agent understands for DD_TAGS is space, not comma
-# To be consistent, allow using spaces as separator, but keep backward compatibility
 if user_tags:
     try:
+        # The separator that the agent understands for DD_TAGS is space, not comma
+        # To be consistent, allow using spaces as separator, but keep backward compatibility
         user_tags = user_tags.replace(" ", ",")
         user_tags = user_tags.split(',')
         tags.extend(user_tags)
