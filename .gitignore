@@ -8,3 +8,4 @@ venv
 tmp
 .DS_Store
 **/*.deb
+**/*.msi
