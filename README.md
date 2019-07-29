@@ -101,6 +101,8 @@ cf set-env $YOUR_APP_NAME DD_TRACE_ENABLED true
 # Restage your app to take these changes
 cf restage $YOUR_APP_NAME
 ```
+#### General configuration of the Datadoc Agent
+All the options supported by the Agent in the main configuration file (`lib/dist/datadog.yaml`) can also be set through environment variables as described in the [documentation of the Agent](https://github.com/DataDog/datadog-agent/blob/master/docs/agent/config.md#environment-variables).
 
 ### DogStatsD Away!
 You're all set up to use DogStatsD. Import the relevant library and start sending data! To learn more, [check our our documentation](https://docs.datadoghq.com/guides/DogStatsD/). Additionally, we have [a list of DogStatsD libraries](https://docs.datadoghq.com/libraries/) you can check out to find one that's compatible with your application.
