@@ -19,10 +19,10 @@ Move-Item -Path "$BUILD_DIR\datadog\extracted-agent\Datadog\Datadog Agent" -Dest
 Move-Item -Path "$BUILD_DIR\datadog\extracted-agent\CommonAppData\Datadog" -Destination "$BUILD_DIR\datadog\AppData"
 Remove-Item -Force -Recurse -Path "$BUILD_DIR\datadog\extracted-agent"
 
-# # Extract .NET tracer
-# Start-Process "MSIEXEC" -ArgumentList "/a $ROOT_DIR\lib\dotnet-tracer.msi /qn TARGETDIR=$BUILD_DIR\datadog\extracted-dotnet-tracer" -Wait -NoNewWindow
-# Move-Item -Path "$BUILD_DIR\datadog\extracted-dotnet-tracer\Datadog\.NET Tracer" -Destination "$BUILD_DIR\datadog\"
-# Remove-Item -Force -Recurse -Path "$BUILD_DIR\datadog\extracted-dotnet-tracer"
+# Extract .NET tracer
+Start-Process "MSIEXEC" -ArgumentList "/a $ROOT_DIR\lib\dotnet-tracer.msi /qn TARGETDIR=$BUILD_DIR\datadog\extracted-dotnet-tracer" -Wait -NoNewWindow
+Move-Item -Path "$BUILD_DIR\datadog\extracted-dotnet-tracer\Datadog\.NET Tracer" -Destination "$BUILD_DIR\datadog\dotNetTracer"
+Remove-Item -Force -Recurse -Path "$BUILD_DIR\datadog\extracted-dotnet-tracer"
 
 Copy-Item -Path "$ROOT_DIR\lib\scripts\get_tags.py" -Destination "$BUILD_DIR\datadog\scripts\get_tags.py"
 Copy-Item -Path "$ROOT_DIR\lib\scripts\create_logs_config.py" -Destination "$BUILD_DIR\datadog\scripts\create_logs_config.py"
