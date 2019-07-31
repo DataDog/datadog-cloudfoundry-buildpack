@@ -16,20 +16,20 @@ AGENT_VERSION=${AGENT_VERSION:-$AGENT_DEFAULT_VERSION}
 DOTNET_TRACER_VERSION=${DOTNET_TRACER_VERSION:-$DOTNET_TRACER_DEFAULT_VERSION}
 AGENT_DEB_DOWNLOAD_URL="https://s3.amazonaws.com/apt.datadoghq.com/pool/d/da/datadog-agent_${AGENT_VERSION}-1_amd64.deb"
 AGENT_MSI_DOWNLOAD_URL="https://s3.amazonaws.com/ddagent-windows-stable/ddagent-cli-${AGENT_VERSION}.msi"
-# AGENT_DOTNET_TRACER_DOWNLOAD_URL="https://github.com/DataDog/dd-trace-dotnet/releases/download/v${DOTNET_TRACER_VERSION}/datadog-dotnet-apm-${DOTNET_TRACER_VERSION}-x64.msi"
+AGENT_DOTNET_TRACER_DOWNLOAD_URL="https://github.com/DataDog/dd-trace-dotnet/releases/download/v${DOTNET_TRACER_VERSION}/datadog-dotnet-apm-${DOTNET_TRACER_VERSION}-x64.msi"
 
 if [ ! -f $SRCDIR/lib/datadog-agent.deb ] ||
    [ ! -f $SRCDIR/lib/datadog-agent.msi ] ||
-  #  [ ! -f $SRCDIR/lib/dotnet-tracer.msi ] ||
+   [ ! -f $SRCDIR/lib/dotnet-tracer.msi ] ||
    [ -n "$REFRESH_ASSETS" ]; then
   # Delete the old ones
   rm -f $SRCDIR/lib/datadog-agent.deb
   rm -f $SRCDIR/lib/datadog-agent.msi
-  # rm -f $SRCDIR/lib/dotnet-tracer.msi
+  rm -f $SRCDIR/lib/dotnet-tracer.msi
   # Download the new ones
   curl $AGENT_DEB_DOWNLOAD_URL -o ./lib/datadog-agent.deb
   curl $AGENT_MSI_DOWNLOAD_URL -o ./lib/datadog-agent.msi
-  # curl -L $AGENT_DOTNET_TRACER_DOWNLOAD_URL -o ./lib/dotnet-tracer.msi
+  curl -L $AGENT_DOTNET_TRACER_DOWNLOAD_URL -o ./lib/dotnet-tracer.msi
 fi
 
     if [ -n "$VERSION" ]; then
