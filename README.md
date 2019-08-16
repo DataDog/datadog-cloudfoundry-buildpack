@@ -1,11 +1,8 @@
 # Datadog Cloud Foundry Buildpack
 
-This is a [decorator buildpack](https://github.com/cf-platform-eng/meta-buildpack/blob/master/README.md#decorators) for Cloud Foundry. It will install a Datadog DogStatsD binary in the container your app is running on. This only contains the DogStatsd components of Datadog Agent, which has limited overhead.
+This is a [supply buildpack](https://docs.cloudfoundry.org/buildpacks/understand-buildpacks.html#supply-script) for Cloud Foundry. It will install the Datadog Agent in the container your app is running on, so that you can send Dogstatsd metrics, send traces for APM and get logs from your app. It contains the agent for both the linux and windows stacks.
 
 ## Use
-
-### Install the [Meta Buildpack](https://github.com/cf-platform-eng/meta-buildpack#how-to-install-the-meta-buildpack)
-First, you will have to [install the Meta Buildpack](https://github.com/cf-platform-eng/meta-buildpack#how-to-install-the-meta-buildpack). This enables apps to use decorator buildpacks. Follow the instructions to get the buildpack and upload it if you don't already have it.
 
 ### Upload the buildpack to CF
 - Download the latest Datadog [build pack release](https://cloudfoundry.datadoghq.com/datadog-cloudfoundry-buildpack/datadog-cloudfoundry-buildpack-latest.zip) or [build it](#building). After you have the zipfile, you will have to upload it to Cloud Foundry environment.
@@ -68,6 +65,22 @@ cf set-env $YOUR_APP_NAME STD_LOG_COLLECTION_PORT 10514
 # Configure the agent to listen to that port
 cf set-env $YOUR_APP_NAME LOGS_CONFIG '[{"type":"tcp","port":"10514","source":"java","service":"app01"}]'
 ```
+
+#### .NET Traces
+
+The buildpack also includes the [.NET Tracer](https://docs.datadoghq.com/tracing/setup/dotnet/?tab=netframeworkonwindows) for the .NET Framework on windows cells. To start instrumenting your app, you need to register the directory containing the DLLs in your app.
+To do so, add the path `C:\Users\vcap\app\datadog\dotNetTracer` in the [`probing`](https://docs.microsoft.com/en-us/dotnet/framework/configure-apps/file-schema/runtime/probing-element) element in your `web.config` file.
+
+**example**:
+```xml
+<runtime>
+    <assemblyBinding xmlns="urn:schemas-microsoft-com:asm.v1">
+        <probing privatePath="C:\Users\vcap\app\datadog\dotNetTracer" />
+    </assemblyBinding>
+</runtime>
+```
+
+Alternatively, you can install the [Datadog.Trace.ClrProfiler.Managed Nuget package](https://www.nuget.org/packages/Datadog.Trace.ClrProfiler.Managed) in your app before pushing it to CloudFoundry.
 
 ### DogStatsD Away!
 You're all set up to use DogStatsD. Import the relevant library and start sending data! To learn more, [check our our documentation](https://docs.datadoghq.com/guides/DogStatsD/). Additionally, we have [a list of DogStatsD libraries](https://docs.datadoghq.com/libraries/) you can check out to find one that's compatible with your application.
