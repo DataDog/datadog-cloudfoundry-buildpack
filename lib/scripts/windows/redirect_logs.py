@@ -72,8 +72,8 @@ def redirect():
         except socket.error:
             sys.stdout.write("Error forwarding log to {}:{}\n".format(host, port))
             sys.stdout.flush()
-            # Break here so we don't read the next line but rather retry sending once the connection is reestablished
-            break
+            # continue so we don't read the next line but rather retry sending once the connection is reestablished
+            continue
         finally:
             sys.stdout.write("release\n")
             sys.stdout.flush()
