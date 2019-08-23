@@ -58,7 +58,7 @@ The following parameters can be used to configure log collection:
 **Additional steps for windows**
 
 To get logs from your .NET Framework applications running on windows cells, follow these additional steps:
-1. Create a `Procfile` at the root of your app containing the following line:
+1. Create a `Procfile` (see https://docs.cloudfoundry.org/buildpacks/prod-server.html#procfile) at the root of your app containing the following line:
     ```
     web: run.cmd
     ```
