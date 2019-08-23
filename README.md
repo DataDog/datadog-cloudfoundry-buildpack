@@ -55,6 +55,19 @@ The following parameters can be used to configure log collection:
 - `STD_LOG_COLLECTION_PORT`: Must be used when collecting logs from `stdout`/`stderr`. It redirects the `stdout`/`stderr` stream to the corresponding local port value.
 - `LOGS_CONFIG`: Use this option to configure the agent to listen to a local TCP port and set the value for the `service` and `source` parameters.
 
+**Additional steps for windows**
+
+To get logs from your .NET Framework applications running on windows cells, follow these additional steps:
+1. Create a `Procfile` at the root of your app containing the following line:
+    ```
+    web: run.cmd
+    ```
+2. Create a file named `run.cmd` at the root of your application. This file contains the command to startup your application
+    ```batch
+    .cloudfoundry\hwc.exe 2>&1 | "C:\Users\vcap\app\datadog\datadog agent\embedded2\python.exe" "C:\Users\vcap\app\datadog\scripts\redirect_logs.py"
+    ```
+    This command starts the usual `hwc` buildpack, and redirects its output to a script that forwards it to the agent, so that your app logs appear in Datadog.
+
 **Example**:
 
 An `app01` Java application is running in Cloud Foundry. The following configuration redirects the container `stdout`/`stderr` to the local port 10514. It then configures the Agent to collect logs from that port while setting the proper value for `service` and `source`:
@@ -68,7 +81,7 @@ cf set-env $YOUR_APP_NAME LOGS_CONFIG '[{"type":"tcp","port":"10514","source":"j
 
 #### .NET Traces
 
-The buildpack also includes the [.NET Tracer](https://docs.datadoghq.com/tracing/setup/dotnet/?tab=netframeworkonwindows) for the .NET Framework on windows cells. To start instrumenting your app, you need to register the directory containing the DLLs in your app.
+The buildpack also includes the [.NET Tracer](https://docs.datadoghq.com/tracing/setup/dotnet/?tab=netframeworkonwindows) for the .NET Framework on windows cells. To start instrumenting your app, register the directory containing the DLLs in your app.
 To do so, add the path `C:\Users\vcap\app\datadog\dotNetTracer` in the [`probing`](https://docs.microsoft.com/en-us/dotnet/framework/configure-apps/file-schema/runtime/probing-element) element in your `web.config` file.
 
 **example**:
@@ -81,6 +94,13 @@ To do so, add the path `C:\Users\vcap\app\datadog\dotNetTracer` in the [`probing
 ```
 
 Alternatively, you can install the [Datadog.Trace.ClrProfiler.Managed Nuget package](https://www.nuget.org/packages/Datadog.Trace.ClrProfiler.Managed) in your app before pushing it to CloudFoundry.
+
+Finally, set the following environment variables in your application:
+```
+cf set-env $YOUR_APP_NAME COR_ENABLE_PROFILING 1
+cf set-env $YOUR_APP_NAME COR_PROFILER {846F5F1C-F9AE-4B07-969E-05C26BC060D8}
+cf set-env $YOUR_APP_NAME COR_PROFILER_PATH C:\Users\vcap\app\datadog\dotNetTracer\Datadog.Trace.ClrProfiler.Native.dll
+```
 
 ### DogStatsD Away!
 You're all set up to use DogStatsD. Import the relevant library and start sending data! To learn more, [check our our documentation](https://docs.datadoghq.com/guides/DogStatsD/). Additionally, we have [a list of DogStatsD libraries](https://docs.datadoghq.com/libraries/) you can check out to find one that's compatible with your application.
