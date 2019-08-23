@@ -27,6 +27,7 @@ Remove-Item -Force -Recurse -Path "$BUILD_DIR\datadog\extracted-dotnet-tracer"
 Copy-Item -Path "$ROOT_DIR\lib\scripts\get_tags.py" -Destination "$BUILD_DIR\datadog\scripts\get_tags.py"
 Copy-Item -Path "$ROOT_DIR\lib\scripts\create_logs_config.py" -Destination "$BUILD_DIR\datadog\scripts\create_logs_config.py"
 Copy-Item -Path "$ROOT_DIR\lib\scripts\windows\run-datadog.ps1" -Destination "$BUILD_DIR\datadog\scripts\run-datadog.ps1"
+Copy-Item -Path "$ROOT_DIR\lib\scripts\windows\redirect_logs.py" -Destination "$BUILD_DIR\datadog\scripts\redirect_logs.py"
 # Copy-Item -Path "$ROOT_DIR\lib\test-endpoint.sh" -Destination "$BUILD_DIR\.profile.d\00-test-endpoint.sh" # Make sure this is sourced first
 # Copy-Item -Path "$ROOT_DIR\lib\redirect-logs.sh" -Destination "$BUILD_DIR\.profile.d\01-redirect-logs.sh"
 Copy-Item -Path "$ROOT_DIR\lib\scripts\windows\run-datadog.bat" -Destination "$BUILD_DIR\.profile.d\02-run-datadog.bat"
