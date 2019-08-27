@@ -2,6 +2,7 @@
 
 unset DD_LOGS_VALID_ENDPOINT
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/datadog}"
+source $DATADOG_DIR/scripts/setup.sh
 
 if [ -z $DD_LOGS_CONFIG_LOGS_DD_URL ]; then
   # Initialize to default value
@@ -27,7 +28,7 @@ if [ "$DD_LOGS_ENABLED" = "true" -a -n $DD_LOGS_CONFIG_LOGS_DD_URL ]; then
             \"title\": \"Log endpoint cannot be reached - Log collection not started\",
             \"text\": \"Could not establish a TCP connection to $DD_LOGS_CONFIG_LOGS_DD_URL after 5 seconds. Log collection has not been started.\",
             \"priority\": \"normal\",
-            \"tags\": $(python $DATADOG_DIR/scripts/get_tags.py),
+            \"tags\": $($DD_AGENT_PYTHON $DATADOG_DIR/scripts/get_tags.py),
             \"alert_type\": \"error\"
       }" "https://api.datadoghq.com/api/v1/events?api_key=$DD_API_KEY"
   else

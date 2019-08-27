@@ -69,6 +69,22 @@ cf set-env $YOUR_APP_NAME STD_LOG_COLLECTION_PORT 10514
 cf set-env $YOUR_APP_NAME LOGS_CONFIG '[{"type":"tcp","port":"10514","source":"java","service":"app01"}]'
 ```
 
+#### Integrations
+
+To enable and configure integrations, set the environment variable `DD_ENABLE_CHECKS` to `true`, and put your configuration files under a `datadog_integrations` folder at the root of your app.
+
+**Example**
+
+The following setup allows you to enable and configure the prometheus integration.
+
+```
+├── myApp
+│   ├── datadog_integrations
+│   |   └── prometheus.d
+|   |       └── conf.yaml
+...
+```
+
 ### DogStatsD Away!
 You're all set up to use DogStatsD. Import the relevant library and start sending data! To learn more, [check our our documentation](https://docs.datadoghq.com/guides/DogStatsD/). Additionally, we have [a list of DogStatsD libraries](https://docs.datadoghq.com/libraries/) you can check out to find one that's compatible with your application.
 

@@ -19,8 +19,9 @@ mkdir -p $BUILD_DIR/.profile.d
 dpkg -x $ROOT_DIR/lib/datadog-agent.deb $BUILD_DIR/datadog/extracted-agent
 mv $BUILD_DIR/datadog/extracted-agent/opt $BUILD_DIR/datadog/opt
 mv $BUILD_DIR/datadog/extracted-agent/etc $BUILD_DIR/datadog/etc
+mv $BUILD_DIR/datadog/etc/datadog-agent/conf.d $BUILD_DIR/datadog/etc/datadog-agent/disabled_confd
 rm -rf $BUILD_DIR/datadog/extracted-agent
-mv $BUILD_DIR/datadog/etc/datadog-agent/datadog.yaml.example $BUILD_DIR/datadog/etc/datadog-agent/datadog.yaml
+rm -rf $BUILD_DIR/datadog/opt/datadog-agent/embedded/lib/python2.7
 
 cp $ROOT_DIR/lib/scripts/get_tags.py $BUILD_DIR/datadog/scripts/get_tags.py
 cp $ROOT_DIR/lib/scripts/create_logs_config.py $BUILD_DIR/datadog/scripts/create_logs_config.py
