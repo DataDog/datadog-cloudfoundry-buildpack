@@ -15,10 +15,13 @@ fi
 if [ -z $DD_LOGS_CONFIG_LOGS_DD_URL ]; then
   # Initialize to default value
   # If DD_SITE contains ".eu" use the EU endpoint, otherwise default to US
-  if [[ $DD_USE_EU ]]; then
-    DD_LOGS_CONFIG_LOGS_DD_URL="agent-intake.logs.datadoghq.eu:443"
+  if [ -n $DD_LOGS_CONFIG_DD_PORT -a -n $DD_LOGS_CONFIG_DD_URL ]; then
+    DD_LOGS_CONFIG_LOGS_DD_URL="$DD_LOGS_CONFIG_DD_URL:$DD_LOGS_CONFIG_DD_PORT"
   else
-      DD_LOGS_CONFIG_LOGS_DD_URL="agent-intake.logs.datadoghq.com:10516"
+    if [[ $DD_USE_EU ]]; then
+      DD_LOGS_CONFIG_LOGS_DD_URL="agent-intake.logs.datadoghq.eu:443"
+    else
+        DD_LOGS_CONFIG_LOGS_DD_URL="agent-intake.logs.datadoghq.com:10516"
   fi
 fi
 
@@ -28,12 +31,12 @@ if [ "$DD_LOGS_ENABLED" = "true" -a -n $DD_LOGS_CONFIG_LOGS_DD_URL ]; then
   LOGS_PORT=`echo $DD_LOGS_CONFIG_LOGS_DD_URL | cut -d ":" -f2`
 
   # Try establishing tcp connection to logs endpoint with 5s timeout
-  nc -w5 -N $LOGS_ENDPOINT $LOGS_PORT < /dev/null
+  nc -w5 $LOGS_ENDPOINT $LOGS_PORT < /dev/null
 
   # Check out exit code and export a variable for subsequent scripts to use
   if [ $? -ne 0 ]; then
     export DD_LOGS_VALID_ENDPOINT="false"
-    echo "Could not establish a TCP connection to $DD_LOGS_CONFIG_LOGS_DD_URL after 5 seconds."
+    echo "Could not establish a TCP connection to $DD_LOGS_CONFIG_LOGS_DD_URL."
     # Post alert to datadog
     HTTP_PROXY=$DD_HTTP_PROXY HTTPS_PROXY=$DD_HTTPS_PROXY NO_PROXY=$DD_NO_PROXY curl \
       -X POST -H "Content-type: application/json" \
