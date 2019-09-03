@@ -2,11 +2,25 @@
 
 unset DD_LOGS_VALID_ENDPOINT
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/datadog}"
+DD_EU_API_SITE="https://api.datadoghq.eu/api/"
+DD_US_API_SITE="https://api.datadoghq.com/api/"
+DD_API_SITE=$DD_US_API_SITE
+DD_USE_EU=false
 
-if [ -z $DD_LOGS_CONFIG_LOGS_DD_URL ]; then
-  # Initialize to default value
-  if [ -n $DD_LOGS_CONFIG_DD_PORT -a -n $DD_LOGS_CONFIG_DD_URL ]; then
+if [ -n "$DD_SITE" ] && [ "$DD_SITE" = "datadoghq.eu" ]; then
+  DD_USE_EU=true
+  DD_API_SITE=$DD_EU_API_SITE
+fi
+
+if [ -z "$DD_LOGS_CONFIG_LOGS_DD_URL" ]; then
+  # Initialize to default value based on the following order:
+  # 1) If both the host/port for logs is specified, use that
+  # 2) If DD_SITE is set to datadoghq.eu, use default EU host/port
+  # 3) Default back to US logs host/port combo.
+  if [ -n "$DD_LOGS_CONFIG_DD_PORT" ] && [ -n "$DD_LOGS_CONFIG_DD_URL" ]; then
     DD_LOGS_CONFIG_LOGS_DD_URL="$DD_LOGS_CONFIG_DD_URL:$DD_LOGS_CONFIG_DD_PORT"
+  elif [ "$DD_USE_EU" = true ]; then
+    DD_LOGS_CONFIG_LOGS_DD_URL="agent-intake.logs.datadoghq.eu:443"
   else
     DD_LOGS_CONFIG_LOGS_DD_URL="agent-intake.logs.datadoghq.com:10516"
   fi
@@ -33,7 +47,7 @@ if [ "$DD_LOGS_ENABLED" = "true" -a -n $DD_LOGS_CONFIG_LOGS_DD_URL ]; then
             \"priority\": \"normal\",
             \"tags\": $(python $DATADOG_DIR/scripts/get_tags.py),
             \"alert_type\": \"error\"
-      }" "https://api.datadoghq.com/api/v1/events?api_key=$DD_API_KEY"
+      }" "${DD_API_SITE}v1/events?api_key=$DD_API_KEY"
   else
     export DD_LOGS_VALID_ENDPOINT="true"
   fi
