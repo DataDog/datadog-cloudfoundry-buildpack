@@ -13,8 +13,10 @@ if [[ -n $DD_SITE ]] && [[ "$DD_SITE" == "datadoghq.eu" ]]; then
 fi
 
 if [[ -z "$DD_LOGS_CONFIG_LOGS_DD_URL" ]]; then
-  # Initialize to default value
-  # If DD_SITE contains ".eu" use the EU endpoint, otherwise default to US
+  # Initialize to default value based on the following order:
+  # 1) If both the host/port for logs is specified, use that
+  # 2) If DD_SITE is set to datadoghq.eu, use default EU host/port
+  # 3) Default back to US logs host/port combo.
   if [[ -n "$DD_LOGS_CONFIG_DD_PORT" ]] && [[ -n "$DD_LOGS_CONFIG_DD_URL" ]]; then
     DD_LOGS_CONFIG_LOGS_DD_URL="$DD_LOGS_CONFIG_DD_URL:$DD_LOGS_CONFIG_DD_PORT"
   elif [[ "$DD_USE_EU" == true ]]; then
