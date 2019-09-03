@@ -5,6 +5,14 @@ export STD_LOG_COLLECTION_PORT
 
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/datadog}"
 
+DD_EU_API_SITE="https://api.datadoghq.eu/api/"
+DD_US_API_SITE="https://api.datadoghq.com/api/"
+DD_API_SITE=$DD_US_API_SITE
+
+if [ -n "$DD_SITE" ] && [ "$DD_SITE" = "datadoghq.eu" ]; then
+  DD_API_SITE=$DD_EU_API_SITE
+fi
+
 # redirect forwards all standard inputs to a TCP socket listening on port STD_LOG_COLLECTION_PORT.
 redirect() {
   while true; do
@@ -19,7 +27,7 @@ redirect() {
             \"priority\": \"normal\",
             \"tags\": $(python $DATADOG_DIR/scripts/get_tags.py),
             \"alert_type\": \"info\"
-      }" "https://api.datadoghq.com/api/v1/events?api_key=$DD_API_KEY"
+      }" "${DD_API_SITE}v1/events?api_key=$DD_API_KEY"
     fi
   done
 }
