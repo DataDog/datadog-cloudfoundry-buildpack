@@ -4,24 +4,23 @@ unset DD_LOGS_VALID_ENDPOINT
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/datadog}"
 DD_EU_API_SITE="https://api.datadoghq.eu/api/"
 DD_US_API_SITE="https://api.datadoghq.com/api/"
-DD_API_SITE=${DD_US_API_SITE}
+DD_API_SITE=$DD_US_API_SITE
 DD_USE_EU=false
 
-if [ $DD_SITE == "datadog.eu" ]; then
+if [[ -n $DD_SITE ]] && [[ "$DD_SITE" == "datadoghq.eu" ]]; then
   DD_USE_EU=true
-  DD_API_SITE=${DD_EU_API_SITE}
+  DD_API_SITE=$DD_EU_API_SITE
 fi
 
-if [ -z $DD_LOGS_CONFIG_LOGS_DD_URL ]; then
+if [[ -z "$DD_LOGS_CONFIG_LOGS_DD_URL" ]]; then
   # Initialize to default value
   # If DD_SITE contains ".eu" use the EU endpoint, otherwise default to US
-  if [ -n $DD_LOGS_CONFIG_DD_PORT -a -n $DD_LOGS_CONFIG_DD_URL ]; then
+  if [[ -n "$DD_LOGS_CONFIG_DD_PORT" ]] && [[ -n "$DD_LOGS_CONFIG_DD_URL" ]]; then
     DD_LOGS_CONFIG_LOGS_DD_URL="$DD_LOGS_CONFIG_DD_URL:$DD_LOGS_CONFIG_DD_PORT"
+  elif [[ "$DD_USE_EU" == true ]]; then
+    DD_LOGS_CONFIG_LOGS_DD_URL="agent-intake.logs.datadoghq.eu:443"
   else
-    if [[ $DD_USE_EU ]]; then
-      DD_LOGS_CONFIG_LOGS_DD_URL="agent-intake.logs.datadoghq.eu:10516"
-    else
-        DD_LOGS_CONFIG_LOGS_DD_URL="agent-intake.logs.datadoghq.com:10516"
+    DD_LOGS_CONFIG_LOGS_DD_URL="agent-intake.logs.datadoghq.com:10516"
   fi
 fi
 
