@@ -7,19 +7,19 @@ DD_US_API_SITE="https://api.datadoghq.com/api/"
 DD_API_SITE=$DD_US_API_SITE
 DD_USE_EU=false
 
-if [[ -n $DD_SITE ]] && [[ "$DD_SITE" == "datadoghq.eu" ]]; then
+if [ -n "$DD_SITE" ] && [ "$DD_SITE" == "datadoghq.eu" ]; then
   DD_USE_EU=true
   DD_API_SITE=$DD_EU_API_SITE
 fi
 
-if [[ -z "$DD_LOGS_CONFIG_LOGS_DD_URL" ]]; then
+if [ -z "$DD_LOGS_CONFIG_LOGS_DD_URL" ]; then
   # Initialize to default value based on the following order:
   # 1) If both the host/port for logs is specified, use that
   # 2) If DD_SITE is set to datadoghq.eu, use default EU host/port
   # 3) Default back to US logs host/port combo.
-  if [[ -n "$DD_LOGS_CONFIG_DD_PORT" ]] && [[ -n "$DD_LOGS_CONFIG_DD_URL" ]]; then
+  if [ -n "$DD_LOGS_CONFIG_DD_PORT" ] && [ -n "$DD_LOGS_CONFIG_DD_URL" ]; then
     DD_LOGS_CONFIG_LOGS_DD_URL="$DD_LOGS_CONFIG_DD_URL:$DD_LOGS_CONFIG_DD_PORT"
-  elif [[ "$DD_USE_EU" == true ]]; then
+  elif [ "$DD_USE_EU" == true ]; then
     DD_LOGS_CONFIG_LOGS_DD_URL="agent-intake.logs.datadoghq.eu:443"
   else
     DD_LOGS_CONFIG_LOGS_DD_URL="agent-intake.logs.datadoghq.com:10516"
