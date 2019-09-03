@@ -8,7 +8,7 @@ start_datadog() {
   pushd $DATADOG_DIR
     export DD_LOG_FILE=$DATADOG_DIR/dogstatsd.log
     export DD_API_KEY
-    export DD_DD_URL=${DD_DD_URL:-https://app.datadoghq.com}
+    export DD_DD_URL
     export DD_ENABLE_CHECKS="${DD_ENABLE_CHECKS:-true}"
     export DOCKER_DD_AGENT=yes
     export LOGS_CONFIG_DIR=$DATADOG_DIR/dist/conf.d/logs.d
