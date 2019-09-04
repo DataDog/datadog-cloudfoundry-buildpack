@@ -12,12 +12,12 @@ DD_DEFAULT_HTTPS_US_ENDPOINT="agent-http-intake.logs.datadoghq.com:10516"
 DD_DEFAULT_TCP_EU_ENDPOINT"agent-intake.logs.datadoghq.eu:443"
 DD_DEFAULT_TCP_US_ENDPOINT="agent-intake.logs.datadoghq.com:10516"
 
-if [ -n "$DD_SITE" ] && [ "$DD_SITE" = "datadoghq.eu" ]; then
+if [ "$DD_SITE" = "datadoghq.eu" ]; then
   DD_USE_EU=true
   DD_API_SITE=$DD_EU_API_SITE
 fi
 
-if [ -n "$DD_LOGS_CONFIG_USE_HTTP" ] && [ "$DD_LOGS_CONFIG_USE_HTTP" = true]; then
+if [ "$DD_LOGS_CONFIG_USE_HTTP" = true]; then
   if [ "$DD_USE_EU" = true ]; then
     "$DEFAULT_LOGS_ENDPOINT"="$DD_DEFAULT_HTTPS_EU_ENDPOINT"
   else
