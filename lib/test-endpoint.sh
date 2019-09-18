@@ -8,7 +8,7 @@ DD_API_SITE=$DD_US_API_SITE
 DD_USE_EU=false
 
 DD_DEFAULT_HTTPS_EU_ENDPOINT="agent-http-intake.logs.datadoghq.eu:443"
-DD_DEFAULT_HTTPS_US_ENDPOINT="agent-http-intake.logs.datadoghq.com:10516"
+DD_DEFAULT_HTTPS_US_ENDPOINT="agent-http-intake.logs.datadoghq.com:443"
 DD_DEFAULT_TCP_EU_ENDPOINT"agent-intake.logs.datadoghq.eu:443"
 DD_DEFAULT_TCP_US_ENDPOINT="agent-intake.logs.datadoghq.com:10516"
 
@@ -18,10 +18,14 @@ if [ "$DD_SITE" = "datadoghq.eu" ]; then
 fi
 
 if [ "$DD_LOGS_CONFIG_USE_HTTP" = true]; then
-  if [ "$DD_USE_EU" = true ]; then
-    "$DEFAULT_LOGS_ENDPOINT"="$DD_DEFAULT_HTTPS_EU_ENDPOINT"
+  if [ -n "$DD_PROXY_HTTPS" ]; then
+    "$DEFAULT_LOGS_ENDPOINT"="$DD_PROXY_HTTPS"
   else
-    "$DEFAULT_LOGS_ENDPOINT"="$DD_DEFAULT_HTTPS_US_ENDPOINT"
+    if [ "$DD_USE_EU" = true ]; then
+      "$DEFAULT_LOGS_ENDPOINT"="$DD_DEFAULT_HTTPS_EU_ENDPOINT"
+    else
+      "$DEFAULT_LOGS_ENDPOINT"="$DD_DEFAULT_HTTPS_US_ENDPOINT"
+    fi
   fi
 else
   if [ "$DD_USE_EU" = true ]; then
@@ -34,8 +38,9 @@ fi
 if [ -z "$DD_LOGS_CONFIG_LOGS_DD_URL" ]; then
   # Initialize to default value based on the following order:
   # 1) If both the host/port for logs is specified, use that
-  # 2) If DD_SITE is set to datadoghq.eu, use default EU host/port
-  # 3) Default back to US logs host/port combo.
+  # 2) If the DD_HTTPS_PROXY is set, use that
+  # 3) If DD_SITE is set to datadoghq.eu, use default EU host/port
+  # 4) Default back to US logs host/port combo.
   if [ -n "$DD_LOGS_CONFIG_DD_PORT" ] && [ -n "$DD_LOGS_CONFIG_DD_URL" ]; then
     DD_LOGS_CONFIG_LOGS_DD_URL="$DD_LOGS_CONFIG_DD_URL:$DD_LOGS_CONFIG_DD_PORT"
   else
