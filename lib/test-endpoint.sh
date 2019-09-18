@@ -7,6 +7,7 @@ DD_US_API_SITE="https://api.datadoghq.com/api/"
 DD_API_SITE=$DD_US_API_SITE
 DD_USE_EU=false
 
+# Default endpoints can be found in DD Docs - https://docs.datadoghq.com/agent/logs/
 DD_DEFAULT_HTTPS_EU_ENDPOINT="agent-http-intake.logs.datadoghq.eu:443"
 DD_DEFAULT_HTTPS_US_ENDPOINT="agent-http-intake.logs.datadoghq.com:443"
 DD_DEFAULT_TCP_EU_ENDPOINT"agent-intake.logs.datadoghq.eu:443"
@@ -59,13 +60,13 @@ if [ "$DD_LOGS_ENABLED" = "true" -a -n $DD_LOGS_CONFIG_LOGS_DD_URL ]; then
   # Check out exit code and export a variable for subsequent scripts to use
   if [ $? -ne 0 ]; then
     export DD_LOGS_VALID_ENDPOINT="false"
-    echo "Could not establish a TCP connection to $DD_LOGS_CONFIG_LOGS_DD_URL."
+    echo "Could not establish a connection to $DD_LOGS_CONFIG_LOGS_DD_URL."
     # Post alert to datadog
     HTTP_PROXY=$DD_HTTP_PROXY HTTPS_PROXY=$DD_HTTPS_PROXY NO_PROXY=$DD_NO_PROXY curl \
       -X POST -H "Content-type: application/json" \
       -d "{
             \"title\": \"Log endpoint cannot be reached - Log collection not started\",
-            \"text\": \"Could not establish a TCP connection to $DD_LOGS_CONFIG_LOGS_DD_URL after 5 seconds. Log collection has not been started.\",
+            \"text\": \"Could not establish a connection to $DD_LOGS_CONFIG_LOGS_DD_URL after 5 seconds. Log collection has not been started.\",
             \"priority\": \"normal\",
             \"tags\": $(python $DATADOG_DIR/scripts/get_tags.py),
             \"alert_type\": \"error\"
