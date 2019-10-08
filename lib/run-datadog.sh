@@ -38,6 +38,15 @@ start_datadog() {
         $DD_AGENT_PYTHON $DATADOG_DIR/scripts/create_logs_config.py
     fi
 
+    # Remove a lot of the Agent's embedded python
+    rm -rf $DATADOG_DIR/opt/datadog-agent/embedded/lib/python3.7/site-packages/
+    rm -rf $DATADOG_DIR/opt/datadog-agent/embedded/bin/python
+    rm -rf $DATADOG_DIR/opt/datadog-agent/embedded/bin/python2
+    rm -rf $DATADOG_DIR/opt/datadog-agent/embedded/bin/python2.7
+    rm -rf $DATADOG_DIR/opt/datadog-agent/embedded/bin/python-config
+    rm -rf $DATADOG_DIR/opt/datadog-agent/embedded/bin/python2-config
+    rm -rf $DATADOG_DIR/opt/datadog-agent/embedded/bin/python2.7-config
+
     $DATADOG_DIR/opt/datadog-agent/bin/agent/agent run --cfgpath $DD_CONF_PATH &
 
     $DATADOG_DIR/opt/datadog-agent/embedded/bin/trace-agent --config $DD_CONF_PATH/datadog.yaml &

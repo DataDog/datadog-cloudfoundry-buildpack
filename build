@@ -3,7 +3,7 @@
 SRCDIR=$(cd "$(dirname $0)/." && pwd)
 ZIPFILE="datadog-cloudfoundry-buildpack.zip"
 
-AGENT_DEFAULT_VERSION="6.12.0"
+AGENT_DEFAULT_VERSION="6.14.0"
 
 AGENT_VERSION=${AGENT_VERSION:-$AGENT_DEFAULT_VERSION}
 AGENT_DOWNLOAD_URL="https://s3.amazonaws.com/apt.datadoghq.com/pool/d/da/datadog-agent_${AGENT_VERSION}-1_amd64.deb"
