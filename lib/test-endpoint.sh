@@ -10,7 +10,7 @@ DD_USE_EU=false
 # Default endpoints can be found in DD Docs - https://docs.datadoghq.com/agent/logs/
 DD_DEFAULT_HTTPS_EU_ENDPOINT="agent-http-intake.logs.datadoghq.eu:443"
 DD_DEFAULT_HTTPS_US_ENDPOINT="agent-http-intake.logs.datadoghq.com:443"
-DD_DEFAULT_TCP_EU_ENDPOINT"agent-intake.logs.datadoghq.eu:443"
+DD_DEFAULT_TCP_EU_ENDPOINT="agent-intake.logs.datadoghq.eu:443"
 DD_DEFAULT_TCP_US_ENDPOINT="agent-intake.logs.datadoghq.com:10516"
 
 if [ "$DD_SITE" = "datadoghq.eu" ]; then
@@ -18,21 +18,21 @@ if [ "$DD_SITE" = "datadoghq.eu" ]; then
   DD_API_SITE=$DD_EU_API_SITE
 fi
 
-if [ "$DD_LOGS_CONFIG_USE_HTTP" = true]; then
+if [ "$DD_LOGS_CONFIG_USE_HTTP" = true ]; then
   if [ -n "$DD_PROXY_HTTPS" ]; then
-    "$DEFAULT_LOGS_ENDPOINT"="$DD_PROXY_HTTPS"
+    DEFAULT_LOGS_ENDPOINT="$DD_PROXY_HTTPS"
   else
     if [ "$DD_USE_EU" = true ]; then
-      "$DEFAULT_LOGS_ENDPOINT"="$DD_DEFAULT_HTTPS_EU_ENDPOINT"
+      DEFAULT_LOGS_ENDPOINT="$DD_DEFAULT_HTTPS_EU_ENDPOINT"
     else
-      "$DEFAULT_LOGS_ENDPOINT"="$DD_DEFAULT_HTTPS_US_ENDPOINT"
+      DEFAULT_LOGS_ENDPOINT="$DD_DEFAULT_HTTPS_US_ENDPOINT"
     fi
   fi
 else
   if [ "$DD_USE_EU" = true ]; then
-    "$DEFAULT_LOGS_ENDPOINT"="$DD_DEFAULT_TCP_EU_ENDPOINT"
+    DEFAULT_LOGS_ENDPOINT="$DD_DEFAULT_TCP_EU_ENDPOINT"
   else
-    "$DEFAULT_LOGS_ENDPOINT"="$DD_DEFAULT_TCP_US_ENDPOINT"
+    DEFAULT_LOGS_ENDPOINT="$DD_DEFAULT_TCP_US_ENDPOINT"
   fi
 fi
 
