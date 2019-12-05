@@ -6,7 +6,6 @@ DD_EU_API_SITE="https://api.datadoghq.eu/api/"
 DD_US_API_SITE="https://api.datadoghq.com/api/"
 DD_API_SITE=$DD_US_API_SITE
 DD_USE_EU=false
-FOO=${default:-$TEST}
 
 # Sets variable in order of DD_PROXY_HTTP -> DD_HTTP_PROXY -> HTTP_PROXY
 DD_PROXY_HTTP_VAR=${DD_PROXY_HTTP:-$DD_HTTP_PROXY}
