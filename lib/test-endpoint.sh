@@ -15,7 +15,7 @@ DD_PROXY_HTTP_VAR=${DD_PROXY_HTTP_VAR:-$HTTP_PROXY}
 DD_PROXY_HTTPS_VAR=${DD_PROXY_HTTPS:-$DD_HTTPS_PROXY}
 DD_PROXY_HTTPS_VAR=${DD_PROXY_HTTPS_VAR:-$HTTPS_PROXY}
 
-DD_STRIPPED_PROXY_HTTPS="${DD_PROXY_HTTP_VAR//https:\/\/}"
+DD_STRIPPED_PROXY_HTTPS="${DD_PROXY_HTTPS_VAR//https:\/\/}"
 
 # Default endpoints can be found in DD Docs - https://docs.datadoghq.com/agent/logs/
 DD_DEFAULT_HTTPS_EU_ENDPOINT="agent-http-intake.logs.datadoghq.eu:443"
@@ -84,4 +84,6 @@ if [ "$DD_LOGS_ENABLED" = "true" -a -n $DD_LOGS_CONFIG_LOGS_DD_URL -a "$DD_SKIP_
   else
     export DD_LOGS_VALID_ENDPOINT="true"
   fi
+else
+  echo "Skipping log endpoint validation"
 fi
