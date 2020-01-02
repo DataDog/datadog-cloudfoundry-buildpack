@@ -75,20 +75,6 @@ All the options supported by the Agent in the main configuration file (`lib/dist
 ### DogStatsD Away!
 You're all set up to use DogStatsD. Import the relevant library and start sending data! To learn more, [check our our documentation](https://docs.datadoghq.com/guides/DogStatsD/). Additionally, we have [a list of DogStatsD libraries](https://docs.datadoghq.com/libraries/) you can check out to find one that's compatible with your application.
 
-
-## Building
-Run the following command from the root of the repository to build the buildpack with the latest agent:
-```bash
-./build
-```
-
-If you want to build for a specific version of the agent, specify the VERSION environment variable.
-```bash
-VERSION=<AGENT_VERSION> REFRESH_ASSETS=1 ./build
-```
-
-This produces a `datadog-cloudfoundry-buildpack.zip` file at the root of the repository that you can use directly with the CF CLI, or to build the [datadog-application-monitoring tile](https://github.com/DataDog/pcf-datadog-application-monitoring).
-
 ## Docker
 
 If you're running docker on Cloud Foundry, you can look at [the docker directory](docker/) to see how to adapt this buildpack to use in a dockerfile
