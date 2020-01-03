@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# Unless explicitly stated otherwise all files in this repository are licensed under the Apache 2.0 License.
+# This product includes software developed at Datadog (https://www.datadoghq.com/).
+# Copyright 2017-Present Datadog, Inc.
+
 unset DD_LOGS_VALID_ENDPOINT
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/datadog}"
 DD_EU_API_SITE="https://api.datadoghq.eu/api/"
