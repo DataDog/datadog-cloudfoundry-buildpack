@@ -64,7 +64,7 @@ working on for a day.
 
 ### Releasing
 
-The release procedure is managed by Datadog.
+The release procedure is managed by Datadog, instructions can be found in the [RELEASING](/RELEASING.md) document.
 
 ## Asking a questions
 
