@@ -3,11 +3,11 @@
 SRCDIR=$(cd "$(dirname $0)/." && pwd)
 NAME="datadog-cloudfoundry-buildpack"
 ZIPFILE="$NAME.zip"
-PUPPY_DOWNLOAD_URL="https://s3.amazonaws.com/dd-agent/agent6/puppy/linux"
-DOGSTATSD_DOWNLOAD_URL="https://s3.amazonaws.com/dd-agent/dsd6/dogstatsd/linux"
+PUPPY_DOWNLOAD_URL="https://s3.amazonaws.com/dd-agent/agent7/puppy/linux"
+DOGSTATSD_DOWNLOAD_URL="https://s3.amazonaws.com/dd-agent/dsd7/dogstatsd/linux"
 TRACEAGENT_DOWNLOAD_URL_HEAD="https://s3.amazonaws.com/apt.datadoghq.com/pool/d/da/datadog-agent_"
 TRACEAGENT_DOWNLOAD_URL_TAIL="-1_amd64.deb"
-TRACE_DEFAULT_VERSION="6.14.0"
+TRACE_DEFAULT_VERSION="7.16.0"
 
 AGENT_DEFAULT_VERSION="7.17.0"
 DOTNET_TRACER_DEFAULT_VERSION="1.6.0"
