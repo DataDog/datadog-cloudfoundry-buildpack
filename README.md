@@ -8,7 +8,7 @@ This is a [decorator buildpack](https://github.com/cf-platform-eng/meta-buildpac
 First, you will have to [install the Meta Buildpack](https://github.com/cf-platform-eng/meta-buildpack#how-to-install-the-meta-buildpack). This enables apps to use decorator buildpacks. Follow the instructions to get the buildpack and upload it if you don't already have it.
 
 ### Upload the buildpack to CF
-- Download the latest Datadog [build pack release](https://cloudfoundry.datadoghq.com/datadog-cloudfoundry-buildpack/datadog-cloudfoundry-buildpack-latest.zip) or [build it](#building). After you have the zipfile, you will have to upload it to Cloud Foundry environment.
+- Download the latest Datadog [build pack release](https://cloudfoundry.datadoghq.com/datadog-cloudfoundry-buildpack/datadog-cloudfoundry-buildpack-latest.zip) or [build it](/DEVELOPMENT.md#building). After you have the zipfile, you will have to upload it to Cloud Foundry environment.
 
 - Create the buildpack in CF if it does not exist
     ```bash

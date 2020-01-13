@@ -33,6 +33,8 @@ function download_trace_agent() {
     $archiver -xzf data.tar.gz
   popd
   cp $TMPDIR/opt/datadog-agent/embedded/bin/trace-agent $SRCDIR/lib/trace-agent
+  # Download the template files that are required for the status command
+  cp -r $TMPDIR/opt/datadog-agent/bin/agent/dist/templates/ $SRCDIR/lib/dist/templates
   rm -rf $TMPDIR/*
 }
 
