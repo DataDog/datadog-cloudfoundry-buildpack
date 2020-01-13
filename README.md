@@ -5,7 +5,7 @@ This is a [supply buildpack](https://docs.cloudfoundry.org/buildpacks/understand
 ## Use
 
 ### Upload the buildpack to CF
-- Download the latest Datadog [build pack release](https://cloudfoundry.datadoghq.com/datadog-cloudfoundry-buildpack/datadog-cloudfoundry-buildpack-latest.zip) or [build it](#building). After you have the zipfile, you will have to upload it to Cloud Foundry environment.
+- Download the latest Datadog [build pack release](https://cloudfoundry.datadoghq.com/datadog-cloudfoundry-buildpack/datadog-cloudfoundry-buildpack-latest.zip) or [build it](/DEVELOPMENT.md#building). After you have the zipfile, you will have to upload it to Cloud Foundry environment.
 
 - Create the buildpack in CF if it does not exist
     ```bash

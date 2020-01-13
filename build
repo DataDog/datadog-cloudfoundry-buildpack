@@ -19,19 +19,44 @@ AGENT_DEB_DOWNLOAD_URL="https://s3.amazonaws.com/apt.datadoghq.com/pool/d/da/dat
 # AGENT_BINARIES_DOWNLOAD_URL="https://s3.amazonaws.com/ddagent-windows-stable/ddagent-cli-${AGENT_VERSION}.msi"
 AGENT_DOTNET_TRACER_DOWNLOAD_URL="https://github.com/DataDog/dd-trace-dotnet/releases/download/v${DOTNET_TRACER_VERSION}/datadog-dotnet-apm-${DOTNET_TRACER_VERSION}-x64.msi"
 
-if [ ! -f $SRCDIR/lib/datadog-agent.deb ] ||
-  #  [ ! -f $SRCDIR/lib/agent-binaries.zip ] ||
-   [ ! -f $SRCDIR/lib/dotnet-tracer.msi ] ||
-   [ -n "$REFRESH_ASSETS" ]; then
-  # Delete the old ones
-  rm -f $SRCDIR/lib/datadog-agent.deb
-  # rm -f $SRCDIR/lib/datadog-binaries.zip
-  rm -f $SRCDIR/lib/dotnet-tracer.msi
-  # Download the new ones
-  curl $AGENT_DEB_DOWNLOAD_URL -o ./lib/datadog-agent.deb
-  # curl $AGENT_MSI_DOWNLOAD_URL -o ./lib/agent-binaries.zip
-  curl -L $AGENT_DOTNET_TRACER_DOWNLOAD_URL -o ./lib/dotnet-tracer.msi
-fi
+  local archiver="tar"
+  if command -v gtar > /dev/null 2>&1; then
+    archiver="gtar"
+  else
+    if [[ `uname` == 'Darwin' ]]; then
+      echo "On OSX you might see some errors from untarring the deb package"
+      echo "Using gnu tar will resolve them"
+      echo "However, they should be okay to ignore"
+    fi
+  fi
+
+  mkdir -p $TMPDIR
+  curl -L $trace_agent_download_url -o ./tmp/datadog-agent.deb
+  pushd $TMPDIR
+    ar x datadog-agent.deb
+    $archiver -xzf data.tar.gz
+  popd
+  cp $TMPDIR/opt/datadog-agent/embedded/bin/trace-agent $SRCDIR/lib/trace-agent
+  # Download the template files that are required for the status command
+  cp -r $TMPDIR/opt/datadog-agent/bin/agent/dist/templates/ $SRCDIR/lib/dist/templates
+  rm -rf $TMPDIR/*
+}
+
+function main() {
+  if [ ! -f $SRCDIR/lib/dogstatsd ] || [ ! -f $SRCDIR/lib/trace-agent ]; then
+    DOWNLOAD="true"
+  fi
+  if [ -n "$PUPPY" ] && [ ! -f $SRCDIR/lib/puppy ]; then
+    DOWNLOAD="true"
+  fi
+  if [ -n "$REFRESH_ASSETS" ]; then
+    DOWNLOAD="true"
+  fi
+  if [ -n "$DOWNLOAD" ]; then
+    # Delete the old ones
+    rm -f $SRCDIR/lib/puppy
+    rm -f $SRCDIR/lib/dogstatsd
+    rm -f $SRCDIR/lib/trace-agent
 
     if [ -n "$VERSION" ]; then
       PUPPY_DOWNLOAD_URL="$PUPPY_DOWNLOAD_URL/agent-$VERSION"
