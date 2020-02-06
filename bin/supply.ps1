@@ -8,7 +8,7 @@ echo "       Extracting Datadog Agent"
 
 New-Item -Path "$BUILD_DIR\datadog\scripts" -ItemType Directory
 New-Item -Path "$BUILD_DIR\.profile.d" -ItemType Directory
-New-Item -Path "$BUILD_DIR\datadog/AppData" -ItemType Directory
+New-Item -Path "$BUILD_DIR\datadog\AppData" -ItemType Directory
 
 # Extract agent
 Expand-Archive -LiteralPath $ROOT_DIR\lib\agent-binaries.zip -DestinationPath $BUILD_DIR\datadog
