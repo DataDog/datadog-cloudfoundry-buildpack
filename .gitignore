@@ -4,7 +4,6 @@
 lib/dogstatsd
 lib/puppy
 lib/trace-agent
-lib/dist/templates/
 venv
 tmp
 .DS_Store
