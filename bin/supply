@@ -22,10 +22,10 @@ mv $BUILD_DIR/datadog/extracted-agent/etc $BUILD_DIR/datadog/etc
 rm -rf $BUILD_DIR/datadog/extracted-agent
 mv $BUILD_DIR/datadog/etc/datadog-agent/datadog.yaml.example $BUILD_DIR/datadog/etc/datadog-agent/datadog.yaml
 
-cp $ROOT_DIR/lib/scripts/get_tags.py $BUILD_DIR/datadog/scripts/get_tags.py
-cp $ROOT_DIR/lib/scripts/create_logs_config.py $BUILD_DIR/datadog/scripts/create_logs_config.py
-cp $ROOT_DIR/lib/scripts/setup.sh $BUILD_DIR/datadog/scripts/setup.sh
-cp $ROOT_DIR/lib/scripts/datadog-agent $BUILD_DIR/datadog/datadog-agent
+cp $ROOT_DIR/lib/scripts/linux/get_tags.py $BUILD_DIR/datadog/scripts/get_tags.py
+cp $ROOT_DIR/lib/scripts/linux/create_logs_config.py $BUILD_DIR/datadog/scripts/create_logs_config.py
+cp $ROOT_DIR/lib/scripts/linux/setup.sh $BUILD_DIR/datadog/scripts/setup.sh
+cp $ROOT_DIR/lib/scripts/linux/datadog-agent $BUILD_DIR/datadog/datadog-agent
 cp $ROOT_DIR/lib/test-endpoint.sh $BUILD_DIR/.profile.d/00-test-endpoint.sh # Make sure this is sourced first
 cp $ROOT_DIR/lib/redirect-logs.sh $BUILD_DIR/.profile.d/01-redirect-logs.sh
 cp $ROOT_DIR/lib/run-datadog.sh $BUILD_DIR/.profile.d/02-run-datadog.sh
