@@ -9,48 +9,28 @@ TRACEAGENT_DOWNLOAD_URL_HEAD="https://s3.amazonaws.com/apt.datadoghq.com/pool/d/
 TRACEAGENT_DOWNLOAD_URL_TAIL="-1_amd64.deb"
 TRACE_DEFAULT_VERSION="6.12.0"
 
-TMPDIR="$SRCDIR/tmp"
+AGENT_DEFAULT_VERSION="6.12.2"
+DOTNET_TRACER_DEFAULT_VERSION="1.6.0"
 
-function download_trace_agent() {
-  local trace_version="${1:-$TRACE_DEFAULT_VERSION}"
-  local trace_agent_download_url="$TRACEAGENT_DOWNLOAD_URL_HEAD$trace_version$TRACEAGENT_DOWNLOAD_URL_TAIL"
+AGENT_VERSION=${AGENT_VERSION:-$AGENT_DEFAULT_VERSION}
+DOTNET_TRACER_VERSION=${DOTNET_TRACER_VERSION:-$DOTNET_TRACER_DEFAULT_VERSION}
+AGENT_DEB_DOWNLOAD_URL="https://s3.amazonaws.com/apt.datadoghq.com/pool/d/da/datadog-agent_${AGENT_VERSION}-1_amd64.deb"
+AGENT_MSI_DOWNLOAD_URL="https://s3.amazonaws.com/ddagent-windows-stable/ddagent-cli-${AGENT_VERSION}.msi"
+# AGENT_DOTNET_TRACER_DOWNLOAD_URL="https://github.com/DataDog/dd-trace-dotnet/releases/download/v${DOTNET_TRACER_VERSION}/datadog-dotnet-apm-${DOTNET_TRACER_VERSION}-x64.msi"
 
-  local archiver="tar"
-  if command -v gtar > /dev/null 2>&1; then
-    archiver="gtar"
-  else
-    if [[ `uname` == 'Darwin' ]]; then
-      echo "On OSX you might see some errors from untarring the deb package"
-      echo "Using gnu tar will resolve them"
-      echo "However, they should be okay to ignore"
-    fi
-  fi
-
-  mkdir -p $TMPDIR
-  curl -L $trace_agent_download_url -o ./tmp/datadog-agent.deb
-  pushd $TMPDIR
-    ar x datadog-agent.deb
-    $archiver -xzf data.tar.gz
-  popd
-  cp $TMPDIR/opt/datadog-agent/embedded/bin/trace-agent $SRCDIR/lib/trace-agent
-  rm -rf $TMPDIR/*
-}
-
-function main() {
-  if [ ! -f $SRCDIR/lib/dogstatsd ] || [ ! -f $SRCDIR/lib/trace-agent ]; then
-    DOWNLOAD="true"
-  fi
-  if [ -n "$PUPPY" ] && [ ! -f $SRCDIR/lib/puppy ]; then
-    DOWNLOAD="true"
-  fi
-  if [ -n "$REFRESH_ASSETS" ]; then
-    DOWNLOAD="true"
-  fi
-  if [ -n "$DOWNLOAD" ]; then
-    # Delete the old ones
-    rm -f $SRCDIR/lib/puppy
-    rm -f $SRCDIR/lib/dogstatsd
-    rm -f $SRCDIR/lib/trace-agent
+if [ ! -f $SRCDIR/lib/datadog-agent.deb ] ||
+   [ ! -f $SRCDIR/lib/datadog-agent.msi ] ||
+  #  [ ! -f $SRCDIR/lib/dotnet-tracer.msi ] ||
+   [ -n "$REFRESH_ASSETS" ]; then
+  # Delete the old ones
+  rm -f $SRCDIR/lib/datadog-agent.deb
+  rm -f $SRCDIR/lib/datadog-agent.msi
+  # rm -f $SRCDIR/lib/dotnet-tracer.msi
+  # Download the new ones
+  curl $AGENT_DEB_DOWNLOAD_URL -o ./lib/datadog-agent.deb
+  curl $AGENT_MSI_DOWNLOAD_URL -o ./lib/datadog-agent.msi
+  # curl -L $AGENT_DOTNET_TRACER_DOWNLOAD_URL -o ./lib/dotnet-tracer.msi
+fi
 
     if [ -n "$VERSION" ]; then
       PUPPY_DOWNLOAD_URL="$PUPPY_DOWNLOAD_URL/agent-$VERSION"
