@@ -34,6 +34,8 @@ cf restage $YOUR_APP_NAME
 
 #### Log Collection
 
+Log collection is currently only available on Linux based applications.
+
 **Enable log collection**:
 
 To start collecting logs from your application in CloudFoundry, the Agent contained in the buildpack needs to be activated and log collection enabled.
@@ -71,6 +73,39 @@ cf set-env $YOUR_APP_NAME LOGS_CONFIG '[{"type":"tcp","port":"10514","source":"j
 
 #### General configuration of the Datadoc Agent
 All the options supported by the Agent in the main configuration file (`lib/dist/datadog.yaml`) can also be set through environment variables as described in the [documentation of the Agent](https://github.com/DataDog/datadog-agent/blob/master/docs/agent/config.md#environment-variables).
+
+#### .NET Traces
+
+The buildpack also includes the [.NET Tracer](https://docs.datadoghq.com/tracing/setup/dotnet/?tab=netframeworkonwindows) for the .NET Framework on windows cells. To start instrumenting your app, perform the following:
+
+1. Register the directory containing the DLLs in your app.
+To do so, add the path `C:\Users\vcap\app\datadog\dotNetTracer` in the [`probing`](https://docs.microsoft.com/en-us/dotnet/framework/configure-apps/file-schema/runtime/probing-element) element in your `web.config` file.
+
+**example**:
+```xml
+<runtime>
+    <assemblyBinding xmlns="urn:schemas-microsoft-com:asm.v1">
+        <probing privatePath="C:\Users\vcap\app\datadog\dotNetTracer" />
+    </assemblyBinding>
+</runtime>
+```
+
+Alternatively, you can install the [Datadog.Trace.ClrProfiler.Managed Nuget package](https://www.nuget.org/packages/Datadog.Trace.ClrProfiler.Managed) in your app before pushing it to CloudFoundry.
+
+2. Set the following environment variables in your application:
+```
+# Set your API key to send traces to Datadog
+cf set-env $YOUR_APP_NAME DD_API_KEY $YOUR_DATADOG_API_KEY
+# Setup the dotnet datadog tracer
+cf set-env $YOUR_APP_NAME COR_ENABLE_PROFILING 1
+cf set-env $YOUR_APP_NAME COR_PROFILER {846F5F1C-F9AE-4B07-969E-05C26BC060D8}
+cf set-env $YOUR_APP_NAME COR_PROFILER_PATH C:\Users\vcap\app\datadog\dotNetTracer\Datadog.Trace.ClrProfiler.Native.dll
+cf set-env $YOUR_APP_NAME DD_TRACE_LOG_PATH "\Users\vcap\app\datadog\dotNetTracer\tracer.log"
+cf set-env $YOUR_APP_NAME DD_INTEGRATIONS "\Users\vcap\app\datadog\dotNetTracer\integrations.json"
+cf set-env $YOUR_APP_NAME DD_TRACE_ENABLED true
+# Restage your app to take these changes
+cf restage $YOUR_APP_NAME
+```
 
 ### DogStatsD Away!
 You're all set up to use DogStatsD. Import the relevant library and start sending data! To learn more, [check our our documentation](https://docs.datadoghq.com/guides/DogStatsD/). Additionally, we have [a list of DogStatsD libraries](https://docs.datadoghq.com/libraries/) you can check out to find one that's compatible with your application.
