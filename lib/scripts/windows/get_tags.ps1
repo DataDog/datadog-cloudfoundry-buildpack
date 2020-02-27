@@ -1,10 +1,12 @@
 $vcapApp = $env:VCAP_APPLICATION
 $vcapApp = $vcapApp | ConvertFrom-JSON
 
+# Collect host tags about the application
 $vcap_variables = "application_id", "name", "instance_index", "space_name"
 
 $tags = @()
 
+# Documentation for the VCAP_APPLICATION env var - https://docs.run.pivotal.io/devguide/deploy-apps/environment-variable.html#VCAP-APPLICATION
 foreach ($element in $vcap_variables) {
     $vcap_var = $vcapApp.$element
     If ($vcap_var -ne $null) {
@@ -23,7 +25,7 @@ If ($vcap_var -ne $null) {
     }
 }
 
-# Require user tags on windows to be a list of tags @()
+# Require user tags on windows to be a list of tags, i.e. $TAGS=@(env:staging, app:web)
 $user_tags = $env:TAGS
 If ($user_tags -ne $null) {
     foreach ($element in $user_tags) {
@@ -31,6 +33,7 @@ If ($user_tags -ne $null) {
     }
 }
 
+# Support the same for the DD_TAGS environment variable
 $user_tags = $env:DD_TAGS
 If ($user_tags -ne $null) {
     foreach ($element in $user_tags) {
