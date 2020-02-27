@@ -62,6 +62,7 @@ function main() {
     rm -f $SRCDIR/lib/dogstatsd
     rm -f $SRCDIR/lib/trace-agent
     # rm -f $SRCDIR/lib/agent-binaries.zip
+    rm -f $SRCDIR/lib/dotnet-tracer.msi
 
     if [ -n "$VERSION" ]; then
       PUPPY_DOWNLOAD_URL="$PUPPY_DOWNLOAD_URL/agent-$VERSION"
@@ -78,6 +79,8 @@ function main() {
     chmod +x $SRCDIR/lib/dogstatsd
 
     # curl $AGENT_BINARIES_DOWNLOAD_URL -o ./lib/agent-binaries.zip
+
+    curl -L $AGENT_DOTNET_TRACER_DOWNLOAD_URL -o ./lib/dotnet-tracer.msi
 
     # Does not support versioning for now, keep it dumb until trace-agent merge with the Agent6
     # curl -L $TRACEAGENT_DOWNLOAD_URL -o ./lib/trace-agent
