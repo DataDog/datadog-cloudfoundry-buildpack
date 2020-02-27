@@ -76,7 +76,7 @@ All the options supported by the Agent in the main configuration file (`lib/dist
 
 #### .NET Traces
 
-The buildpack also includes the [.NET Tracer](https://docs.datadoghq.com/tracing/setup/dotnet/?tab=netframeworkonwindows) for the .NET Framework on windows cells. To start instrumenting your app, perform the following:
+The buildpack also includes the [.NET Tracer](https://docs.datadoghq.com/tracing/setup/dotnet/?tab=netframeworkonwindows) for the .NET Framework on windows cells. To start instrumenting your app:
 
 1. Register the directory containing the DLLs in your app.
 To do so, add the path `C:\Users\vcap\app\datadog\dotNetTracer` in the [`probing`](https://docs.microsoft.com/en-us/dotnet/framework/configure-apps/file-schema/runtime/probing-element) element in your `web.config` file.
@@ -108,7 +108,7 @@ cf restage $YOUR_APP_NAME
 ```
 
 ### DogStatsD Away!
-You're all set up to use DogStatsD. Import the relevant library and start sending data! To learn more, [check our our documentation](https://docs.datadoghq.com/guides/DogStatsD/). Additionally, we have [a list of DogStatsD libraries](https://docs.datadoghq.com/libraries/) you can check out to find one that's compatible with your application.
+You're all set up to use DogStatsD. Import the relevant library and start sending data! To learn more, [check our our documentation](https://docs.datadoghq.com/guides/DogStatsD/). Additionally, there is [a list of DogStatsD libraries](https://docs.datadoghq.com/libraries/) you can check out to find one that's compatible with your application.
 
 ## Docker
 
