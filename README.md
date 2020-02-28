@@ -34,8 +34,6 @@ cf restage $YOUR_APP_NAME
 
 #### Log Collection
 
-Log collection is currently only available on Linux based applications.
-
 **Enable log collection**:
 
 To start collecting logs from your application in CloudFoundry, the Agent contained in the buildpack needs to be activated and log collection enabled.
@@ -59,6 +57,19 @@ The following parameters can be used to configure log collection:
 
 - `STD_LOG_COLLECTION_PORT`: Must be used when collecting logs from `stdout`/`stderr`. It redirects the `stdout`/`stderr` stream to the corresponding local port value.
 - `LOGS_CONFIG`: Use this option to configure the agent to listen to a local TCP port and set the value for the `service` and `source` parameters.
+
+**Additional steps for windows**
+
+To get logs from your .NET Framework applications running on windows cells, follow these additional steps:
+1. Create a `Procfile` (see https://docs.cloudfoundry.org/buildpacks/prod-server.html#procfile) at the root of your app containing the following line:
+    ```
+    web: run.cmd
+    ```
+2. Create a file named `run.cmd` at the root of your application. This file contains the command to startup your application
+    ```batch
+    .cloudfoundry\hwc.exe 2>&1 | powershell C:\Users\vcap\app\datadog\scripts\redirect_logs.ps1
+    ```
+    This command starts the usual `hwc` buildpack, and redirects its output to a script that forwards it to the agent, so that your app logs appear in Datadog.
 
 **Example**:
 

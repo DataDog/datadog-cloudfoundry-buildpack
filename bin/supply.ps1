@@ -20,6 +20,7 @@ Move-Item -Path "$BUILD_DIR\datadog\extracted-dotnet-tracer\Datadog\.NET Tracer"
 Remove-Item -Force -Recurse -Path "$BUILD_DIR\datadog\extracted-dotnet-tracer"
 
 Copy-Item -Path "$ROOT_DIR\lib\scripts\windows\get_tags.ps1" -Destination "$BUILD_DIR\datadog\scripts\get_tags.ps1"
+Copy-Item -Path "$ROOT_DIR\lib\scripts\windows\redirect_logs.ps1" -Destination "$BUILD_DIR\datadog\scripts\redirect_logs.ps1"
 Copy-Item -Path "$ROOT_DIR\lib\scripts\windows\run-datadog.ps1" -Destination "$BUILD_DIR\datadog\scripts\run-datadog.ps1"
 Copy-Item -Path "$ROOT_DIR\lib\scripts\windows\run-datadog.bat" -Destination "$BUILD_DIR\.profile.d\01-run-datadog.bat"
 Copy-Item -Path "$ROOT_DIR\lib\scripts\windows\datadog-agent.bat" -Destination "$BUILD_DIR\datadog\datadog-agent.bat"

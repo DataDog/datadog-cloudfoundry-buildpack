@@ -14,11 +14,16 @@ echo "$tags_out" | Out-File "$DATADOG_DIR\AppData\datadog.yaml" -Append -Encodin
 # Update the path to the check configuration files
 echo "confd_path: $DATADOG_DIR\AppData\datadog-agent\conf.d" | Out-File "$DATADOG_DIR\AppData\datadog.yaml" -Append -Encoding "UTF8"
 
-$Env:LOGS_CONFIG_DIR="$DATADOG_DIR\AppData\conf.d\logs.d"
-New-Item $Env:LOGS_CONFIG_DIR -ItemType "directory" -Force
+# Write the config for the logs
+$LOGS_CONFIG_DIR="$DATADOG_DIR\AppData\datadog-agent\conf.d\logs.d"
+New-Item $LOGS_CONFIG_DIR -ItemType "directory" -Force
+echo "{`"logs`":$Env:LOGS_CONFIG}" | Out-File $LOGS_CONFIG_DIR\logs.yaml
 
 # Logs, core checks, and dogstatsd
 Start-Process "$DATADOG_DIR\bin\agent.exe" -ArgumentList "run -c $DATADOG_DIR\AppData" -NoNewWindow
+
+# Start redirecting logs to the agent port
+Start-Process "$DATADOG_DIR\scripts\redirect_logs.ps1"
 
 # Traces
 Start-Process "$DATADOG_DIR\bin\agent\trace-agent.exe" -ArgumentList "--config $DATADOG_DIR\AppData\datadog.yaml" -NoNewWindow

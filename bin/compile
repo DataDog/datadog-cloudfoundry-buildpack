@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# This file is a deprecated alternative to bin/supply (same content) and is here to maintain backwards compatibility for older PAS versions
+# https://docs.pivotal.io/pivotalcf/2-6/buildpacks/understand-buildpacks.html
+
 echo "-----> DatadogBuildpack/compile"
 
 BIN_DIR=$(cd $(dirname $0); pwd)
