@@ -22,8 +22,5 @@ echo "{`"logs`":$Env:LOGS_CONFIG}" | Out-File $LOGS_CONFIG_DIR\logs.yaml
 # Logs, core checks, and dogstatsd
 Start-Process "$DATADOG_DIR\bin\agent.exe" -ArgumentList "run -c $DATADOG_DIR\AppData" -NoNewWindow
 
-# Start redirecting logs to the agent port
-Start-Process "$DATADOG_DIR\scripts\redirect_logs.ps1"
-
 # Traces
 Start-Process "$DATADOG_DIR\bin\agent\trace-agent.exe" -ArgumentList "--config $DATADOG_DIR\AppData\datadog.yaml" -NoNewWindow
