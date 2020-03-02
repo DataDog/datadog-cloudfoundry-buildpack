@@ -27,7 +27,7 @@ function Run {
             $Socket.Close()
             $Socket, $Writer = Recreate-Socket
         }
-        $line = read-host
+        $line = Read-Host
         $Writer.WriteLine($line)
         Write-Host $line
     }
