@@ -69,7 +69,7 @@ cf set-env $YOUR_APP_NAME STD_LOG_COLLECTION_PORT 10514
 cf set-env $YOUR_APP_NAME LOGS_CONFIG '[{"type":"tcp","port":"10514","source":"java","service":"app01"}]'
 ```
 
-#### General configuration of the Datadoc Agent
+#### General configuration of the Datadog Agent
 All the options supported by the Agent in the main configuration file (`lib/dist/datadog.yaml`) can also be set through environment variables as described in the [documentation of the Agent](https://github.com/DataDog/datadog-agent/blob/master/docs/agent/config.md#environment-variables).
 
 ### DogStatsD Away!
