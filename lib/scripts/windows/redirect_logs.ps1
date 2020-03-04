@@ -20,16 +20,23 @@ function Run {
     $Socket, $Writer = Recreate-Socket
     while($true)
     {
-        # Reconnect if the socket is disconnected
-        # (The Datadog Agent times out the connection if it does not receive
-        # logs during 1 minute)
-        If ($Socket.Connected -eq $false) {
+        # Read-Host waits for the input from the piped process, so it also writes to screen.
+        # So we don't need to explicitly rewrite the line back out via Write-Host
+        $line = Read-Host
+
+        # (The Agent closes this connection after a period of receiving no logs)
+        # IF the connection is closed, the first message sent won't send but won't trigger an exception
+        # Then when the second message tries to send, it gets an exceoption, and marks the Socket.Connected as false
+        try{
+            $Writer.WriteLine($line)
+            # Set this if only if we were successfully able to send the message to the socket
+            $previous_line = $line
+        } catch {
             $Socket.Close()
             $Socket, $Writer = Recreate-Socket
+            $Writer.WriteLine($previous_line)
+            $Writer.WriteLine($line)
         }
-        $line = Read-Host
-        $Writer.WriteLine($line)
-        Write-Host $line
     }
 }
 
