@@ -14,6 +14,11 @@ echo "$tags_out" | Out-File "$DATADOG_DIR\AppData\datadog.yaml" -Append -Encodin
 # Update the path to the check configuration files
 echo "confd_path: $DATADOG_DIR\AppData\datadog-agent\conf.d" | Out-File "$DATADOG_DIR\AppData\datadog.yaml" -Append -Encoding "UTF8"
 
+# Remove the core checks if DD_ENABLE_CHECKS is false
+If ("$DD_ENABLE_CHECKS" -ne $true) {
+    Remove-Item -Path "$DATADOG_DIR\AppData\datadog-agent\conf.d\*" -Recurse
+}
+
 # Write the config for the logs
 $LOGS_CONFIG_DIR="$DATADOG_DIR\AppData\datadog-agent\conf.d\logs.d"
 New-Item $LOGS_CONFIG_DIR -ItemType "directory" -Force
