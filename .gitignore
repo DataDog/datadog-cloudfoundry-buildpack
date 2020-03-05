@@ -4,6 +4,10 @@
 lib/dogstatsd
 lib/puppy
 lib/trace-agent
+lib/dotnet-tracer.deb
+lib/dotnet-tracer.msi
+# This is covered by the above *.zip but this is explicit
+lib/agent-binaries.zip
 venv
 tmp
 .DS_Store

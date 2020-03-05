@@ -18,6 +18,17 @@ start_datadog() {
     export LOGS_CONFIG_DIR=$DATADOG_DIR/dist/conf.d/logs.d
     export LOGS_CONFIG
 
+    # Setup .NET Tracing configuration if DD_DOTNET_TRACING is set to true
+    if [ "$DD_DOTNET_TRACING" = "true" ]; then
+      export DD_TRACE_ENABLED=true
+      export CORECLR_ENABLE_PROFILING=1
+      export CORECLR_PROFILER="{846F5F1C-F9AE-4B07-969E-05C26BC060D8}"
+      export CORECLR_PROFILER_PATH=$DATADOG_DIR/dotnet/opt/datadog/Datadog.Trace.ClrProfiler.Native.so
+      export DD_INTEGRATIONS=$DATADOG_DIR/dotnet/opt/datadog/integrations.json
+      export DD_DOTNET_TRACER_HOME=$DATADOG_DIR/dotnet/opt/datadog/
+      export DD_TRACE_LOG_PATH=$DATADOG_DIR/dotnet/dotnet.log
+    fi
+
     # create and configure set /conf.d if integrations are enabled
     if [ "$DD_ENABLE_CHECKS" = "true" ] || [ -n "$LOGS_CONFIG" ] ; then
       mkdir $DATADOG_DIR/dist/conf.d

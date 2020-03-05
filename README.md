@@ -87,7 +87,9 @@ All the options supported by the Agent in the main configuration file (`lib/dist
 
 #### .NET Traces
 
-The buildpack also includes the [.NET Tracer](https://docs.datadoghq.com/tracing/setup/dotnet/?tab=netframeworkonwindows) for the .NET Framework on windows cells. To start instrumenting your app:
+The buildpack also includes the [.NET Tracer](https://docs.datadoghq.com/tracing/setup/dotnet-core/??tab=windows#installation) for .NET on windows and linux cells. For linux, the debian .NET tracer is bundled when `DD_DOTNET_TRACING: true` is set.
+
+To start instrumenting your app:
 
 1. Register the directory containing the DLLs in your app.
 To do so, add the path `C:\Users\vcap\app\datadog\dotNetTracer` in the [`probing`](https://docs.microsoft.com/en-us/dotnet/framework/configure-apps/file-schema/runtime/probing-element) element in your `web.config` file.
@@ -101,9 +103,25 @@ To do so, add the path `C:\Users\vcap\app\datadog\dotNetTracer` in the [`probing
 </runtime>
 ```
 
+2. Setup the appropriate environment variables for your application depending on the OS the app will run on.
+
 Alternatively, you can install the [Datadog.Trace.ClrProfiler.Managed Nuget package](https://www.nuget.org/packages/Datadog.Trace.ClrProfiler.Managed) in your app before pushing it to CloudFoundry.
 
-2. Set the following environment variables in your application:
+### Linux (.NET Core Apps)
+
+Set the following environment variables in your application:
+```
+# Set your API key to send traces to Datadog
+cf set-env $YOUR_APP_NAME DD_API_KEY $YOUR_DATADOG_API_KEY
+# Setting this environment variable will bundle the .NET Tracing dependencies and enable the
+cf set-env $YOUR_APP_NAME DD_DOTNET_TRACING true
+# environment variables needed to automatically instrument your .NET Application
+cf restage $YOUR_APP_NAME
+```
+
+### Windows (.NET Framework Apps)
+
+Set the following environment variables in your application:
 ```
 # Set your API key to send traces to Datadog
 cf set-env $YOUR_APP_NAME DD_API_KEY $YOUR_DATADOG_API_KEY

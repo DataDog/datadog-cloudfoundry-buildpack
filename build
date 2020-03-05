@@ -9,15 +9,15 @@ TRACEAGENT_DOWNLOAD_URL_HEAD="https://s3.amazonaws.com/apt.datadoghq.com/pool/d/
 TRACEAGENT_DOWNLOAD_URL_TAIL="-1_amd64.deb"
 
 AGENT_DEFAULT_VERSION="7.17.0"
-DOTNET_TRACER_DEFAULT_VERSION="1.6.0"
+DOTNET_TRACER_DEFAULT_VERSION="1.13.2"
 
 AGENT_VERSION=${AGENT_VERSION:-$AGENT_DEFAULT_VERSION}
 DOTNET_TRACER_VERSION=${DOTNET_TRACER_VERSION:-$DOTNET_TRACER_DEFAULT_VERSION}
 AGENT_DEB_DOWNLOAD_URL="https://s3.amazonaws.com/apt.datadoghq.com/pool/d/da/datadog-agent_${AGENT_VERSION}-1_amd64.deb"
 # [TODO] Update this to the zip location and uncomment the commented lines in this script
 # AGENT_BINARIES_DOWNLOAD_URL="https://s3.amazonaws.com/ddagent-windows-stable/ddagent-cli-${AGENT_VERSION}.msi"
-AGENT_DOTNET_TRACER_DOWNLOAD_URL="https://github.com/DataDog/dd-trace-dotnet/releases/download/v${DOTNET_TRACER_VERSION}/datadog-dotnet-apm-${DOTNET_TRACER_VERSION}-x64.msi"
-
+AGENT_DOTNET_TRACER_WIN_DOWNLOAD_URL="https://github.com/DataDog/dd-trace-dotnet/releases/download/v${DOTNET_TRACER_VERSION}/datadog-dotnet-apm-${DOTNET_TRACER_VERSION}-x64.msi"
+AGENT_DOTNET_TRACER_DEB_DOWNLOAD_URL="https://github.com/DataDog/dd-trace-dotnet/releases/download/v${DOTNET_TRACER_VERSION}/datadog-dotnet-apm_${DOTNET_TRACER_VERSION}_amd64.deb"
 
 TMPDIR="$SRCDIR/tmp"
 
@@ -63,6 +63,7 @@ function main() {
     rm -f $SRCDIR/lib/trace-agent
     # rm -f $SRCDIR/lib/agent-binaries.zip
     rm -f $SRCDIR/lib/dotnet-tracer.msi
+    rm -f $SRCDIR/lib/dotnet-tracer.deb
 
     if [ -n "$VERSION" ]; then
       PUPPY_DOWNLOAD_URL="$PUPPY_DOWNLOAD_URL/agent-$VERSION"
@@ -80,8 +81,8 @@ function main() {
 
     # curl $AGENT_BINARIES_DOWNLOAD_URL -o ./lib/agent-binaries.zip
 
-    curl -L $AGENT_DOTNET_TRACER_DOWNLOAD_URL -o ./lib/dotnet-tracer.msi
-
+    curl -L $AGENT_DOTNET_TRACER_WIN_DOWNLOAD_URL -o ./lib/dotnet-tracer.msi
+    curl -L $AGENT_DOTNET_TRACER_DEB_DOWNLOAD_URL -o ./lib/dotnet-tracer.deb
     # Does not support versioning for now, keep it dumb until trace-agent merge with the Agent6
     # curl -L $TRACEAGENT_DOWNLOAD_URL -o ./lib/trace-agent
     download_trace_agent $VERSION

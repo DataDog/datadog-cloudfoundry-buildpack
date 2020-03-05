@@ -38,3 +38,9 @@ chmod +x $BUILD_DIR/datadog/trace-agent
 chmod +x $BUILD_DIR/.profile.d/00-test-endpoint.sh
 chmod +x $BUILD_DIR/.profile.d/01-redirect-logs.sh
 chmod +x $BUILD_DIR/.profile.d/02-run-datadog.sh
+
+# Only add the dotnet tracer if DD_DOTNET_TRACING is enabled
+if [ "$DD_DOTNET_TRACING" == 'true' ]; then
+  mkdir -p $BUILD_DIR/datadog/dotnet
+  dpkg --extract $ROOT_DIR/lib/dotnet-tracer.deb $BUILD_DIR/datadog/dotnet/
+fi
