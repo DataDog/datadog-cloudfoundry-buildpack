@@ -139,6 +139,8 @@ cf restage $YOUR_APP_NAME
 ### DogStatsD Away!
 You're all set up to use DogStatsD. Import the relevant library and start sending data! To learn more, [check our our documentation](https://docs.datadoghq.com/guides/DogStatsD/). Additionally, there is [a list of DogStatsD libraries](https://docs.datadoghq.com/libraries/) you can check out to find one that's compatible with your application.
 
+Note: On Windows .NET applications you can add the Dogstatsd-CSharp client to your project's dependencies to submit custom metrics from your application. This requires publishing the application (to include the dogstatsd client dependency) and passing the published folder in your app manifest.
+
 ## Docker
 
 If you're running docker on Cloud Foundry, you can look at [the docker directory](docker/) to see how to adapt this buildpack to use in a dockerfile
