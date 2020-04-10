@@ -14,8 +14,17 @@ echo "$tags_out" | Out-File "$DATADOG_DIR\AppData\datadog.yaml" -Append -Encodin
 # Update the path to the check configuration files
 echo "confd_path: $DATADOG_DIR\AppData\datadog-agent\conf.d" | Out-File "$DATADOG_DIR\AppData\datadog.yaml" -Append -Encoding "UTF8"
 
+# Remove the core checks that aren't available as Go checks
+# Currently: network, load, disk. These are only available as python checks
+# and can't be run via the puppy
+Remove-Item -Path "$DATADOG_DIR\AppData\datadog-agent\conf.d\disk.d" -Recurse
+Remove-Item -Path "$DATADOG_DIR\AppData\datadog-agent\conf.d\load.d" -Recurse
+Remove-Item -Path "$DATADOG_DIR\AppData\datadog-agent\conf.d\network.d" -Recurse
+
 # Remove the core checks if DD_ENABLE_CHECKS is false
-If ("$DD_ENABLE_CHECKS" -ne $true) {
+# This needs to happen before we setup the logs config file
+If ("$Env:DD_ENABLE_CHECKS" -ne $true  -and "$Env:DD_ENABLE_CHECKS" -ne "true" ) {
+    echo "Removing Checks config based on DD_ENABLED_CHECKS being set to: $Env:DD_ENABLED_CHECKS"
     Remove-Item -Path "$DATADOG_DIR\AppData\datadog-agent\conf.d\*" -Recurse
 }
 

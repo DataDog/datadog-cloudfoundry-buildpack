@@ -103,7 +103,21 @@ To do so, add the path `C:\Users\vcap\app\datadog\dotNetTracer` in the [`probing
 </runtime>
 ```
 
-2. Setup the appropriate environment variables for your application depending on the OS the app will run on.
+2. Setup the appropriate environment variables for your application depending on the OS the app will run on. These can be set directly in the `run.cmd` file.
+
+**example**:
+```
+# Setup the Tracing Environment Variables
+SET COR_ENABLE_PROFILING=1
+SET COR_PROFILER={846F5F1C-F9AE-4B07-969E-05C26BC060D8}
+SET COR_PROFILER_PATH_64=C:\Users\vcap\app\datadog\dotNetTracer\x64\Datadog.Trace.ClrProfiler.Native.dll
+SET COR_PROFILER_PATH_32=C:\Users\vcap\app\datadog\dotNetTracer\x86\Datadog.Trace.ClrProfiler.Native.dll
+SET DD_INTEGRATIONS=\Users\vcap\app\datadog\dotNetTracer\integrations.json
+SET DD_DOTNET_TRACER_HOME=\Users\vcap\app\datadog\dotNetTracer
+SET DD_TRACE_LOG_PATH=\Users\vcap\app\datadog\dotNetTracer\dotnet-profiler.log
+# Redirect logs to the Datadog Agent
+.cloudfoundry\hwc.exe | powershell C:\Users\vcap\app\datadog\scripts\redirect_logs.ps1 2>&1
+```
 
 Alternatively, you can install the [Datadog.Trace.ClrProfiler.Managed Nuget package](https://www.nuget.org/packages/Datadog.Trace.ClrProfiler.Managed) in your app before pushing it to CloudFoundry.
 
@@ -116,23 +130,6 @@ cf set-env $YOUR_APP_NAME DD_API_KEY $YOUR_DATADOG_API_KEY
 # Setting this environment variable will bundle the .NET Tracing dependencies and enable the
 cf set-env $YOUR_APP_NAME DD_DOTNET_TRACING true
 # environment variables needed to automatically instrument your .NET Application
-cf restage $YOUR_APP_NAME
-```
-
-### Windows (.NET Framework Apps)
-
-Set the following environment variables in your application:
-```
-# Set your API key to send traces to Datadog
-cf set-env $YOUR_APP_NAME DD_API_KEY $YOUR_DATADOG_API_KEY
-# Setup the dotnet datadog tracer
-cf set-env $YOUR_APP_NAME COR_ENABLE_PROFILING 1
-cf set-env $YOUR_APP_NAME COR_PROFILER {846F5F1C-F9AE-4B07-969E-05C26BC060D8}
-cf set-env $YOUR_APP_NAME COR_PROFILER_PATH C:\Users\vcap\app\datadog\dotNetTracer\Datadog.Trace.ClrProfiler.Native.dll
-cf set-env $YOUR_APP_NAME DD_TRACE_LOG_PATH "\Users\vcap\app\datadog\dotNetTracer\tracer.log"
-cf set-env $YOUR_APP_NAME DD_INTEGRATIONS "\Users\vcap\app\datadog\dotNetTracer\integrations.json"
-cf set-env $YOUR_APP_NAME DD_TRACE_ENABLED true
-# Restage your app to take these changes
 cf restage $YOUR_APP_NAME
 ```
 

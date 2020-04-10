@@ -15,9 +15,7 @@ Expand-Archive -LiteralPath $ROOT_DIR\lib\agent-binaries.zip -DestinationPath $B
 Get-ChildItem -Path "$BUILD_DIR\datadog\etc" -Recurse | Move-Item -Destination "$BUILD_DIR\datadog\AppData"
 
 # Extract .NET tracer
-Start-Process "MSIEXEC" -ArgumentList "/a $ROOT_DIR\lib\dotnet-tracer.msi /qn TARGETDIR=$BUILD_DIR\datadog\extracted-dotnet-tracer" -Wait -NoNewWindow
-Move-Item -Path "$BUILD_DIR\datadog\extracted-dotnet-tracer\Datadog\.NET Tracer" -Destination "$BUILD_DIR\datadog\dotNetTracer"
-Remove-Item -Force -Recurse -Path "$BUILD_DIR\datadog\extracted-dotnet-tracer"
+Expand-Archive -LiteralPath "$ROOT_DIR\lib\dotnet-tracer.zip" -DestinationPath "$BUILD_DIR\datadog\dotNetTracer"
 
 Copy-Item -Path "$ROOT_DIR\lib\scripts\windows\get_tags.ps1" -Destination "$BUILD_DIR\datadog\scripts\get_tags.ps1"
 Copy-Item -Path "$ROOT_DIR\lib\scripts\windows\redirect_logs.ps1" -Destination "$BUILD_DIR\datadog\scripts\redirect_logs.ps1"
