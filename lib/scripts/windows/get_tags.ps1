@@ -1,3 +1,5 @@
+# This script retrieves some expected tags from various CF provided environment variables
+# as well as some custom tags provided by the user.
 $vcapApp = $env:VCAP_APPLICATION
 $vcapApp = $vcapApp | ConvertFrom-JSON
 
@@ -7,6 +9,7 @@ $vcap_variables = "application_id", "name", "instance_index", "space_name"
 $tags = @()
 
 # Documentation for the VCAP_APPLICATION env var - https://docs.run.pivotal.io/devguide/deploy-apps/environment-variable.html#VCAP-APPLICATION
+# Pull out expected key/values to use as tags.
 foreach ($element in $vcap_variables) {
     $vcap_var = $vcapApp.$element
     If ($vcap_var -ne $null) {
