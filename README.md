@@ -58,10 +58,10 @@ The following parameters can be used to configure log collection:
 - `STD_LOG_COLLECTION_PORT`: Must be used when collecting logs from `stdout`/`stderr`. It redirects the `stdout`/`stderr` stream to the corresponding local port value.
 - `LOGS_CONFIG`: Use this option to configure the agent to listen to a local TCP port and set the value for the `service` and `source` parameters.
 
-**Additional steps for windows**
+**Additional steps for Windows**
 
-To get logs from your .NET Framework applications running on windows cells, follow these additional steps:
-1. Create a `Procfile` (see https://docs.cloudfoundry.org/buildpacks/prod-server.html#procfile) at the root of your app containing the following line:
+To get logs from your .NET Framework applications running on Windows cells, follow these additional steps:
+1. Create a `Procfile` (see the [About Procfiles CloudFoundry documentation](https://docs.cloudfoundry.org/buildpacks/prod-server.html#procfile)) at the root of your application containing the following line:
     ```
     web: run.cmd
     ```
@@ -69,7 +69,7 @@ To get logs from your .NET Framework applications running on windows cells, foll
     ```batch
     .cloudfoundry\hwc.exe 2>&1 | powershell C:\Users\vcap\app\datadog\scripts\redirect_logs.ps1
     ```
-    This command starts the usual `hwc` buildpack, and redirects its output to a script that forwards it to the agent, so that your app logs appear in Datadog.
+    This command starts the usual `hwc` buildpack, and redirects its output to a script that forwards it to the Agent, so that your application logs appear in Datadog.
 
 **Example**:
 
@@ -87,14 +87,14 @@ All the options supported by the Agent in the main configuration file (`lib/dist
 
 #### .NET Traces
 
-The buildpack also includes the [.NET Tracer](https://docs.datadoghq.com/tracing/setup/dotnet-core/??tab=windows#installation) for .NET on windows and linux cells. For linux, the debian .NET tracer is bundled when `DD_DOTNET_TRACING: true` is set.
+The buildpack also includes the [.NET Tracer](https://docs.datadoghq.com/tracing/setup/dotnet-core/?tab=windows#installation) for .NET on Windows and linux cells. For linux, the Debian .NET tracer is bundled when `DD_DOTNET_TRACING: true` is set.
 
-To start instrumenting your app:
+To start instrumenting your application:
 
-1. Register the directory containing the DLLs in your app.
-To do so, add the path `C:\Users\vcap\app\datadog\dotNetTracer` in the [`probing`](https://docs.microsoft.com/en-us/dotnet/framework/configure-apps/file-schema/runtime/probing-element) element in your `web.config` file.
+1. Register the directory containing the DLLs in your application by adding the path `C:\Users\vcap\app\datadog\dotNetTracer` in the [`probing`](https://docs.microsoft.com/en-us/dotnet/framework/configure-apps/file-schema/runtime/probing-element) element in your `web.config` file.
 
 **example**:
+
 ```xml
 <runtime>
     <assemblyBinding xmlns="urn:schemas-microsoft-com:asm.v1">
@@ -103,9 +103,10 @@ To do so, add the path `C:\Users\vcap\app\datadog\dotNetTracer` in the [`probing
 </runtime>
 ```
 
-2. Setup the appropriate environment variables for your application depending on the OS the app will run on. These can be set directly in the `run.cmd` file.
+2. In the `run.cmd` file, setup the appropriate environment variables for your application depending on the OS the application is running on.
 
 **example**:
+
 ```
 # Setup the Tracing Environment Variables
 SET COR_ENABLE_PROFILING=1
@@ -119,7 +120,7 @@ SET DD_TRACE_LOG_PATH=\Users\vcap\app\datadog\dotNetTracer\dotnet-profiler.log
 .cloudfoundry\hwc.exe | powershell C:\Users\vcap\app\datadog\scripts\redirect_logs.ps1 2>&1
 ```
 
-Alternatively, you can install the [Datadog.Trace.ClrProfiler.Managed Nuget package](https://www.nuget.org/packages/Datadog.Trace.ClrProfiler.Managed) in your app before pushing it to CloudFoundry.
+Alternatively, you can install the [Datadog.Trace.ClrProfiler.Managed Nuget package](https://www.nuget.org/packages/Datadog.Trace.ClrProfiler.Managed) in your application before pushing it to CloudFoundry.
 
 ### Linux (.NET Core Apps)
 
@@ -134,9 +135,10 @@ cf restage $YOUR_APP_NAME
 ```
 
 ### DogStatsD Away!
-You're all set up to use DogStatsD. Import the relevant library and start sending data! To learn more, [check our our documentation](https://docs.datadoghq.com/guides/DogStatsD/). Additionally, there is [a list of DogStatsD libraries](https://docs.datadoghq.com/libraries/) you can check out to find one that's compatible with your application.
 
-Note: On Windows .NET applications you can add the Dogstatsd-CSharp client to your project's dependencies to submit custom metrics from your application. This requires publishing the application (to include the dogstatsd client dependency) and passing the published folder in your app manifest.
+You're all set up to use DogStatsD. Import the relevant library and start sending data! To learn more, [check the Datadog DogStastD documentation](https://docs.datadoghq.com/guides/DogStatsD/). Additionally, there is [a list of DogStatsD libraries](https://docs.datadoghq.com/libraries/) you can check out to find one that's compatible with your application.
+
+**Note**: On Windows .NET applications you can add the [Dogstatsd-CSharp client](https://github.com/DataDog/dogstatsd-csharp-client) to your project's dependencies to submit custom metrics from your application. This requires publishing the application (to include the DogStatsD client dependency) and passing the published folder in your application manifest.
 
 ## Docker
 
