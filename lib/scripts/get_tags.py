@@ -17,7 +17,7 @@ tags = []
 
 for vcap_var_name in vcap_variables:
     vcap_var = vcap_application.get(vcap_var_name)
-    if vcap_var:
+    if vcap_var is not None:
         key = vcap_var_name
         if vcap_var_name == 'name':
             key = 'application_name'
