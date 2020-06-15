@@ -8,15 +8,15 @@ BUILD_DIR=$1
 CACHE_DIR=$2
 ENV_DIR=$3
 
-echo "Installing Datadog Puppy Agent, Dogstatsd and Trace Agent"
+echo "Installing Datadog IOT Agent, Dogstatsd and Trace Agent"
 
 mkdir -p $BUILD_DIR/datadog/scripts
 mkdir -p $BUILD_DIR/.profile.d
 
 cp -r $ROOT_DIR/lib/dist $BUILD_DIR/datadog/
 cp -r $ROOT_DIR/lib/conf.d $BUILD_DIR/datadog/
-if [ -f $ROOT_DIR/lib/puppy ]; then
-  cp $ROOT_DIR/lib/puppy $BUILD_DIR/datadog/puppy
+if [ -f $ROOT_DIR/lib/agent ]; then
+  cp $ROOT_DIR/lib/agent $BUILD_DIR/datadog/agent
 fi
 if [ -f $ROOT_DIR/lib/dogstatsd ]; then
   cp $ROOT_DIR/lib/dogstatsd $BUILD_DIR/datadog/dogstatsd
@@ -28,8 +28,8 @@ cp -r $ROOT_DIR/lib/test-endpoint.sh $BUILD_DIR/.profile.d/00-test-endpoint.sh #
 cp $ROOT_DIR/lib/redirect-logs.sh $BUILD_DIR/.profile.d/01-redirect-logs.sh
 cp $ROOT_DIR/lib/run-datadog.sh $BUILD_DIR/.profile.d/02-run-datadog.sh
 
-if [ -f $BUILD_DIR/datadog/puppy ]; then
-  chmod +x $BUILD_DIR/datadog/puppy
+if [ -f $BUILD_DIR/datadog/agent ]; then
+  chmod +x $BUILD_DIR/datadog/agent
 fi
 if [ -f $BUILD_DIR/datadog/dogstatsd ]; then
   chmod +x $BUILD_DIR/datadog/dogstatsd
