@@ -3,11 +3,11 @@
 SRCDIR=$(cd "$(dirname $0)/." && pwd)
 NAME="datadog-cloudfoundry-buildpack"
 ZIPFILE="$NAME.zip"
-PUPPY_DOWNLOAD_URL="https://s3.amazonaws.com/dd-agent/agent7/puppy/linux"
+IOT_AGENT_DOWNLOAD_URL="https://s3.amazonaws.com/dd-agent/agent7/iot/linux"
 DOGSTATSD_DOWNLOAD_URL="https://s3.amazonaws.com/dd-agent/dsd7/dogstatsd/linux"
 TRACEAGENT_DOWNLOAD_URL_HEAD="https://s3.amazonaws.com/apt.datadoghq.com/pool/d/da/datadog-agent_"
 TRACEAGENT_DOWNLOAD_URL_TAIL="-1_amd64.deb"
-TRACE_DEFAULT_VERSION="7.19.1"
+TRACE_DEFAULT_VERSION="7.20.1"
 
 TMPDIR="$SRCDIR/tmp"
 
@@ -40,7 +40,7 @@ function main() {
   if [ ! -f $SRCDIR/lib/dogstatsd ] || [ ! -f $SRCDIR/lib/trace-agent ]; then
     DOWNLOAD="true"
   fi
-  if [ -n "$PUPPY" ] && [ ! -f $SRCDIR/lib/puppy ]; then
+  if [ -n "$IOT_AGENT" ] && [ ! -f $SRCDIR/lib/agent ]; then
     DOWNLOAD="true"
   fi
   if [ -n "$REFRESH_ASSETS" ]; then
@@ -48,20 +48,20 @@ function main() {
   fi
   if [ -n "$DOWNLOAD" ]; then
     # Delete the old ones
-    rm -f $SRCDIR/lib/puppy
+    rm -f $SRCDIR/lib/agent
     rm -f $SRCDIR/lib/dogstatsd
     rm -f $SRCDIR/lib/trace-agent
 
     if [ -n "$VERSION" ]; then
-      PUPPY_DOWNLOAD_URL="$PUPPY_DOWNLOAD_URL/agent-$VERSION"
+      IOT_AGENT_DOWNLOAD_URL="$IOT_AGENT_DOWNLOAD_URL/agent-$VERSION"
       DOGSTATSD_DOWNLOAD_URL="$DOGSTATSD_DOWNLOAD_URL/dogstatsd-$VERSION"
     else
-      PUPPY_DOWNLOAD_URL="$PUPPY_DOWNLOAD_URL/agent-latest"
+      IOT_AGENT_DOWNLOAD_URL="$IOT_AGENT_DOWNLOAD_URL/agent-latest"
       DOGSTATSD_DOWNLOAD_URL="$DOGSTATSD_DOWNLOAD_URL/dogstatsd-latest"
     fi
 
-    curl $PUPPY_DOWNLOAD_URL -o $SRCDIR/lib/puppy
-    chmod +x $SRCDIR/lib/puppy
+    curl $IOT_AGENT_DOWNLOAD_URL -o $SRCDIR/lib/agent
+    chmod +x $SRCDIR/lib/agent
 
     curl $DOGSTATSD_DOWNLOAD_URL -o ./lib/dogstatsd
     chmod +x $SRCDIR/lib/dogstatsd
