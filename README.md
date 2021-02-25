@@ -21,11 +21,11 @@ Download the latest Datadog [buildpack release](https://cloudfoundry.datadoghq.c
     ```
 Once it is available in your Cloud Foundry environment, configure your application to use the Datadog buildpack by specifying it in your application manifest.
 
-**Note:** since this is a supply buildpack, it has to be specified before any final buildpack in the list. See [here](https://docs.cloudfoundry.org/buildpacks/use-multiple-buildpacks.html) for details about pushing an application with multiple buildpacks.
+**Note**: Since this is a supply buildpack, it has to be specified before any final buildpack in the list. See [Cloud Foundry documentation](https://docs.cloudfoundry.org/buildpacks/use-multiple-buildpacks.html) for details about pushing an application with multiple buildpacks.
 
 ### Configuration
 
-#### Metric Collection
+#### Metric collection
 
 Set an API Key in your environment to enable the Datadog Agents in the buildpack. The following code samples specify the `env` section of the application manifest.
 
@@ -34,11 +34,11 @@ env:
   DD_API_KEY: <DATADOG_API_KEY>
 ```
 
-#### Log Collection
+#### Log collection
 
 **Enable log collection**
 
-To start collecting logs from your application in CloudFoundry, the Agent contained in the buildpack needs to be activated and log collection enabled.
+To collect logs from your application in CloudFoundry, the Agent contained in the buildpack needs to be activated with log collection enabled.
 
 ```yaml
 env: 
@@ -58,7 +58,7 @@ env:
 The following environment variables are used to configure log collection.
 
 - `STD_LOG_COLLECTION_PORT`: Must be used when collecting logs from `stdout`/`stderr`. It redirects the `stdout`/`stderr` stream to the corresponding local port value.
-- `LOGS_CONFIG`: Use this option to configure the agent to listen to a local TCP port and set the value for the `service` and `source` parameters. The port specified in the configuration must be the same as specified in the environment variable `STD_LOG_COLLECTION_PORT`.
+- `LOGS_CONFIG`: Use this option to configure the Agent to listen to a local TCP port and set the value for the `service` and `source` parameters. The port specified in the configuration must be the same as specified in the environment variable `STD_LOG_COLLECTION_PORT`.
 
 **Example**
 
@@ -78,9 +78,9 @@ env:
 All the options supported by the Agent in the main `datadog.yaml` configuration file can also be set through environment variables as described in the [documentation of the Agent](https://github.com/DataDog/datadog-agent/blob/master/docs/agent/config.md#environment-variables).
 
 ### Instrument your application
-You are all set up to instrument your application and start sending custom metrics and APM traces through DogStatsD and the Datadog Trace Agent.
-Download and import [the relevant libraries](https://docs.datadoghq.com/libraries/) and start sending data! To learn more, check out our [DogSatsD documentation](https://docs.datadoghq.com/guides/DogStatsD/) and [APM documentation](https://docs.datadoghq.com/tracing/setup_overview/).
+Instrument your application to send custom metrics and APM traces through DogStatsD and the Datadog Trace Agent.
+Download and import the [relevant libraries](https://docs.datadoghq.com/libraries/) to send data. To learn more, check out the [DogSatsD documentation](https://docs.datadoghq.com/guides/DogStatsD/) and [APM documentation](https://docs.datadoghq.com/tracing/setup_overview/).
 
 ## Docker
 
-If you're running docker on Cloud Foundry, you can look at [the docker directory](docker/) to see how to adapt this buildpack to use in a dockerfile.
+If you're running Docker on Cloud Foundry, review the [`docker` directory](docker/) to adapt this buildpack to use in a `dockerfile`.
