@@ -1,6 +1,6 @@
 # Datadog Cloud Foundry Buildpack
 
-This is a [supply buildpack](https://docs.cloudfoundry.org/buildpacks/understand-buildpacks.html#supply-script) for Cloud Foundry. It installs the following three binaries in the container your application is running on:
+This is a [supply buildpack][1] for Cloud Foundry. It installs the following three binaries in the container your application is running on:
 * Datadog Dogstatsd for submitting custom metrics from your application
 * Datadog Trace Agent for submitting APM traces from your application
 * Datadog IoT Agent for submitting your application logs
@@ -9,7 +9,7 @@ This is a [supply buildpack](https://docs.cloudfoundry.org/buildpacks/understand
 
 ### Upload the buildpack to CF
 
-Download the latest Datadog [buildpack release](https://cloudfoundry.datadoghq.com/datadog-cloudfoundry-buildpack/datadog-cloudfoundry-buildpack-latest.zip) or [build it](/DEVELOPMENT.md#building) and upload it to your Cloud Foundry environment.
+Download the latest Datadog [buildpack release][2] or [build it][3] and upload it to your Cloud Foundry environment.
 
 - Upload buildpack for the first time
     ```bash
@@ -21,7 +21,7 @@ Download the latest Datadog [buildpack release](https://cloudfoundry.datadoghq.c
     ```
 Once it is available in your Cloud Foundry environment, configure your application to use the Datadog buildpack by specifying it in your application manifest.
 
-**Note**: Since this is a supply buildpack, it has to be specified before any final buildpack in the list. See [Cloud Foundry documentation](https://docs.cloudfoundry.org/buildpacks/use-multiple-buildpacks.html) for details about pushing an application with multiple buildpacks.
+**Note**: Since this is a supply buildpack, it has to be specified before any final buildpack in the list. See [Cloud Foundry documentation][4] for details about pushing an application with multiple buildpacks.
 
 ### Configuration
 
@@ -75,12 +75,23 @@ env:
 ```
 
 #### General configuration of the Datadog Agent
-All the options supported by the Agent in the main `datadog.yaml` configuration file can also be set through environment variables as described in the [documentation of the Agent](https://github.com/DataDog/datadog-agent/blob/master/docs/agent/config.md#environment-variables).
+All the options supported by the Agent in the main `datadog.yaml` configuration file can also be set through environment variables as described in the [documentation of the Agent][5].
 
 ### Instrument your application
 Instrument your application to send custom metrics and APM traces through DogStatsD and the Datadog Trace Agent.
-Download and import the [relevant libraries](https://docs.datadoghq.com/libraries/) to send data. To learn more, check out the [DogSatsD documentation](https://docs.datadoghq.com/guides/DogStatsD/) and [APM documentation](https://docs.datadoghq.com/tracing/setup_overview/).
+Download and import the [relevant libraries][6] to send data. To learn more, check out the [DogSatsD documentation][7] and [APM documentation][8].
 
 ## Docker
 
-If you're running Docker on Cloud Foundry, review the [`docker` directory](docker/) to adapt this buildpack to use in a `dockerfile`.
+If you're running Docker on Cloud Foundry, review the [`docker` directory][9] to adapt this buildpack to use in a `dockerfile`.
+
+
+[1]: https://docs.cloudfoundry.org/buildpacks/understand-buildpacks.html#supply-script
+[2]: https://cloudfoundry.datadoghq.com/datadog-cloudfoundry-buildpack/datadog-cloudfoundry-buildpack-latest.zip
+[3]: /DEVELOPMENT.md#building
+[4]: https://docs.cloudfoundry.org/buildpacks/use-multiple-buildpacks.html
+[5]: https://github.com/DataDog/datadog-agent/blob/master/docs/agent/config.md#environment-variables
+[6]: https://docs.datadoghq.com/libraries/
+[7]: https://docs.datadoghq.com/guides/DogStatsD/
+[8]: https://docs.datadoghq.com/tracing/setup_overview/
+[9]: docker/
