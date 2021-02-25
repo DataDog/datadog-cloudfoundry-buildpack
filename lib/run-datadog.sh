@@ -75,6 +75,9 @@ start_datadog() {
       sed -i "s~# cmd_port: 5001~cmd_port: $DD_CMD_PORT~" $DATADOG_DIR/dist/datadog.yaml
     fi
 
+    # Create folder for storing PID files
+    mkdir run
+
     # DSD requires its own config file
     cp $DATADOG_DIR/dist/datadog.yaml $DATADOG_DIR/dist/dogstatsd.yaml
     if [ -n "$RUN_AGENT" -a -f ./agent ]; then
@@ -83,15 +86,26 @@ start_datadog() {
       else
         export DD_LOG_FILE=$DATADOG_DIR/agent.log
         sed -i "s~log_file: AGENT_LOG_FILE~log_file: $DD_LOG_FILE~" $DATADOG_DIR/dist/datadog.yaml
-        ./agent run --cfgpath $DATADOG_DIR/dist/ &
+        ./agent run --cfgpath $DATADOG_DIR/dist/ --pidfile $DATADOG_DIR/run/agent.pid &
       fi
     else
       export DD_LOG_FILE=$DATADOG_DIR/dogstatsd.log
       sed -i "s~log_file: AGENT_LOG_FILE~log_file: $DD_LOG_FILE~" $DATADOG_DIR/dist/datadog.yaml
       ./dogstatsd start --cfgpath $DATADOG_DIR/dist/ &
+      echo $! > run/dogstatsd.pid
     fi
-    ./trace-agent --config $DATADOG_DIR/dist/datadog.yaml &
+    ./trace-agent --config $DATADOG_DIR/dist/datadog.yaml --pid $DATADOG_DIR/run/trace-agent.pid &
   popd
+}
+
+stop_datadog() {
+  while kill -0 $$; do
+    sleep 1
+  done
+  echo "main process exited, stopping agent"
+  for pidfile in "$DATADOG_DIR/run/*"; do
+    kill $(cat $pidfile)
+  done
 }
 
 if [ -z $DD_API_KEY ]; then
@@ -99,4 +113,5 @@ if [ -z $DD_API_KEY ]; then
 else
   echo "starting datadog"
   start_datadog
+  stop_datadog &
 fi
