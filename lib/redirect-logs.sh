@@ -19,7 +19,7 @@ fi
 
 # redirect forwards all standard inputs to a TCP socket listening on port STD_LOG_COLLECTION_PORT.
 redirect() {
-  while true; do
+  while kill -0 $$; do
     nc localhost $STD_LOG_COLLECTION_PORT || sleep 0.5
     echo "Resetting buildpack log redirection"
     if [ "$DD_DEBUG_STD_REDIRECTION" = "true" ]; then
