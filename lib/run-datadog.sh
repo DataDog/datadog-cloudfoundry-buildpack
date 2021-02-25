@@ -86,8 +86,7 @@ start_datadog() {
       else
         export DD_LOG_FILE=$DATADOG_DIR/agent.log
         sed -i "s~log_file: AGENT_LOG_FILE~log_file: $DD_LOG_FILE~" $DATADOG_DIR/dist/datadog.yaml
-        ./agent run --cfgpath $DATADOG_DIR/dist/ &
-        echo $! > run/agent.pid
+        ./agent run --cfgpath $DATADOG_DIR/dist/ --pidfile $DATADOG_DIR/run/agent.pid &
       fi
     else
       export DD_LOG_FILE=$DATADOG_DIR/dogstatsd.log
@@ -95,8 +94,7 @@ start_datadog() {
       ./dogstatsd start --cfgpath $DATADOG_DIR/dist/ &
       echo $! > run/dogstatsd.pid
     fi
-    ./trace-agent --config $DATADOG_DIR/dist/datadog.yaml &
-    echo $! > run/trace-agent.pid
+    ./trace-agent --config $DATADOG_DIR/dist/datadog.yaml --pid $DATADOG_DIR/run/trace-agent.pid &
   popd
 }
 
