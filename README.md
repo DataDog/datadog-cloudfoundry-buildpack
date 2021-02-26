@@ -1,80 +1,97 @@
 # Datadog Cloud Foundry Buildpack
 
-This is a [decorator buildpack](https://github.com/cf-platform-eng/meta-buildpack/blob/master/README.md#decorators) for Cloud Foundry. It will install a Datadog DogStatsD binary in the container your app is running on. This only contains the DogStatsd components of Datadog Agent, which has limited overhead.
+This is a [supply buildpack][1] for Cloud Foundry. It installs the following three binaries in the container your application is running on:
+* Datadog Dogstatsd for submitting custom metrics from your application
+* Datadog Trace Agent for submitting APM traces from your application
+* Datadog IoT Agent for submitting your application logs
 
-## Use
-
-### Install the [Meta Buildpack](https://github.com/cf-platform-eng/meta-buildpack#how-to-install-the-meta-buildpack)
-First, you will have to [install the Meta Buildpack](https://github.com/cf-platform-eng/meta-buildpack#how-to-install-the-meta-buildpack). This enables apps to use decorator buildpacks. Follow the instructions to get the buildpack and upload it if you don't already have it.
+## Installation
 
 ### Upload the buildpack to CF
-- Download the latest Datadog [build pack release](https://cloudfoundry.datadoghq.com/datadog-cloudfoundry-buildpack/datadog-cloudfoundry-buildpack-latest.zip) or [build it](/DEVELOPMENT.md#building). After you have the zipfile, you will have to upload it to Cloud Foundry environment.
 
-- Create the buildpack in CF if it does not exist
+Download the latest Datadog [buildpack release][2] or [build it][3] and upload it to your Cloud Foundry environment.
+
+- Upload buildpack for the first time
     ```bash
     cf create-buildpack datadog-cloudfoundry-buildpack datadog-cloudfoundry-buildpack.zip 99 --enable
     ```
-    or update it if it already exists
+- Update existing buildpack
     ```bash
     cf update-buildpack datadog-cloudfoundry-buildpack -p datadog-cloudfoundry-buildpack.zip
     ```
+Once it is available in your Cloud Foundry environment, configure your application to use the Datadog buildpack by specifying it in your application manifest.
+
+**Note**: Since this is a supply buildpack, it has to be specified before any final buildpack in the list. See [Cloud Foundry documentation][4] for details about pushing an application with multiple buildpacks.
 
 ### Configuration
 
-#### Metric Collection
+#### Metric collection
 
-**Set an API Key in your environment to enable the buildpack**:
+Set an API Key in your environment to enable the Datadog Agents in the buildpack. The following code samples specify the `env` section of the application manifest.
 
-```shell
-# set the environment variable
-cf set-env $YOUR_APP_NAME DD_API_KEY $YOUR_DATADOG_API_KEY
-# restage the application to get it to pick up the new environment variable and use the buildpack
-cf restage $YOUR_APP_NAME
+```yaml
+env: 
+  DD_API_KEY: <DATADOG_API_KEY>
 ```
 
-#### Log Collection
+#### Log collection
 
-**Enable log collection**:
+**Enable log collection**
 
-To start collecting logs from your application in CloudFoundry, the Agent contained in the buildpack needs to be activated and log collection enabled.
+To collect logs from your application in CloudFoundry, the Agent contained in the buildpack needs to be activated with log collection enabled.
 
+```yaml
+env: 
+  DD_API_KEY: <DATADOG_API_KEY>
+  RUN_AGENT: true
+  DD_LOGS_ENABLED: true
+  # Disable the Agent core checks to disable system metrics collection
+  DD_ENABLE_CHECKS false
+  # Redirect Container Stdout/Stderr to a local port so the agent can collect the logs
+  STD_LOG_COLLECTION_PORT: <PORT>
+  # Configure the agent to collect logs from the wanted port and set the value for source and service
+  LOGS_CONFIG: '[{"type":"tcp","port":"<PORT>","source":"<SOURCE>","service":"<SERVICE>"}]'
 ```
-cf set-env $YOUR_APP_NAME RUN_AGENT true
-cf set-env $YOUR_APP_NAME DD_LOGS_ENABLED true
-# Disable the Agent core checks to disable system metrics collection
-cf set-env $YOUR_APP_NAME DD_ENABLE_CHECKS false
-# Redirect Container Stdout/Stderr to a local port so the agent can collect the logs
-cf set-env $YOUR_APP_NAME STD_LOG_COLLECTION_PORT <PORT>
-# Configure the agent to collect logs from the wanted port and set the value for source and service
-cf set-env $YOUR_APP_NAME LOGS_CONFIG '[{"type":"tcp","port":"<PORT>","source":"<SOURCE>","service":"<SERVICE>"}]'
-# restage the application to get it to pick up the new environment variable and use the buildpack
-cf restage $YOUR_APP_NAME
-```
 
-**Configure log collection**:
+**Configure log collection**
 
-The following parameters can be used to configure log collection:
+The following environment variables are used to configure log collection.
 
 - `STD_LOG_COLLECTION_PORT`: Must be used when collecting logs from `stdout`/`stderr`. It redirects the `stdout`/`stderr` stream to the corresponding local port value.
-- `LOGS_CONFIG`: Use this option to configure the agent to listen to a local TCP port and set the value for the `service` and `source` parameters.
+- `LOGS_CONFIG`: Use this option to configure the Agent to listen to a local TCP port and set the value for the `service` and `source` parameters. The port specified in the configuration must be the same as specified in the environment variable `STD_LOG_COLLECTION_PORT`.
 
-**Example**:
+**Example**
 
 An `app01` Java application is running in Cloud Foundry. The following configuration redirects the container `stdout`/`stderr` to the local port 10514. It then configures the Agent to collect logs from that port while setting the proper value for `service` and `source`:
 
-```
-# Redirect Stdout/Stderr to port 10514
-cf set-env $YOUR_APP_NAME STD_LOG_COLLECTION_PORT 10514
-# Configure the agent to listen to that port
-cf set-env $YOUR_APP_NAME LOGS_CONFIG '[{"type":"tcp","port":"10514","source":"java","service":"app01"}]'
+```yaml
+env:
+  DD_API_KEY: <DATADOG_API_KEY>
+  RUN_AGENT: true
+  DD_LOGS_ENABLED: true
+  DD_ENABLE_CHECKS false
+  STD_LOG_COLLECTION_PORT: 10514
+  LOGS_CONFIG '[{"type":"tcp","port":"10514","source":"java","service":"app01"}]'
 ```
 
 #### General configuration of the Datadog Agent
-All the options supported by the Agent in the main configuration file (`lib/dist/datadog.yaml`) can also be set through environment variables as described in the [documentation of the Agent](https://github.com/DataDog/datadog-agent/blob/master/docs/agent/config.md#environment-variables).
+All the options supported by the Agent in the main `datadog.yaml` configuration file can also be set through environment variables as described in the [documentation of the Agent][5].
 
-### DogStatsD Away!
-You're all set up to use DogStatsD. Import the relevant library and start sending data! To learn more, [check our our documentation](https://docs.datadoghq.com/guides/DogStatsD/). Additionally, we have [a list of DogStatsD libraries](https://docs.datadoghq.com/libraries/) you can check out to find one that's compatible with your application.
+### Instrument your application
+Instrument your application to send custom metrics and APM traces through DogStatsD and the Datadog Trace Agent.
+Download and import the [relevant libraries][6] to send data. To learn more, check out the [DogSatsD documentation][7] and [APM documentation][8].
 
 ## Docker
 
-If you're running docker on Cloud Foundry, you can look at [the docker directory](docker/) to see how to adapt this buildpack to use in a dockerfile
+If you're running Docker on Cloud Foundry, review the [`docker` directory][9] to adapt this buildpack to use in a `dockerfile`.
+
+
+[1]: https://docs.cloudfoundry.org/buildpacks/understand-buildpacks.html#supply-script
+[2]: https://cloudfoundry.datadoghq.com/datadog-cloudfoundry-buildpack/datadog-cloudfoundry-buildpack-latest.zip
+[3]: /DEVELOPMENT.md#building
+[4]: https://docs.cloudfoundry.org/buildpacks/use-multiple-buildpacks.html
+[5]: https://github.com/DataDog/datadog-agent/blob/master/docs/agent/config.md#environment-variables
+[6]: https://docs.datadoghq.com/libraries/
+[7]: https://docs.datadoghq.com/guides/DogStatsD/
+[8]: https://docs.datadoghq.com/tracing/setup_overview/
+[9]: docker/
