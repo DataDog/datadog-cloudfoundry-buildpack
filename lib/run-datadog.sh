@@ -103,7 +103,7 @@ stop_datadog() {
     sleep 1
   done
   echo "main process exited, stopping agent"
-  for pidfile in "$DATADOG_DIR/run/*"; do
+  for pidfile in "$DATADOG_DIR"/run/*; do
     kill $(cat $pidfile)
   done
 }
