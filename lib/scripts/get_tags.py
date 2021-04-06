@@ -13,7 +13,9 @@ vcap_application = json.loads(vcap_app_string)
 
 vcap_variables = ["application_id", "name", "instance_index", "space_name"]
 
-tags = []
+cf_instance_ip = os.environ.get("CF_INSTANCE_IP")
+
+tags = ["cf_instance_ip:{}".format(cf_instance_ip)]
 
 for vcap_var_name in vcap_variables:
     vcap_var = vcap_application.get(vcap_var_name)
