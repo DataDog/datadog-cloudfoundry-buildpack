@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.21.0 / 2021-04-06
+
+* [Added] Add `CF_INSTANCE_IP` environment variable as host tag. See [#102](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/102).
+* [Fixed] Stop agent processes when main app process exits. See [#97](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/97).
+* [Added] Bump agent version to 7.26.0, [read more about it here](https://github.com/DataDog/datadog-agent/blob/master/CHANGELOG.rst#7260--6260)
+
 ## 4.20.0 / 2021-01-21
 
 * [Added] Bump agent version to 7.25.0, [read more about it here](https://github.com/DataDog/datadog-agent/blob/master/CHANGELOG.rst#7250--6250)
