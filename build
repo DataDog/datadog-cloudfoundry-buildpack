@@ -15,22 +15,10 @@ function download_trace_agent() {
   local trace_version="${1:-$TRACE_DEFAULT_VERSION}"
   local trace_agent_download_url="$TRACEAGENT_DOWNLOAD_URL_HEAD$trace_version$TRACEAGENT_DOWNLOAD_URL_TAIL"
 
-  local archiver="tar"
-  if command -v gtar > /dev/null 2>&1; then
-    archiver="gtar"
-  else
-    if [[ `uname` == 'Darwin' ]]; then
-      echo "On OSX you might see some errors from untarring the deb package"
-      echo "Using gnu tar will resolve them"
-      echo "However, they should be okay to ignore"
-    fi
-  fi
-
   mkdir -p $TMPDIR
   curl -L $trace_agent_download_url -o ./tmp/datadog-agent.deb
   pushd $TMPDIR
-    ar x datadog-agent.deb
-    $archiver -xzf data.tar.gz
+    dpkg -x datadog-agent.deb .
   popd
   cp $TMPDIR/opt/datadog-agent/embedded/bin/trace-agent $SRCDIR/lib/trace-agent
   rm -rf $TMPDIR/*
