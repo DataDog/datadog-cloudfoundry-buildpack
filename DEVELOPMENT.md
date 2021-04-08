@@ -6,6 +6,9 @@ The main logic can be found in the shell scripts under the `lib` directory.
 
 ## Building
 
+To execute the `build` script, `dpkg` needs to be installed.
+On macOS, `brew install dpkg`.
+
 Run the following command from the root of the repository to build the buildpack with the latest agent:
 ```bash
 REFRESH_ASSETS=1 ./build
