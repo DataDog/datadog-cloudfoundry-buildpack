@@ -85,6 +85,7 @@ start_datadog() {
         echo "Log endpoint not valid, not starting agent"
       else
         export DD_LOG_FILE=$DATADOG_DIR/agent.log
+        export DD_IOT_HOST=false
         sed -i "s~log_file: AGENT_LOG_FILE~log_file: $DD_LOG_FILE~" $DATADOG_DIR/dist/datadog.yaml
         ./agent run --cfgpath $DATADOG_DIR/dist/ --pidfile $DATADOG_DIR/run/agent.pid &
       fi
