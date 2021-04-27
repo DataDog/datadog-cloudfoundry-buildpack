@@ -7,6 +7,7 @@
 # Start dogstatsd
 
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/datadog}"
+SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 
 start_datadog() {
   pushd $DATADOG_DIR
@@ -86,15 +87,27 @@ start_datadog() {
         export DD_LOG_FILE=$DATADOG_DIR/agent.log
         export DD_IOT_HOST=false
         sed -i "s~log_file: AGENT_LOG_FILE~log_file: $DD_LOG_FILE~" $DATADOG_DIR/dist/datadog.yaml
-        ./agent run --cfgpath $DATADOG_DIR/dist/ --pidfile $DATADOG_DIR/run/agent.pid > /dev/null 2>&1 &
+        if [ "$SUPPRESS_DD_AGENT_OUTPUT" == "true" ]; then
+          ./agent run --cfgpath $DATADOG_DIR/dist/ --pidfile $DATADOG_DIR/run/agent.pid > /dev/null 2>&1 &
+        else
+          ./agent run --cfgpath $DATADOG_DIR/dist/ --pidfile $DATADOG_DIR/run/agent.pid &
+        fi
       fi
     else
       export DD_LOG_FILE=$DATADOG_DIR/dogstatsd.log
       sed -i "s~log_file: AGENT_LOG_FILE~log_file: $DD_LOG_FILE~" $DATADOG_DIR/dist/datadog.yaml
-      ./dogstatsd start --cfgpath $DATADOG_DIR/dist/ > /dev/null 2>&1 &
+      if [ "$SUPPRESS_DD_AGENT_OUTPUT" == "true" ]; then
+        ./dogstatsd start --cfgpath $DATADOG_DIR/dist/ > /dev/null 2>&1 &
+      else
+        ./dogstatsd start --cfgpath $DATADOG_DIR/dist/ &
+      fi
       echo $! > run/dogstatsd.pid
     fi
-    ./trace-agent --config $DATADOG_DIR/dist/datadog.yaml --pid $DATADOG_DIR/run/trace-agent.pid > /dev/null 2>&1 &
+    if [ "$SUPPRESS_DD_AGENT_OUTPUT" == "true" ]; then
+      ./trace-agent --config $DATADOG_DIR/dist/datadog.yaml --pid $DATADOG_DIR/run/trace-agent.pid > /dev/null 2>&1 &
+    else
+      ./trace-agent --config $DATADOG_DIR/dist/datadog.yaml --pid $DATADOG_DIR/run/trace-agent.pid &
+    fi
   popd
 }
 
