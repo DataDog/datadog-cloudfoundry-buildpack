@@ -21,7 +21,6 @@ start_datadog() {
     # create and configure set /conf.d if integrations are enabled
     if [ "$DD_ENABLE_CHECKS" = "true" ] || [ -n "$LOGS_CONFIG" ] ; then
       mkdir $DATADOG_DIR/dist/conf.d
-      sed -i "s~# confd_path:.*~confd_path: $DATADOG_DIR/dist/conf.d~" $DATADOG_DIR/dist/datadog.yaml
     fi
 
     # add checks configs
