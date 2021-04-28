@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.22.0 / 2021-04-28
+
+* [Added] Add ability to keep or suppress agent logs from cf logs. Suppress by default. See [#108](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/108).
+* [Fixed] Fix reading duplicate logs configuration. See [#107](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/107).
+* [Fixed] Prevent buildpack from blocking application startup when verbose application starts. See [#105](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/105).
+* [Fixed] Stop counting buildpack agent as IoT agent. See [#100](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/100).
+* [Added] Bump agent version to 7.27.0, [read more about it here](https://github.com/DataDog/datadog-agent/blob/master/CHANGELOG.rst#7270--6270)
+
 ## 4.21.0 / 2021-04-06
 
 * [Added] Add `CF_INSTANCE_IP` environment variable as host tag. See [#102](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/102).
