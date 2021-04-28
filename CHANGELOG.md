@@ -1,6 +1,6 @@
 # Changelog
 
-## 4.22.0 / 2021-04-27
+## 4.22.0 / 2021-04-28
 
 * [Added] Add ability to keep or suppress agent logs from cf logs. Suppress by default. See [#108](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/108).
 * [Fixed] Fix reading duplicate logs configuration. See [#107](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/107).
