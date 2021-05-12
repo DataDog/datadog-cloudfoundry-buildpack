@@ -6,7 +6,7 @@
 
 # Start dogstatsd
 
-DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/datadog}"
+DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 
 start_datadog() {

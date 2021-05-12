@@ -7,7 +7,7 @@
 export LOGS_CONFIG
 export STD_LOG_COLLECTION_PORT
 
-DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/datadog}"
+DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 
 DD_EU_API_SITE="https://api.datadoghq.eu/api/"
 DD_US_API_SITE="https://api.datadoghq.com/api/"

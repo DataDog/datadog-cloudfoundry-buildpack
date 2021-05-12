@@ -5,7 +5,7 @@
 # Copyright 2017-Present Datadog, Inc.
 
 unset DD_LOGS_VALID_ENDPOINT
-DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/datadog}"
+DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 DD_EU_API_SITE="https://api.datadoghq.eu/api/"
 DD_US_API_SITE="https://api.datadoghq.com/api/"
 DD_API_SITE=$DD_US_API_SITE
