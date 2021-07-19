@@ -41,7 +41,7 @@ if [ "$DD_LOGS_ENABLED" = "true" ]; then
   if [ "$DD_LOGS_VALID_ENDPOINT" = "false" ]; then
     echo "Log endpoint not valid, not starting log redirection"
   else
-    if [ -z "LOGS_CONFIG" ]; then
+    if [ -z "$LOGS_CONFIG" ]; then
       echo "can't collect logs, LOGS_CONFIG is not set"
     else
       echo "collect all logs for config $LOGS_CONFIG"
