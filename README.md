@@ -87,7 +87,7 @@ If you're running Docker on Cloud Foundry, review the [`docker` directory][9] to
 
 
 [1]: https://docs.cloudfoundry.org/buildpacks/understand-buildpacks.html#supply-script
-[2]: https://cloudfoundry.datadoghq.com/datadog-cloudfoundry-buildpack/datadog-cloudfoundry-buildpack-latest.zip
+[2]: https://github.com/datadog-cloudfoundry-buildpack/releases/latest/download/datadog-cloudfoundry-buildpack.zip
 [3]: /DEVELOPMENT.md#building
 [4]: https://docs.cloudfoundry.org/buildpacks/use-multiple-buildpacks.html
 [5]: https://github.com/DataDog/datadog-agent/blob/master/docs/agent/config.md#environment-variables
