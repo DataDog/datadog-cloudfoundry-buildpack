@@ -20,7 +20,7 @@ fi
 # redirect forwards all standard inputs to a TCP socket listening on port STD_LOG_COLLECTION_PORT.
 redirect() {
   while kill -0 $$; do
-    nc localhost $STD_LOG_COLLECTION_PORT || sleep 0.5
+    python "$DATADOG_DIR/scripts/nc.py" "$STD_LOG_COLLECTION_PORT" || sleep 0.5
     echo "Resetting buildpack log redirection"
     if [ "$DD_DEBUG_STD_REDIRECTION" = "true" ]; then
       HTTP_PROXY=$DD_HTTP_PROXY HTTPS_PROXY=$DD_HTTPS_PROXY NO_PROXY=$DD_NO_PROXY curl \
