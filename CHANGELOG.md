@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.23.0 / 2021-07-23
+
+* [Fixed] Avoid losing log lines when app sparsely writes to STDOUT. See [#112](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/112).
+* [Fixed] Fix check of `LOGS_CONFIG` env var. See [#111](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/111).
+* [Fixed] Install Datadog bits in hidden folder to avoid interfering with some buildpack detection mechanism. See [#109](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/109).
+
 ## 4.22.0 / 2021-04-28
 
 * [Added] Add ability to keep or suppress agent logs from cf logs. Suppress by default. See [#108](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/108).
