@@ -1,6 +1,6 @@
 # Changelog
 
-## 4.23.0 / 2021-07-22
+## 4.23.0 / 2021-07-23
 
 * [Fixed] Avoid losing log lines when app sparsely writes to STDOUT. See [#112](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/112).
 * [Fixed] Fix check of `LOGS_CONFIG` env var. See [#111](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/111).
