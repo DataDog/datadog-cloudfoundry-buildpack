@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.24.0 / 2021-08-13
+
+* [Added] Bump agent version to 7.30.0, [read more about it here](https://github.com/DataDog/datadog-agent/blob/master/CHANGELOG.rst#7300--6300)
+
 ## 4.23.0 / 2021-07-23
 
 * [Fixed] Avoid losing log lines when app sparsely writes to STDOUT. See [#112](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/112).
