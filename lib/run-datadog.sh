@@ -8,6 +8,7 @@
 
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
+LOCKFILE="$DATADOG_DIR/lock"
 
 start_datadog() {
   pushd $DATADOG_DIR
@@ -124,7 +125,11 @@ stop_datadog() {
 if [ -z $DD_API_KEY ]; then
   echo "Datadog API Key not set, not starting Datadog"
 else
-  echo "starting datadog"
-  start_datadog
-  stop_datadog &
+  exec 9> "$LOCKFILE" || exit 1
+  if flock -x -n 9; then
+    echo "starting datadog"
+    start_datadog
+    stop_datadog &
+    exec 9>&-
+  fi
 fi
