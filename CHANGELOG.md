@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.27.0 / 2021-12-13
+
+* [Added] Bump agent version to 7.32.2, [read more about it here](https://github.com/DataDog/datadog-agent/blob/master/CHANGELOG.rst#7322--6322)
+* [Fixed] Fix startup issues when using sidecars. See [#120](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/120). Thanks [martinpfeifer](https://github.com/martinpfeifer).
+
 ## 4.26.0 / 2021-11-29
 
 * [Added] Bump agent version to 7.32.1, [read more about it here](https://github.com/DataDog/datadog-agent/blob/master/CHANGELOG.rst#7321--6321)
