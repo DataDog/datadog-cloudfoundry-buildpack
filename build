@@ -3,17 +3,18 @@
 SRCDIR=$(cd "$(dirname $0)/." && pwd)
 NAME="datadog-cloudfoundry-buildpack"
 ZIPFILE="$NAME.zip"
-IOT_AGENT_DOWNLOAD_URL="https://s3.amazonaws.com/dd-agent/agent7/iot/linux"
-DOGSTATSD_DOWNLOAD_URL="https://s3.amazonaws.com/dd-agent/dsd7/dogstatsd/linux"
-TRACEAGENT_DOWNLOAD_URL_HEAD="https://s3.amazonaws.com/apt.datadoghq.com/pool/d/da/datadog-agent_"
-TRACEAGENT_DOWNLOAD_URL_TAIL="-1_amd64.deb"
-TRACE_DEFAULT_VERSION="7.32.4"
+DOWNLOAD_BASE_URL="https://s3.amazonaws.com/apt.datadoghq.com/pool/d/da/datadog-"
+TRACEAGENT_DOWNLOAD_URL=$DOWNLOAD_BASE_URL"agent_"
+IOT_AGENT_DOWNLOAD_URL=$DOWNLOAD_BASE_URL"iot-agent_"
+DOGSTATSD_DOWNLOAD_URL=$DOWNLOAD_BASE_URL"dogstatsd_"
+DOWNLOAD_URL_TAIL="-1_amd64.deb"
+AGENT_DEFAULT_VERSION="7.32.4"
 
 TMPDIR="$SRCDIR/tmp"
 
 function download_trace_agent() {
-  local trace_version="${1:-$TRACE_DEFAULT_VERSION}"
-  local trace_agent_download_url="$TRACEAGENT_DOWNLOAD_URL_HEAD$trace_version$TRACEAGENT_DOWNLOAD_URL_TAIL"
+  local trace_version="${1:-$AGENT_DEFAULT_VERSION}"
+  local trace_agent_download_url="$TRACEAGENT_DOWNLOAD_URL$trace_version$DOWNLOAD_URL_TAIL"
 
   mkdir -p $TMPDIR
   curl -L $trace_agent_download_url -o ./tmp/datadog-agent.deb
@@ -21,6 +22,32 @@ function download_trace_agent() {
     dpkg -x datadog-agent.deb .
   popd
   cp $TMPDIR/opt/datadog-agent/embedded/bin/trace-agent $SRCDIR/lib/trace-agent
+  rm -rf $TMPDIR/*
+}
+
+function download_iot_agent() {
+  local iot_version="${1:-$AGENT_DEFAULT_VERSION}"
+  local iot_agent_download_url="$IOT_AGENT_DOWNLOAD_URL$iot_version$DOWNLOAD_URL_TAIL"
+
+  mkdir -p $TMPDIR
+  curl -L $iot_agent_download_url -o ./tmp/datadog-agent.deb
+  pushd $TMPDIR
+    dpkg -x datadog-agent.deb .
+  popd
+  cp $TMPDIR/opt/datadog-agent/bin/agent/agent $SRCDIR/lib/agent
+  rm -rf $TMPDIR/*
+}
+
+function download_dogstatsd() {
+  local dogstatsd_version="${1:-$AGENT_DEFAULT_VERSION}"
+  local dogstatsd_download_url="$DOGSTATSD_DOWNLOAD_URL$dogstatsd_version$DOWNLOAD_URL_TAIL"
+
+  mkdir -p $TMPDIR
+  curl -L $dogstatsd_download_url -o ./tmp/dogstatsd.deb
+  pushd $TMPDIR
+    dpkg -x dogstatsd.deb .
+  popd
+  cp $TMPDIR/opt/datadog-dogstatsd/bin/dogstatsd $SRCDIR/lib/dogstatsd
   rm -rf $TMPDIR/*
 }
 
@@ -40,24 +67,17 @@ function main() {
     rm -f $SRCDIR/lib/dogstatsd
     rm -f $SRCDIR/lib/trace-agent
 
-    if [ -n "$VERSION" ]; then
-      IOT_AGENT_DOWNLOAD_URL="$IOT_AGENT_DOWNLOAD_URL/agent-$VERSION"
-      DOGSTATSD_DOWNLOAD_URL="$DOGSTATSD_DOWNLOAD_URL/dogstatsd-$VERSION"
-    else
-      IOT_AGENT_DOWNLOAD_URL="$IOT_AGENT_DOWNLOAD_URL/agent-latest"
-      DOGSTATSD_DOWNLOAD_URL="$DOGSTATSD_DOWNLOAD_URL/dogstatsd-latest"
-    fi
+    # Download the new ones
+    VERSION=${VERSION:-$AGENT_DEFAULT_VERSION}
 
-    curl $IOT_AGENT_DOWNLOAD_URL -o $SRCDIR/lib/agent
-    chmod +x $SRCDIR/lib/agent
-
-    curl $DOGSTATSD_DOWNLOAD_URL -o ./lib/dogstatsd
-    chmod +x $SRCDIR/lib/dogstatsd
-
-    # Does not support versioning for now, keep it dumb until trace-agent merge with the Agent6
-    # curl -L $TRACEAGENT_DOWNLOAD_URL -o ./lib/trace-agent
     download_trace_agent $VERSION
     chmod +x $SRCDIR/lib/trace-agent
+
+    download_iot_agent $VERSION
+    chmod +x $SRCDIR/lib/agent
+
+    download_dogstatsd $VERSION
+    chmod +x $SRCDIR/lib/dogstatsd
   fi
 
   rm -f $ZIPFILE
