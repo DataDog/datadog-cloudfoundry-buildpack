@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.30.0 / 2022-02-07
+
+* [Added] Bump agent version to 7.33.0, [read more about it here](https://github.com/DataDog/datadog-agent/blob/master/CHANGELOG.rst#7330--6330)
+
 ## 4.29.0 / 2021-12-22
 
 * [Added] Bump agent version to 7.32.4, [read more about it here](https://github.com/DataDog/datadog-agent/blob/master/CHANGELOG.rst#7324--6324)
