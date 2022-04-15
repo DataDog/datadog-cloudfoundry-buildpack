@@ -46,7 +46,7 @@ env:
   RUN_AGENT: true
   DD_LOGS_ENABLED: true
   # Disable the Agent core checks to disable system metrics collection
-  DD_ENABLE_CHECKS false
+  DD_ENABLE_CHECKS: false
   # Redirect Container Stdout/Stderr to a local port so the agent can collect the logs
   STD_LOG_COLLECTION_PORT: <PORT>
   # Configure the agent to collect logs from the wanted port and set the value for source and service
@@ -69,9 +69,9 @@ env:
   DD_API_KEY: <DATADOG_API_KEY>
   RUN_AGENT: true
   DD_LOGS_ENABLED: true
-  DD_ENABLE_CHECKS false
+  DD_ENABLE_CHECKS: false
   STD_LOG_COLLECTION_PORT: 10514
-  LOGS_CONFIG '[{"type":"tcp","port":"10514","source":"java","service":"app01"}]'
+  LOGS_CONFIG: '[{"type":"tcp","port":"10514","source":"java","service":"app01"}]'
 ```
 
 #### General configuration of the Datadog Agent
