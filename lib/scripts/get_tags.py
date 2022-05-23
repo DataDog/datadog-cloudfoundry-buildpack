@@ -6,7 +6,6 @@ from __future__ import print_function
 
 import os
 import json
-import socket
 
 vcap_app_string = os.environ.get('VCAP_APPLICATION', '{}')
 
@@ -15,8 +14,9 @@ vcap_application = json.loads(vcap_app_string)
 vcap_variables = ["application_id", "name", "instance_index", "space_name"]
 
 cf_instance_ip = os.environ.get("CF_INSTANCE_IP")
+cf_instance_guid = os.environ.get("CF_INSTANCE_GUID")
 
-tags = ["cf_instance_ip:{}".format(cf_instance_ip)]
+tags = ["cf_instance_ip:{}".format(cf_instance_ip), "container_id:{}".format(cf_instance_guid)]
 
 for vcap_var_name in vcap_variables:
     vcap_var = vcap_application.get(vcap_var_name)
@@ -25,8 +25,6 @@ for vcap_var_name in vcap_variables:
         if vcap_var_name == 'name':
             key = 'application_name'
         tags.append("{0}:{1}".format(key, vcap_var))
-
-tags.append("{0}:{1}".format("container_id", os.environ.get("CF_INSTANCE_GUID")))
 
 uris = vcap_application.get('uris')
 if uris:
