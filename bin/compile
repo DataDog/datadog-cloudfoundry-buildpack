@@ -22,6 +22,7 @@ if [ -f $ROOT_DIR/lib/dogstatsd ]; then
   cp $ROOT_DIR/lib/dogstatsd $BUILD_DIR/.datadog/dogstatsd
 fi
 cp $ROOT_DIR/lib/trace-agent $BUILD_DIR/.datadog/trace-agent
+cp $ROOT_DIR/lib/vector $BUILD_DIR/.datadog/vector
 cp $ROOT_DIR/lib/scripts/get_tags.py $BUILD_DIR/.datadog/scripts/get_tags.py
 cp $ROOT_DIR/lib/scripts/create_logs_config.py $BUILD_DIR/.datadog/scripts/create_logs_config.py
 cp $ROOT_DIR/lib/scripts/nc.py $BUILD_DIR/.datadog/scripts/nc.py

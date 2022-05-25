@@ -51,6 +51,15 @@ function download_dogstatsd() {
   rm -rf $TMPDIR/*
 }
 
+function download_vector() {
+  mkdir -p $TMPDIR/vector && \
+  curl -sSfL --proto '=https' --tlsv1.2 https://packages.timber.io/vector/0.21.2/vector-0.21.2-x86_64-unknown-linux-musl.tar.gz  | \
+  tar xzf - -C $TMPDIR/vector --strip-components=2
+
+  mv $TMPDIR/vector/bin/vector $SRCDIR/lib/vector
+  rm -rf $TMPDIR/*
+}
+
 function main() {
   if [ ! -f $SRCDIR/lib/dogstatsd ] || [ ! -f $SRCDIR/lib/trace-agent ]; then
     DOWNLOAD="true"
@@ -66,6 +75,7 @@ function main() {
     rm -f $SRCDIR/lib/agent
     rm -f $SRCDIR/lib/dogstatsd
     rm -f $SRCDIR/lib/trace-agent
+    rm -f $SRCDIR/lib/vector
 
     # Download the new ones
     VERSION=${VERSION:-$AGENT_DEFAULT_VERSION}
@@ -78,6 +88,9 @@ function main() {
 
     download_dogstatsd $VERSION
     chmod +x $SRCDIR/lib/dogstatsd
+
+    download_vector
+    chmod +x $SRCDIR/lib/vector
   fi
 
   rm -f $ZIPFILE

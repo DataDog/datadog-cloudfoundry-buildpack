@@ -87,31 +87,32 @@ start_datadog() {
     # Create folder for storing PID files
     mkdir run
 
-    # DSD requires its own config file
-    cp $DATADOG_DIR/dist/datadog.yaml $DATADOG_DIR/dist/dogstatsd.yaml
-    if [ "$DD_LOGS_ENABLED" = "true" -a -f ./agent ]; then
-      if [ "$DD_LOGS_VALID_ENDPOINT" = "false" ]; then
-        echo "Log endpoint not valid, not starting agent"
-      else
-        export DD_LOG_FILE=$DATADOG_DIR/agent.log
-        export DD_IOT_HOST=false
-        sed -i "s~log_file: AGENT_LOG_FILE~log_file: $DD_LOG_FILE~" $DATADOG_DIR/dist/datadog.yaml
-        if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
-          ./agent run --cfgpath $DATADOG_DIR/dist/ --pidfile $DATADOG_DIR/run/agent.pid > /dev/null 2>&1 &
-        else
-          ./agent run --cfgpath $DATADOG_DIR/dist/ --pidfile $DATADOG_DIR/run/agent.pid &
-        fi
-      fi
-    else
-      export DD_LOG_FILE=$DATADOG_DIR/dogstatsd.log
+
+    # Run agent when checks are enabled
+    if [ "$DD_ENABLE_CHECKS" = "true" -a -f ./agent ]; then
+      export DD_LOG_FILE=$DATADOG_DIR/agent.log
+      export DD_IOT_HOST=false
       sed -i "s~log_file: AGENT_LOG_FILE~log_file: $DD_LOG_FILE~" $DATADOG_DIR/dist/datadog.yaml
       if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
-        ./dogstatsd start --cfgpath $DATADOG_DIR/dist/ > /dev/null 2>&1 &
+        ./agent run --cfgpath $DATADOG_DIR/dist/ --pidfile $DATADOG_DIR/run/agent.pid > /dev/null 2>&1 &
       else
-        ./dogstatsd start --cfgpath $DATADOG_DIR/dist/ &
+        ./agent run --cfgpath $DATADOG_DIR/dist/ --pidfile $DATADOG_DIR/run/agent.pid &
       fi
-      echo $! > run/dogstatsd.pid
     fi
+
+    # DSD requires its own config file
+    cp $DATADOG_DIR/dist/datadog.yaml $DATADOG_DIR/dist/dogstatsd.yaml
+
+    export DSD_LOG_FILE=$DATADOG_DIR/dogstatsd.log
+    sed -i "s~log_file: AGENT_LOG_FILE~log_file: $DSD_LOG_FILE~" $DATADOG_DIR/dist/datadog.yaml
+
+    if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
+      ./dogstatsd start --cfgpath $DATADOG_DIR/dist/ > /dev/null 2>&1 &
+    else
+      ./dogstatsd start --cfgpath $DATADOG_DIR/dist/ &
+    fi
+    echo $! > run/dogstatsd.pid
+
     if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
       ./trace-agent --config $DATADOG_DIR/dist/datadog.yaml --pid $DATADOG_DIR/run/trace-agent.pid > /dev/null 2>&1 &
     else

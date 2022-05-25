@@ -1,0 +1,20 @@
+[sources.app_logs]
+type = "stdin"
+
+[transforms.with_dd_metadata]
+type = "remap"
+inputs = ["app_logs"]
+source = '''
+.service="$DD_SERVICE"
+.ddsource="$DD_LOG_SOURCE"
+.ddtags="$DD_TAGS"
+'''
+
+[sinks.dd_logs]
+type = "datadog_logs"
+inputs = [ "with_dd_metadata" ]
+default_api_key = "$DD_API_KEY"
+compression = "gzip"
+
+[api]
+enabled = true
