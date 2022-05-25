@@ -15,7 +15,7 @@ start_datadog() {
     export DD_LOG_FILE=$DATADOG_DIR/dogstatsd.log
     export DD_API_KEY
     export DD_DD_URL
-    export DD_ENABLE_CHECKS="${DD_ENABLE_CHECKS:-true}"
+    export DD_ENABLE_CHECKS="${DD_ENABLE_CHECKS:-false}"
     export DOCKER_DD_AGENT=yes
     export LOGS_CONFIG_DIR=$DATADOG_DIR/dist/conf.d/logs.d
     export LOGS_CONFIG
@@ -81,14 +81,14 @@ start_datadog() {
 
     # DSD requires its own config file
     cp $DATADOG_DIR/dist/datadog.yaml $DATADOG_DIR/dist/dogstatsd.yaml
-    if [ -n "$RUN_AGENT" -a -f ./agent ]; then
-      if [ "$DD_LOGS_ENABLED" = "true" -a "$DD_LOGS_VALID_ENDPOINT" = "false" ]; then
+    if [ "$DD_LOGS_ENABLED" = "true" -a -f ./agent ]; then
+      if [ "$DD_LOGS_VALID_ENDPOINT" = "false" ]; then
         echo "Log endpoint not valid, not starting agent"
       else
         export DD_LOG_FILE=$DATADOG_DIR/agent.log
         export DD_IOT_HOST=false
         sed -i "s~log_file: AGENT_LOG_FILE~log_file: $DD_LOG_FILE~" $DATADOG_DIR/dist/datadog.yaml
-        if [ "$SUPPRESS_DD_AGENT_OUTPUT" == "true" ]; then
+        if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
           ./agent run --cfgpath $DATADOG_DIR/dist/ --pidfile $DATADOG_DIR/run/agent.pid > /dev/null 2>&1 &
         else
           ./agent run --cfgpath $DATADOG_DIR/dist/ --pidfile $DATADOG_DIR/run/agent.pid &
@@ -97,14 +97,14 @@ start_datadog() {
     else
       export DD_LOG_FILE=$DATADOG_DIR/dogstatsd.log
       sed -i "s~log_file: AGENT_LOG_FILE~log_file: $DD_LOG_FILE~" $DATADOG_DIR/dist/datadog.yaml
-      if [ "$SUPPRESS_DD_AGENT_OUTPUT" == "true" ]; then
+      if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
         ./dogstatsd start --cfgpath $DATADOG_DIR/dist/ > /dev/null 2>&1 &
       else
         ./dogstatsd start --cfgpath $DATADOG_DIR/dist/ &
       fi
       echo $! > run/dogstatsd.pid
     fi
-    if [ "$SUPPRESS_DD_AGENT_OUTPUT" == "true" ]; then
+    if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
       ./trace-agent --config $DATADOG_DIR/dist/datadog.yaml --pid $DATADOG_DIR/run/trace-agent.pid > /dev/null 2>&1 &
     else
       ./trace-agent --config $DATADOG_DIR/dist/datadog.yaml --pid $DATADOG_DIR/run/trace-agent.pid &
