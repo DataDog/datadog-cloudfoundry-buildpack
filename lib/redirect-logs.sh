@@ -42,5 +42,7 @@ redirect() {
 
 pushd $DATADOG_DIR
 echo "forward all logs from stdout/stderr to vector"
-exec &> >(./vector --config $DATADOG_DIR/dist/vector.toml)
+
+IFS=. read -a VM_HOSTNAME <<< $(host $CF_INSTANCE_IP | awk '{print $5}')
+exec &> >(VM_HOSTNAME=$VM_HOSTNAME ./vector --config $DATADOG_DIR/dist/vector.toml)
 popd

@@ -8,6 +8,7 @@ source = '''
 .service="$DD_SERVICE"
 .ddsource="$DD_LOG_SOURCE"
 .ddtags="$DD_TAGS"
+.host="$VM_HOSTNAME"
 '''
 
 [sinks.dd_logs]
