@@ -46,8 +46,9 @@ start_datadog() {
     # set the agent hostname to the host VM hostname
     host $CF_INSTANCE_IP
     if [ $? -ne 0 ]; then
+        cp $DATADOG_DIR/dist/datadog.yaml $DATADOG_DIR/dist/datadog_trace.yaml
         IFS=. read -a VM_HOSTNAME <<< $(host $CF_INSTANCE_IP | awk '{print $5}')
-        sed -i "s~# hostname: mymachine.mydomain~hostname: $VM_HOSTNAME~" $DATADOG_DIR/dist/datadog.yaml
+        sed -i "s~# hostname: mymachine.mydomain~hostname: $VM_HOSTNAME~" $DATADOG_DIR/dist/datadog_trace.yaml
     fi
 
     if [ -n "$DD_SKIP_SSL_VALIDATION" ]; then
@@ -114,9 +115,9 @@ start_datadog() {
     echo $! > run/dogstatsd.pid
 
     if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
-      ./trace-agent --config $DATADOG_DIR/dist/datadog.yaml --pid $DATADOG_DIR/run/trace-agent.pid > /dev/null 2>&1 &
+      ./trace-agent --config $DATADOG_DIR/dist/datadog_trace.yaml --pid $DATADOG_DIR/run/trace-agent.pid > /dev/null 2>&1 &
     else
-      ./trace-agent --config $DATADOG_DIR/dist/datadog.yaml --pid $DATADOG_DIR/run/trace-agent.pid &
+      ./trace-agent --config $DATADOG_DIR/dist/datadog_trace.yaml --pid $DATADOG_DIR/run/trace-agent.pid &
     fi
   popd
 }
