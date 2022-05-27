@@ -37,6 +37,7 @@ if [ -f $BUILD_DIR/.datadog/dogstatsd ]; then
   chmod +x $BUILD_DIR/.datadog/dogstatsd
 fi
 chmod +x $BUILD_DIR/.datadog/trace-agent
+chmod +x $BUILD_DIR/.datadog/vector
 chmod +x $BUILD_DIR/.profile.d/00-test-endpoint.sh
 chmod +x $BUILD_DIR/.profile.d/02-redirect-logs.sh
 chmod +x $BUILD_DIR/.profile.d/01-run-datadog.sh

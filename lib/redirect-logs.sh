@@ -42,5 +42,5 @@ redirect() {
 
 pushd $DATADOG_DIR
 echo "forward all logs from stdout/stderr to vector"
-exec &> >(./vector --config ./dist/vector.toml)
+exec &> >(./vector --config $DATADOG_DIR/dist/vector.toml)
 popd
