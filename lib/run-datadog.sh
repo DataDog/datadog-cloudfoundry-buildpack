@@ -43,14 +43,6 @@ start_datadog() {
     sed -i "s~# tags:.*~tags: $datadog_tags~" $DATADOG_DIR/dist/datadog.yaml
     sed -i "s~log_file: TRACE_LOG_FILE~log_file: $DATADOG_DIR/trace.log~" $DATADOG_DIR/dist/datadog.yaml
 
-    # set the agent hostname to the host VM hostname
-    host $CF_INSTANCE_IP
-    if [ $? -ne 0 ]; then
-        cp $DATADOG_DIR/dist/datadog.yaml $DATADOG_DIR/dist/datadog_trace.yaml
-        IFS=. read -a VM_HOSTNAME <<< $(host $CF_INSTANCE_IP | awk '{print $5}')
-        sed -i "s~# hostname: mymachine.mydomain~hostname: $VM_HOSTNAME~" $DATADOG_DIR/dist/datadog_trace.yaml
-    fi
-
     if [ -n "$DD_SKIP_SSL_VALIDATION" ]; then
       sed -i "s~# skip_ssl_validation: no~skip_ssl_validation: yes~" $DATADOG_DIR/dist/datadog.yaml
     fi
@@ -113,6 +105,14 @@ start_datadog() {
       ./dogstatsd start --cfgpath $DATADOG_DIR/dist/ &
     fi
     echo $! > run/dogstatsd.pid
+
+     # set the trace agent hostname to the host VM hostname
+    host $CF_INSTANCE_IP
+    if [ $? -eq 0 ]; then
+        cp $DATADOG_DIR/dist/datadog.yaml $DATADOG_DIR/dist/datadog_trace.yaml
+        IFS=. read -a VM_HOSTNAME <<< $(host $CF_INSTANCE_IP | awk '{print $5}')
+        sed -i "s~# hostname: mymachine.mydomain~hostname: $VM_HOSTNAME~" $DATADOG_DIR/dist/datadog_trace.yaml
+    fi
 
     if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
       ./trace-agent --config $DATADOG_DIR/dist/datadog_trace.yaml --pid $DATADOG_DIR/run/trace-agent.pid > /dev/null 2>&1 &
