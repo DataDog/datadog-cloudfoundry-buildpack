@@ -4,8 +4,6 @@
 # This product includes software developed at Datadog (https://www.datadoghq.com/).
 # Copyright 2017-Present Datadog, Inc.
 
-# Start dogstatsd
-
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 LOCKFILE="$DATADOG_DIR/lock"
@@ -93,29 +91,15 @@ start_datadog() {
       fi
     fi
 
-    # DSD requires its own config file
-    cp $DATADOG_DIR/dist/datadog.yaml $DATADOG_DIR/dist/dogstatsd.yaml
-
     # trace agent own config file
     cp $DATADOG_DIR/dist/datadog.yaml $DATADOG_DIR/dist/datadog_trace.yaml
 
-    # set the trace agent and dogstatsd hostnames to the VM hostname
+    # set the trace agent and hostnames to the VM hostname
     host $CF_INSTANCE_IP
     if [ $? -eq 0 ]; then
         IFS=. read -a VM_HOSTNAME <<< $(host $CF_INSTANCE_IP | awk '{print $5}')
         sed -i "s~# hostname: mymachine.mydomain~hostname: $VM_HOSTNAME~" $DATADOG_DIR/dist/datadog_trace.yaml
-        sed -i "s~# hostname: mymachine.mydomain~hostname: $VM_HOSTNAME~" $DATADOG_DIR/dist/dogstatsd.yaml
     fi
-
-    export DSD_LOG_FILE=$DATADOG_DIR/dogstatsd.log
-    sed -i "s~log_file: AGENT_LOG_FILE~log_file: $DSD_LOG_FILE~" $DATADOG_DIR/dist/datadog.yaml
-
-    if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
-      ./dogstatsd start --cfgpath $DATADOG_DIR/dist/ > /dev/null 2>&1 &
-    else
-      ./dogstatsd start --cfgpath $DATADOG_DIR/dist/ &
-    fi
-    echo $! > run/dogstatsd.pid
 
     if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
       ./trace-agent --config $DATADOG_DIR/dist/datadog_trace.yaml --pid $DATADOG_DIR/run/trace-agent.pid > /dev/null 2>&1 &

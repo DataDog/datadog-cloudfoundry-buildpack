@@ -6,7 +6,6 @@ ZIPFILE="$NAME.zip"
 DOWNLOAD_BASE_URL="https://s3.amazonaws.com/apt.datadoghq.com/pool/d/da/datadog-"
 TRACEAGENT_DOWNLOAD_URL=$DOWNLOAD_BASE_URL"agent_"
 IOT_AGENT_DOWNLOAD_URL=$DOWNLOAD_BASE_URL"iot-agent_"
-DOGSTATSD_DOWNLOAD_URL=$DOWNLOAD_BASE_URL"dogstatsd_"
 DOWNLOAD_URL_TAIL="-1_amd64.deb"
 AGENT_DEFAULT_VERSION="7.35.1"
 
@@ -38,19 +37,6 @@ function download_iot_agent() {
   rm -rf $TMPDIR/*
 }
 
-function download_dogstatsd() {
-  local dogstatsd_version="${1:-$AGENT_DEFAULT_VERSION}"
-  local dogstatsd_download_url="$DOGSTATSD_DOWNLOAD_URL$dogstatsd_version$DOWNLOAD_URL_TAIL"
-
-  mkdir -p $TMPDIR
-  curl -L $dogstatsd_download_url -o ./tmp/dogstatsd.deb
-  pushd $TMPDIR
-    dpkg -x dogstatsd.deb .
-  popd
-  cp $TMPDIR/opt/datadog-dogstatsd/bin/dogstatsd $SRCDIR/lib/dogstatsd
-  rm -rf $TMPDIR/*
-}
-
 function download_vector() {
   mkdir -p $TMPDIR/vector && \
   curl -sSfL --proto '=https' --tlsv1.2 https://packages.timber.io/vector/0.21.2/vector-0.21.2-x86_64-unknown-linux-musl.tar.gz  | \
@@ -61,7 +47,7 @@ function download_vector() {
 }
 
 function main() {
-  if [ ! -f $SRCDIR/lib/dogstatsd ] || [ ! -f $SRCDIR/lib/trace-agent ]; then
+  if [ ! -f $SRCDIR/lib/vector ] || [ ! -f $SRCDIR/lib/trace-agent ]; then
     DOWNLOAD="true"
   fi
   if [ -n "$IOT_AGENT" ] && [ ! -f $SRCDIR/lib/agent ]; then
@@ -73,7 +59,6 @@ function main() {
   if [ -n "$DOWNLOAD" ]; then
     # Delete the old ones
     rm -f $SRCDIR/lib/agent
-    rm -f $SRCDIR/lib/dogstatsd
     rm -f $SRCDIR/lib/trace-agent
     rm -f $SRCDIR/lib/vector
 
@@ -85,9 +70,6 @@ function main() {
 
     download_iot_agent $VERSION
     chmod +x $SRCDIR/lib/agent
-
-    download_dogstatsd $VERSION
-    chmod +x $SRCDIR/lib/dogstatsd
 
     download_vector
     chmod +x $SRCDIR/lib/vector

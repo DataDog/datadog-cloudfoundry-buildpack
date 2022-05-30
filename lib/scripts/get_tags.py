@@ -49,6 +49,11 @@ if user_tags:
     except Exception as e:
         print("there was an issue parsing the tags in DD_TAGS: {}".format(e))
 
+if os.environ.get('OVERRIDE_DD_HOSTNAME', None):
+    import socket
+    vm_hostname = socket.gethostbyaddr(cf_instance_ip)[0].split(".")[0]
+    tags.append("host:{}".format(vm_hostname))
+
 legacy_tags = os.environ.get('LEGACY_TAGS_FORMAT', False)
 if legacy_tags:
     print(','.join(tags))

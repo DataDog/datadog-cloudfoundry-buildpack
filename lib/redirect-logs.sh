@@ -43,6 +43,10 @@ redirect() {
 pushd $DATADOG_DIR
 echo "forward all logs from stdout/stderr to vector"
 
+DD_TAGS=$(LEGACY_TAGS_FORMAT=true OVERRIDE_DD_HOSTNAME=true python $DATADOG_DIR/scripts/get_tags.py)
+
+echo "DD_TAGS:$DD_TAGS"
+
 IFS=. read -a VM_HOSTNAME <<< $(host $CF_INSTANCE_IP | awk '{print $5}')
-exec &> >(VM_HOSTNAME=$VM_HOSTNAME ./vector --config $DATADOG_DIR/dist/vector.toml)
+exec &> >(VM_HOSTNAME=$VM_HOSTNAME DD_TAGS=$(LEGACY_TAGS_FORMAT=true OVERRIDE_DD_HOSTNAME=true python $DATADOG_DIR/scripts/get_tags.py) ./vector --config $DATADOG_DIR/dist/vector.toml)
 popd

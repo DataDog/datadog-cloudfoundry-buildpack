@@ -1,7 +1,12 @@
 [sources.app_logs]
 type = "stdin"
 
-[transforms.with_dd_metadata]
+[sources.app_metrics]
+type = "statsd"
+address = "0.0.0.0:8125"
+mode = "udp"
+
+[transforms.logs_with_dd_metadata]
 type = "remap"
 inputs = ["app_logs"]
 source = '''
@@ -11,11 +16,37 @@ source = '''
 .host="$VM_HOSTNAME"
 '''
 
+[transforms.metrics_with_dd_metadata]
+type = "remap"
+inputs = ["app_metrics"]
+source = '''
+.tags="$DD_TAGS"
+'''
+
 [sinks.dd_logs]
 type = "datadog_logs"
-inputs = [ "with_dd_metadata" ]
+inputs = [ "logs_with_dd_metadata" ]
 default_api_key = "$DD_API_KEY"
 compression = "gzip"
 
+[sinks.dd_metrics]
+type = "datadog_metrics"
+inputs = [ "metrics_with_dd_metadata" ]
+api_key = "$DD_API_KEY"
+
+# vector configuration for better debugging
 [api]
 enabled = true
+
+[sources.internal_logs]
+type = "internal_logs"
+
+[sinks.vector_logs]
+type = "file"
+inputs = [ "internal_logs" ]
+compression = "none"
+path = "./vector.log"
+
+  [sinks.vector_logs.encoding]
+  codec = "text"
+
