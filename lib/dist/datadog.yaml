@@ -93,7 +93,7 @@ api_key:
 # Metadata collection should always be enabled, except if you are running several
 # agents/dsd instances per host. In that case, only one agent should have it on.
 # WARNING: disabling it on every agent will lead to display and billing issues
-# enable_metadata_collection: true
+enable_metadata_collection: false
 
 # Enable the gohai collection of systems data
 # enable_gohai: true

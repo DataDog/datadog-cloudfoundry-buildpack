@@ -43,9 +43,9 @@ start_datadog() {
     sed -i "s~# tags:.*~tags: $datadog_tags~" $DATADOG_DIR/dist/datadog.yaml
     sed -i "s~log_file: TRACE_LOG_FILE~log_file: $DATADOG_DIR/trace.log~" $DATADOG_DIR/dist/datadog.yaml
 
-    # set the agent hostname to the host VM hostname
+    # set logs, traces and metrics hostname to the VM hostname
     host $CF_INSTANCE_IP
-    if [ $? -ne 0 ]; then
+    if [ $? -eq 0 ]; then
         IFS=. read -a VM_HOSTNAME <<< $(host $CF_INSTANCE_IP | awk '{print $5}')
         sed -i "s~# hostname: mymachine.mydomain~hostname: $VM_HOSTNAME~" $DATADOG_DIR/dist/datadog.yaml
     fi
@@ -89,6 +89,10 @@ start_datadog() {
 
     # DSD requires its own config file
     cp $DATADOG_DIR/dist/datadog.yaml $DATADOG_DIR/dist/dogstatsd.yaml
+
+    # DSD requires its own config file
+    cp $DATADOG_DIR/dist/datadog.yaml $DATADOG_DIR/dist/trace-agent.yaml
+
     if [ "$DD_LOGS_ENABLED" = "true" -a -f ./agent ]; then
       if [ "$DD_LOGS_VALID_ENDPOINT" = "false" ]; then
         echo "Log endpoint not valid, not starting agent"
@@ -113,9 +117,9 @@ start_datadog() {
       echo $! > run/dogstatsd.pid
     fi
     if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
-      ./trace-agent --config $DATADOG_DIR/dist/datadog.yaml --pid $DATADOG_DIR/run/trace-agent.pid > /dev/null 2>&1 &
+      ./trace-agent --config $DATADOG_DIR/dist/trace-agent.yaml --pid $DATADOG_DIR/run/trace-agent.pid > /dev/null 2>&1 &
     else
-      ./trace-agent --config $DATADOG_DIR/dist/datadog.yaml --pid $DATADOG_DIR/run/trace-agent.pid &
+      ./trace-agent --config $DATADOG_DIR/dist/trace-agent.yaml --pid $DATADOG_DIR/run/trace-agent.pid &
     fi
   popd
 }
