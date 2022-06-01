@@ -99,6 +99,11 @@ start_datadog() {
       else
         export DD_LOG_FILE=$DATADOG_DIR/agent.log
         export DD_IOT_HOST=false
+
+        if [ "$DD_ENABLE_CHECKS" = "true" ]; then
+          sed -i "s~enable_metadata_collection: false~enable_metadata_collection: true~" $DATADOG_DIR/dist/datadog.yaml
+        fi
+
         sed -i "s~log_file: AGENT_LOG_FILE~log_file: $DD_LOG_FILE~" $DATADOG_DIR/dist/datadog.yaml
         if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
           ./agent run --cfgpath $DATADOG_DIR/dist/ --pidfile $DATADOG_DIR/run/agent.pid > /dev/null 2>&1 &
