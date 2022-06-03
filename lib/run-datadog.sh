@@ -15,7 +15,7 @@ start_datadog() {
     export DD_LOG_FILE=$DATADOG_DIR/dogstatsd.log
     export DD_API_KEY
     export DD_DD_URL
-    export DD_ENABLE_CHECKS="${DD_ENABLE_CHECKS:-true}"
+    export DD_ENABLE_CHECKS="${DD_ENABLE_CHECKS:-false}"
     export DOCKER_DD_AGENT=yes
     export LOGS_CONFIG_DIR=$DATADOG_DIR/dist/conf.d/logs.d
     export LOGS_CONFIG
@@ -47,6 +47,15 @@ start_datadog() {
     fi
     # Override user set tags so the tags set in the yaml file are used instead
     export DD_TAGS=""
+
+    # set logs, traces and metrics hostname to the VM hostname
+    if [ "$DD_ENABLE_CHECKS" != "true" ]; then
+      host $CF_INSTANCE_IP
+      if [ $? -eq 0 ]; then
+          IFS=. read -a VM_HOSTNAME <<< $(host $CF_INSTANCE_IP | awk '{print $5}')
+          sed -i "s~# hostname: mymachine.mydomain~hostname: $VM_HOSTNAME~" $DATADOG_DIR/dist/datadog.yaml
+      fi
+    fi
 
     if [ -n "$DD_HTTP_PROXY" ]; then
       sed -i "s~# proxy:~proxy:~" $DATADOG_DIR/dist/datadog.yaml
