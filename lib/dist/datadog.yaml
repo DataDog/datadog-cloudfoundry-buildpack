@@ -159,7 +159,7 @@ metadata_collectors:
 
 # Logging
 #
-# log_level: info
+log_level: TRACE
 log_file: AGENT_LOG_FILE
 
 # Set to 'yes' to output logs in JSON format
