@@ -4,6 +4,8 @@
 # This product includes software developed at Datadog (https://www.datadoghq.com/).
 # Copyright 2017-Present Datadog, Inc.
 
+export DD_TAGS=$(LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py)
+
 unset DD_LOGS_VALID_ENDPOINT
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 DD_EU_API_SITE="https://api.datadoghq.eu/api/"

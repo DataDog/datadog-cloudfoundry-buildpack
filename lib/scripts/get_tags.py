@@ -17,6 +17,7 @@ cf_instance_ip = os.environ.get("CF_INSTANCE_IP")
 
 tags = ["cf_instance_ip:{}".format(cf_instance_ip)]
 
+
 for vcap_var_name in vcap_variables:
     vcap_var = vcap_application.get(vcap_var_name)
     if vcap_var is not None:

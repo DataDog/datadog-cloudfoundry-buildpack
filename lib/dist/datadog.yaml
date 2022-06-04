@@ -93,7 +93,7 @@ api_key:
 # Metadata collection should always be enabled, except if you are running several
 # agents/dsd instances per host. In that case, only one agent should have it on.
 # WARNING: disabling it on every agent will lead to display and billing issues
-# enable_metadata_collection: true
+enable_metadata_collection: false
 
 # Enable the gohai collection of systems data
 # enable_gohai: true
@@ -104,9 +104,9 @@ api_key:
 # Metadata providers, add or remove from the list to enable or disable collection.
 # Intervals are expressed in seconds. You can also set a provider's interval to 0
 # to disable it.
-metadata_collectors:
-  - name: 'resources'
-    interval: 60
+# metadata_collectors:
+#   - name: 'resources'
+#     interval: 60
 
 # DogStatsd
 #
@@ -156,6 +156,8 @@ metadata_collectors:
 # you can configure the namspace below. Each metric received will be prefixed
 # with the namespace before it's sent to Datadog.
 # statsd_metric_namespace:
+
+# dogstatsd_tags:
 
 # Logging
 #

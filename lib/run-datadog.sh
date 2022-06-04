@@ -86,12 +86,13 @@ start_datadog() {
       sed -i "s~# cmd_port: 5001~cmd_port: $DD_CMD_PORT~" $DATADOG_DIR/dist/datadog.yaml
     fi
 
+     sed -i "s~# dogstatsd_tags:~dogstatsd_tags: $DD_TAGS~" $DATADOG_DIR/dist/datadog.yaml
     # Create folder for storing PID files
     mkdir run
 
     # DSD requires its own config file
     cp $DATADOG_DIR/dist/datadog.yaml $DATADOG_DIR/dist/dogstatsd.yaml
-    if [ -n "$RUN_AGENT" -a -f ./agent ]; then
+    if [ "$DD_LOGS_ENABLED" = "true" -a -f ./agent ] || [ -n "$RUN_AGENT" -a -f ./agent ]; then
       if [ "$DD_LOGS_ENABLED" = "true" -a "$DD_LOGS_VALID_ENDPOINT" = "false" ]; then
         echo "Log endpoint not valid, not starting agent"
       else
