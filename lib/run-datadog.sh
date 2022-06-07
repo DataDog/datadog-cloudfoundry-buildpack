@@ -34,7 +34,7 @@ start_datadog() {
     # add logs configs
     if [ -n "$LOGS_CONFIG" ]; then
       mkdir -p $LOGS_CONFIG_DIR
-      python $DATADOG_DIR/scripts/create_logs_config.py
+      DD_TAGS=$DD_TAGS python $DATADOG_DIR/scripts/create_logs_config.py
     fi
 
     # The yaml file requires the tags to be an array,
@@ -42,6 +42,7 @@ start_datadog() {
     # so they must be grabbed separately
     datadog_tags=$(python $DATADOG_DIR/scripts/get_tags.py)
     sed -i "s~# tags:.*~tags: $datadog_tags~" $DATADOG_DIR/dist/datadog.yaml
+    sed -i "s~# dogstatsd_tags:~dogstatsd_tags: $datadog_tags~" $DATADOG_DIR/dist/datadog.yaml
     sed -i "s~log_file: TRACE_LOG_FILE~log_file: $DATADOG_DIR/trace.log~" $DATADOG_DIR/dist/datadog.yaml
     if [ -n "$DD_SKIP_SSL_VALIDATION" ]; then
       sed -i "s~# skip_ssl_validation: no~skip_ssl_validation: yes~" $DATADOG_DIR/dist/datadog.yaml
@@ -85,8 +86,6 @@ start_datadog() {
     if [ -n "$DD_CMD_PORT" ]; then
       sed -i "s~# cmd_port: 5001~cmd_port: $DD_CMD_PORT~" $DATADOG_DIR/dist/datadog.yaml
     fi
-
-     sed -i "s~# dogstatsd_tags:~dogstatsd_tags: $DD_TAGS~" $DATADOG_DIR/dist/datadog.yaml
     # Create folder for storing PID files
     mkdir run
 
