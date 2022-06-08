@@ -92,7 +92,7 @@ start_datadog() {
 
     # DSD requires its own config file
     cp $DATADOG_DIR/dist/datadog.yaml $DATADOG_DIR/dist/dogstatsd.yaml
-    if [ -f ./agent ] && { [ "$DD_LOGS_ENABLED" = "true" || -n "$RUN_AGENT" ]; }; then
+    if [ -f ./agent ] && { [ "$DD_LOGS_ENABLED" = "true" || "$DD_ENABLE_CHECKS" = "true" ]; }; then
       if [ "$DD_LOGS_ENABLED" = "true" -a "$DD_LOGS_VALID_ENDPOINT" = "false" ]; then
         echo "Log endpoint not valid, not starting agent"
       else
