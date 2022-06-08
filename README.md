@@ -30,7 +30,7 @@ Once it is available in your Cloud Foundry environment, configure your applicati
 Set an API Key in your environment to enable the Datadog Agents in the buildpack. The following code samples specify the `env` section of the application manifest.
 
 ```yaml
-env: 
+env:
   DD_API_KEY: <DATADOG_API_KEY>
 ```
 
@@ -41,9 +41,8 @@ env:
 To collect logs from your application in CloudFoundry, the Agent contained in the buildpack needs to be activated with log collection enabled.
 
 ```yaml
-env: 
+env:
   DD_API_KEY: <DATADOG_API_KEY>
-  RUN_AGENT: true
   DD_LOGS_ENABLED: true
   # Disable the Agent core checks to disable system metrics collection
   DD_ENABLE_CHECKS: false
@@ -67,7 +66,6 @@ An `app01` Java application is running in Cloud Foundry. The following configura
 ```yaml
 env:
   DD_API_KEY: <DATADOG_API_KEY>
-  RUN_AGENT: true
   DD_LOGS_ENABLED: true
   DD_ENABLE_CHECKS: false
   STD_LOG_COLLECTION_PORT: 10514

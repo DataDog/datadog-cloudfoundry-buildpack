@@ -9,13 +9,14 @@
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 LOCKFILE="$DATADOG_DIR/lock"
+export DD_TAGS=$(LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py)
 
 start_datadog() {
   pushd $DATADOG_DIR
     export DD_LOG_FILE=$DATADOG_DIR/dogstatsd.log
     export DD_API_KEY
     export DD_DD_URL
-    export DD_ENABLE_CHECKS="${DD_ENABLE_CHECKS:-true}"
+    export DD_ENABLE_CHECKS="${DD_ENABLE_CHECKS:-false}"
     export DOCKER_DD_AGENT=yes
     export LOGS_CONFIG_DIR=$DATADOG_DIR/dist/conf.d/logs.d
     export LOGS_CONFIG
@@ -41,12 +42,23 @@ start_datadog() {
     # so they must be grabbed separately
     datadog_tags=$(python $DATADOG_DIR/scripts/get_tags.py)
     sed -i "s~# tags:.*~tags: $datadog_tags~" $DATADOG_DIR/dist/datadog.yaml
+    sed -i "s~# dogstatsd_tags:~dogstatsd_tags: $datadog_tags~" $DATADOG_DIR/dist/datadog.yaml
     sed -i "s~log_file: TRACE_LOG_FILE~log_file: $DATADOG_DIR/trace.log~" $DATADOG_DIR/dist/datadog.yaml
     if [ -n "$DD_SKIP_SSL_VALIDATION" ]; then
       sed -i "s~# skip_ssl_validation: no~skip_ssl_validation: yes~" $DATADOG_DIR/dist/datadog.yaml
     fi
     # Override user set tags so the tags set in the yaml file are used instead
     export DD_TAGS=""
+
+    # set logs, traces and metrics hostname to the VM hostname
+    if [ "$DD_ENABLE_CHECKS" != "true" ]; then
+      sed -i "s~# enable_metadata_collection: true~enable_metadata_collection: false~" $DATADOG_DIR/dist/datadog.yaml
+      host $CF_INSTANCE_IP
+      if [ $? -eq 0 ]; then
+          IFS=. read -a VM_HOSTNAME <<< $(host $CF_INSTANCE_IP | awk '{print $5}')
+          sed -i "s~# hostname: mymachine.mydomain~hostname: $VM_HOSTNAME~" $DATADOG_DIR/dist/datadog.yaml
+      fi
+    fi
 
     if [ -n "$DD_HTTP_PROXY" ]; then
       sed -i "s~# proxy:~proxy:~" $DATADOG_DIR/dist/datadog.yaml
@@ -75,13 +87,12 @@ start_datadog() {
     if [ -n "$DD_CMD_PORT" ]; then
       sed -i "s~# cmd_port: 5001~cmd_port: $DD_CMD_PORT~" $DATADOG_DIR/dist/datadog.yaml
     fi
-
     # Create folder for storing PID files
     mkdir run
 
     # DSD requires its own config file
     cp $DATADOG_DIR/dist/datadog.yaml $DATADOG_DIR/dist/dogstatsd.yaml
-    if [ -n "$RUN_AGENT" -a -f ./agent ]; then
+    if [ -f ./agent ] && { [ "$DD_LOGS_ENABLED" = "true" || "$DD_ENABLE_CHECKS" = "true" ]; }; then
       if [ "$DD_LOGS_ENABLED" = "true" -a "$DD_LOGS_VALID_ENDPOINT" = "false" ]; then
         echo "Log endpoint not valid, not starting agent"
       else

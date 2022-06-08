@@ -5,11 +5,18 @@
 from __future__ import print_function
 
 import os
+import json
 
 LOGS_CONFIG_DIR = os.environ['LOGS_CONFIG_DIR']
 LOGS_CONFIG = os.environ['LOGS_CONFIG']
+DD_TAGS = os.environ['DD_TAGS']
 
-config = "{\"logs\":" + LOGS_CONFIG + "}"
+
+config = {}
+config["logs"] = json.loads(LOGS_CONFIG)
+config["logs"][0]["tags"] = DD_TAGS
+config = json.dumps(config)
+
 path = LOGS_CONFIG_DIR + "/logs.yaml"
 
 with open(path, 'w') as f:

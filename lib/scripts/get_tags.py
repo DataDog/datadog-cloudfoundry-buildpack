@@ -16,6 +16,7 @@ vcap_variables = ["application_id", "name", "instance_index", "space_name"]
 cf_instance_ip = os.environ.get("CF_INSTANCE_IP")
 
 tags = ["cf_instance_ip:{}".format(cf_instance_ip)]
+tags.append("container_id:{}".format(os.environ.get("CF_INSTANCE_GUID")))
 
 for vcap_var_name in vcap_variables:
     vcap_var = vcap_application.get(vcap_var_name)

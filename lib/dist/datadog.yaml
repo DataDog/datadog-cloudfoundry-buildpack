@@ -157,6 +157,8 @@ metadata_collectors:
 # with the namespace before it's sent to Datadog.
 # statsd_metric_namespace:
 
+# dogstatsd_tags:
+
 # Logging
 #
 # log_level: info
