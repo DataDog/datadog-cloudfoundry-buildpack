@@ -52,6 +52,7 @@ start_datadog() {
 
     # set logs, traces and metrics hostname to the VM hostname
     if [ "$DD_ENABLE_CHECKS" != "true" ]; then
+      sed -i "s~# enable_metadata_collection: true~enable_metadata_collection: false~" $DATADOG_DIR/dist/datadog.yaml
       host $CF_INSTANCE_IP
       if [ $? -eq 0 ]; then
           IFS=. read -a VM_HOSTNAME <<< $(host $CF_INSTANCE_IP | awk '{print $5}')

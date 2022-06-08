@@ -12,7 +12,7 @@ LOGS_CONFIG = os.environ['LOGS_CONFIG']
 DD_TAGS = os.environ['DD_TAGS']
 
 
-config = dict()
+config = {}
 config["logs"] = json.loads(LOGS_CONFIG)
 config["logs"][0]["tags"] = DD_TAGS
 config = json.dumps(config)
