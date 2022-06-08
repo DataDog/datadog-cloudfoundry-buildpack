@@ -34,7 +34,7 @@ start_datadog() {
     # add logs configs
     if [ -n "$LOGS_CONFIG" ]; then
       mkdir -p $LOGS_CONFIG_DIR
-      DD_TAGS=$DD_TAGS python $DATADOG_DIR/scripts/create_logs_config.py
+      python $DATADOG_DIR/scripts/create_logs_config.py
     fi
 
     # The yaml file requires the tags to be an array,
@@ -91,7 +91,7 @@ start_datadog() {
 
     # DSD requires its own config file
     cp $DATADOG_DIR/dist/datadog.yaml $DATADOG_DIR/dist/dogstatsd.yaml
-    if [ "$DD_LOGS_ENABLED" = "true" -a -f ./agent ] || [ -n "$RUN_AGENT" -a -f ./agent ]; then
+    if [ -f ./agent ] && { [ "$DD_LOGS_ENABLED" = "true" || -n "$RUN_AGENT" ] }; then
       if [ "$DD_LOGS_ENABLED" = "true" -a "$DD_LOGS_VALID_ENDPOINT" = "false" ]; then
         echo "Log endpoint not valid, not starting agent"
       else

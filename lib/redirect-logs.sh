@@ -17,8 +17,6 @@ if [ -n "$DD_SITE" ] && [ "$DD_SITE" = "datadoghq.eu" ]; then
   DD_API_SITE=$DD_EU_API_SITE
 fi
 
-export DD_TAGS=$(LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py)
-
 # redirect forwards all standard inputs to a TCP socket listening on port STD_LOG_COLLECTION_PORT.
 redirect() {
   while kill -0 $$; do
