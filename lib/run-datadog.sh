@@ -47,8 +47,6 @@ start_datadog() {
     if [ -n "$DD_SKIP_SSL_VALIDATION" ]; then
       sed -i "s~# skip_ssl_validation: no~skip_ssl_validation: yes~" $DATADOG_DIR/dist/datadog.yaml
     fi
-    # Override user set tags so the tags set in the yaml file are used instead
-    export DD_TAGS=""
 
     # set logs, traces and metrics hostname to the VM hostname
     if [ "$DD_ENABLE_CHECKS" != "true" ]; then
@@ -92,7 +90,7 @@ start_datadog() {
 
     # DSD requires its own config file
     cp $DATADOG_DIR/dist/datadog.yaml $DATADOG_DIR/dist/dogstatsd.yaml
-    if [ -f ./agent ] && { [ "$DD_LOGS_ENABLED" = "true" ] || [ "$DD_ENABLE_CHECKS" = "true" ]; }; then
+    if [ -a ./agent ] && { [ "$DD_LOGS_ENABLED" = "true" ] || [ "$DD_ENABLE_CHECKS" = "true" ]; }; then
       if [ "$DD_LOGS_ENABLED" = "true" -a "$DD_LOGS_VALID_ENDPOINT" = "false" ]; then
         echo "Log endpoint not valid, not starting agent"
       else
