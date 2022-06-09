@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.32.0 / 2022-06-09
+
+* [Added] Bump agent version to 7.36.1, [read more about it here](https://github.com/DataDog/datadog-agent/blob/master/CHANGELOG.rst#7361--6361)
+* [Changed] Use VM hostname for logs, traces and metrics. See [#129](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/129).
+
 ## 4.31.0 / 2022-04-14
 
 * [Added] Bump agent version to 7.35.1, [read more about it here](https://github.com/DataDog/datadog-agent/blob/master/CHANGELOG.rst#7351--6351)
