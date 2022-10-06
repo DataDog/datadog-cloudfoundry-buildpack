@@ -6,6 +6,8 @@ from __future__ import print_function
 
 import os
 import json
+import sys
+
 
 vcap_app_string = os.environ.get('VCAP_APPLICATION', '{}')
 
@@ -17,6 +19,13 @@ cf_instance_ip = os.environ.get("CF_INSTANCE_IP")
 
 tags = ["cf_instance_ip:{}".format(cf_instance_ip)]
 tags.append("container_id:{}".format(os.environ.get("CF_INSTANCE_GUID")))
+
+if sys.argv[1] == 'node-agent-tags':
+    # These are always comma separated so this feature does not support
+    # the legacy tags format
+    node_agent_tags = os.environ.get('DD_NODE_AGENT_TAGS', None)
+    if node_agent_tags is not None:
+        tags.append(node_agent_tags)
 
 for vcap_var_name in vcap_variables:
     vcap_var = vcap_application.get(vcap_var_name)
