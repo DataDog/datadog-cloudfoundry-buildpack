@@ -59,6 +59,6 @@ start_datadog() {
   popd
 }
 
-echo "restarting datadog"
+echo "restarting datadog to refresh tags"
 stop_datadog
 start_datadog
