@@ -20,7 +20,7 @@ cf_instance_ip = os.environ.get("CF_INSTANCE_IP")
 tags = ["cf_instance_ip:{}".format(cf_instance_ip)]
 tags.append("container_id:{}".format(os.environ.get("CF_INSTANCE_GUID")))
 
-if sys.argv[1] == 'node-agent-tags':
+if len(sys.argv) > 1 and sys.argv[1] == 'node-agent-tags':
     # These are always comma separated so this feature does not support
     # the legacy tags format
     node_agent_tags = os.environ.get('DD_NODE_AGENT_TAGS', None)
