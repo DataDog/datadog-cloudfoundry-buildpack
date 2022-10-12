@@ -9,8 +9,8 @@ SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 export DD_TAGS=$(LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py)
 
 datadog_tags=$(python $DATADOG_DIR/scripts/get_tags.py node-agent-tags)
-sed -i "s~tags:.*~tags: $datadog_tags~" $DATADOG_DIR/dist/datadog.yaml
-sed -i "s~dogstatsd_tags:~dogstatsd_tags: $datadog_tags~" $DATADOG_DIR/dist/datadog.yaml
+sed -i "s~tags: \[.*?\].*~tags: $datadog_tags~" $DATADOG_DIR/dist/datadog.yaml
+sed -i "s~dogstatsd_tags: \[.*?\].*~dogstatsd_tags: $datadog_tags~" $DATADOG_DIR/dist/datadog.yaml
 
 stop_datadog() {
   for pidfile in "$DATADOG_DIR"/run/*; do
@@ -34,7 +34,6 @@ start_datadog() {
       else
         export DD_LOG_FILE=$DATADOG_DIR/agent.log
         export DD_IOT_HOST=false
-        sed -i "s~log_file: AGENT_LOG_FILE~log_file: $DD_LOG_FILE~" $DATADOG_DIR/dist/datadog.yaml
         if [ "$SUPPRESS_DD_AGENT_OUTPUT" == "true" ]; then
           ./agent run --cfgpath $DATADOG_DIR/dist/ --pidfile $DATADOG_DIR/run/agent.pid > /dev/null 2>&1 &
         else
@@ -43,7 +42,6 @@ start_datadog() {
       fi
     else
       export DD_LOG_FILE=$DATADOG_DIR/dogstatsd.log
-      sed -i "s~log_file: AGENT_LOG_FILE~log_file: $DD_LOG_FILE~" $DATADOG_DIR/dist/datadog.yaml
       if [ "$SUPPRESS_DD_AGENT_OUTPUT" == "true" ]; then
         ./dogstatsd start --cfgpath $DATADOG_DIR/dist/ > /dev/null 2>&1 &
       else
