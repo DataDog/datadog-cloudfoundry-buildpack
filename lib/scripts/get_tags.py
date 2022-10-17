@@ -25,7 +25,8 @@ if len(sys.argv) > 1 and sys.argv[1] == 'node-agent-tags':
     # the legacy tags format
     node_agent_tags = os.environ.get('DD_NODE_AGENT_TAGS', None)
     if node_agent_tags is not None:
-        tags.append(node_agent_tags)
+        all_node_agent_tags = node_agent_tags.split(",")
+        tags = tags + all_node_agent_tags
 
 for vcap_var_name in vcap_variables:
     vcap_var = vcap_application.get(vcap_var_name)

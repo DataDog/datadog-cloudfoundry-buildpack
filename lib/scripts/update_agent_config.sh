@@ -6,15 +6,24 @@
 
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
-export DD_TAGS=$(LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py)
 
 datadog_tags=$(python $DATADOG_DIR/scripts/get_tags.py node-agent-tags)
-sed -i "s~tags: \[.*?\].*~tags: $datadog_tags~" $DATADOG_DIR/dist/datadog.yaml
-sed -i "s~dogstatsd_tags: \[.*?\].*~dogstatsd_tags: $datadog_tags~" $DATADOG_DIR/dist/datadog.yaml
+sed -i "s~tags: \[.*\].*~tags: $datadog_tags~" $DATADOG_DIR/dist/datadog.yaml
+sed -i "s~dogstatsd_tags: \[.*\].*~dogstatsd_tags: $datadog_tags~" $DATADOG_DIR/dist/datadog.yaml
+
+sed -i "s~tags: \[.*\].*~tags: $datadog_tags~" $DATADOG_DIR/dist/dogstatsd.yaml
+sed -i "s~dogstatsd_tags: \[.*\].*~dogstatsd_tags: $datadog_tags~" $DATADOG_DIR/dist/dogstatsd.yaml
 
 stop_datadog() {
+  echo "Stopping agent process, pid: $(cat $DATADOG_DIR/run/agent.pid)"
+  $DATADOG_DIR/agent stop --cfgpath $DATADOG_DIR/dist/
+  while test -e $DATADOG_DIR/run/agent.pid; do
+    sleep 1
+  done
   for pidfile in "$DATADOG_DIR"/run/*; do
-    kill $(cat $pidfile)
+    echo "Killing process $(cat $pidfile)"
+    kill -9 $(cat $pidfile)
+    rm $pidfile
   done
 }
 
@@ -27,6 +36,9 @@ start_datadog() {
     export DOCKER_DD_AGENT=yes
     export LOGS_CONFIG_DIR=$DATADOG_DIR/dist/conf.d/logs.d
     export LOGS_CONFIG
+
+    datadog_tags=$(python $DATADOG_DIR/scripts/create_logs_config.py)
+    unset DD_TAGS
 
     if [ -a ./agent ] && { [ "$DD_LOGS_ENABLED" = "true" ] || [ "$DD_ENABLE_CHECKS" = "true" ]; }; then
       if [ "$DD_LOGS_ENABLED" = "true" -a "$DD_LOGS_VALID_ENDPOINT" = "false" ]; then
@@ -57,6 +69,6 @@ start_datadog() {
   popd
 }
 
-echo "restarting datadog to refresh tags"
+echo "Restarting datadog to refresh tags"
 stop_datadog
 start_datadog
