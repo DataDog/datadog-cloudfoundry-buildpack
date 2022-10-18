@@ -40,7 +40,7 @@ start_datadog() {
     # the conf file requires them to be comma separated only
     # so they must be grabbed separately
     datadog_tags=$(python $DATADOG_DIR/scripts/get_tags.py)
-    export DD_TAGS=""
+    unset DD_TAGS
 
     sed -i "s~# tags:.*~tags: $datadog_tags~" $DATADOG_DIR/dist/datadog.yaml
     sed -i "s~# dogstatsd_tags:~dogstatsd_tags: $datadog_tags~" $DATADOG_DIR/dist/datadog.yaml
