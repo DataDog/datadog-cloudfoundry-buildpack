@@ -4,6 +4,9 @@
 # This product includes software developed at Datadog (https://www.datadoghq.com/).
 # Copyright 2022-Present Datadog, Inc.
 
+# This script is called by the node agent to expose CAPI metadata and DCA tags to the container agents
+# It sets the DD_NODE_AGENT_TAGS environment variable with these new tags 
+# see: https://github.com/DataDog/datadog-agent/blob/7.40.x/pkg/cloudfoundry/containertagger/container_tagger.go#L131
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 
@@ -16,6 +19,7 @@ sed -i "s~dogstatsd_tags: \[.*\].*~dogstatsd_tags: $datadog_tags~" $DATADOG_DIR/
 
 sed -i "s~tags: \[.*\].*~tags: $datadog_tags~" $DATADOG_DIR/dist/dogstatsd.yaml
 sed -i "s~dogstatsd_tags: \[.*\].*~dogstatsd_tags: $datadog_tags~" $DATADOG_DIR/dist/dogstatsd.yaml
+
 
 stop_datadog() {
   echo "Stopping agent process, pid: $(cat $DATADOG_DIR/run/agent.pid)"
@@ -77,6 +81,7 @@ start_datadog() {
   popd
 }
 
+# After the tags are parsed and added to the agent config, we need to restart the agent for the changes to take effect 
 echo "Restarting datadog to refresh tags"
 stop_datadog
 start_datadog
