@@ -39,8 +39,6 @@ if [ -f $BUILD_DIR/.datadog/dogstatsd ]; then
 fi
 
 chmod +x $BUILD_DIR/.datadog/scripts/update_agent_config.sh
-chmod +x $BUILD_DIR/.datadog/scripts/create_logs_config.py
-chmod +x $BUILD_DIR/.datadog/scripts/get_tags.py
 chmod +x $BUILD_DIR/.datadog/trace-agent
 chmod +x $BUILD_DIR/.profile.d/00-test-endpoint.sh
 chmod +x $BUILD_DIR/.profile.d/02-redirect-logs.sh
