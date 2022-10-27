@@ -20,6 +20,7 @@ sed -i "s~dogstatsd_tags: \[.*\].*~dogstatsd_tags: $datadog_tags~" $DATADOG_DIR/
 sed -i "s~tags: \[.*\].*~tags: $datadog_tags~" $DATADOG_DIR/dist/dogstatsd.yaml
 sed -i "s~dogstatsd_tags: \[.*\].*~dogstatsd_tags: $datadog_tags~" $DATADOG_DIR/dist/dogstatsd.yaml
 
+echo $datadog_tags > "$DATADOG_DIR/node_agent_tags.txt"
 
 stop_datadog() {
   echo "Stopping agent process, pid: $(cat $DATADOG_DIR/run/agent.pid)"
