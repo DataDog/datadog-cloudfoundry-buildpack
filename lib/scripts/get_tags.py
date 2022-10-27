@@ -21,7 +21,7 @@ tags = ["cf_instance_ip:{}".format(cf_instance_ip)]
 tags.append("container_id:{}".format(os.environ.get("CF_INSTANCE_GUID")))
 
 if len(sys.argv) > 1 and sys.argv[1] == 'node-agent-tags':
-    # These are always comma separated
+    # These are always comma separated - See https://github.com/DataDog/datadog-agent/blob/main/pkg/cloudfoundry/containertagger/container_tagger.go#L133
     node_agent_tags = os.environ.get('DD_NODE_AGENT_TAGS', None)
     if node_agent_tags is not None:
         all_node_agent_tags = node_agent_tags.split(",")
