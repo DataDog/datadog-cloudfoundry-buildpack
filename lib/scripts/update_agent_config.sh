@@ -13,12 +13,13 @@ SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 # import utility functions
 source "$DATADOG_DIR/scripts/utils.sh"
 
-datadog_tags=$(python $DATADOG_DIR/scripts/get_tags.py node-agent-tags)
-sed -i "s~tags: \[.*\].*~tags: $datadog_tags~" $DATADOG_DIR/dist/datadog.yaml
-sed -i "s~dogstatsd_tags: \[.*\].*~dogstatsd_tags: $datadog_tags~" $DATADOG_DIR/dist/datadog.yaml
+datadog_tags=$(LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py node-agent-tags)
+export DD_TAGS=$datadog_tags
+sed -i "s~dogstatsd_tags: \[.*\].*~#dogstatsd_tags: ~" $DATADOG_DIR/dist/datadog.yaml
+sed -i "s~tags: \[.*\].*~#tags: ~" $DATADOG_DIR/dist/datadog.yaml
 
-sed -i "s~tags: \[.*\].*~tags: $datadog_tags~" $DATADOG_DIR/dist/dogstatsd.yaml
-sed -i "s~dogstatsd_tags: \[.*\].*~dogstatsd_tags: $datadog_tags~" $DATADOG_DIR/dist/dogstatsd.yaml
+sed -i "s~dogstatsd_tags: \[.*\].*~#dogstatsd_tags: ~" $DATADOG_DIR/dist/dogstatsd.yaml
+sed -i "s~tags: \[.*\].*~#tags: ~" $DATADOG_DIR/dist/dogstatsd.yaml
 
 echo $datadog_tags > "$DATADOG_DIR/node_agent_tags.txt"
 
@@ -51,7 +52,6 @@ start_datadog() {
     export LOGS_CONFIG
 
     datadog_tags=$(python $DATADOG_DIR/scripts/create_logs_config.py)
-    unset DD_TAGS
 
     if [ -a ./agent ] && { [ "$DD_LOGS_ENABLED" = "true" ] || [ "$DD_ENABLE_CHECKS" = "true" ]; }; then
       if [ "$DD_LOGS_ENABLED" = "true" -a "$DD_LOGS_VALID_ENDPOINT" = "false" ]; then
