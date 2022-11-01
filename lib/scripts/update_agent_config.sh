@@ -15,11 +15,6 @@ source "$DATADOG_DIR/scripts/utils.sh"
 
 datadog_tags=$(LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py node-agent-tags)
 export DD_TAGS=$datadog_tags
-sed -i "s~dogstatsd_tags: \[.*\].*~#dogstatsd_tags: ~" $DATADOG_DIR/dist/datadog.yaml
-sed -i "s~tags: \[.*\].*~#tags: ~" $DATADOG_DIR/dist/datadog.yaml
-
-sed -i "s~dogstatsd_tags: \[.*\].*~#dogstatsd_tags: ~" $DATADOG_DIR/dist/dogstatsd.yaml
-sed -i "s~tags: \[.*\].*~#tags: ~" $DATADOG_DIR/dist/dogstatsd.yaml
 
 echo $datadog_tags > "$DATADOG_DIR/node_agent_tags.txt"
 
