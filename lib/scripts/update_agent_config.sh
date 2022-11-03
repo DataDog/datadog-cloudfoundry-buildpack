@@ -5,35 +5,42 @@
 # Copyright 2022-Present Datadog, Inc.
 
 # This script is called by the node agent to expose CAPI metadata and DCA tags to the container agents
-# It sets the DD_NODE_AGENT_TAGS environment variable with these new tags 
+# It sets the DD_NODE_AGENT_TAGS environment variable with these new tags
 # see: https://github.com/DataDog/datadog-agent/blob/7.40.x/pkg/cloudfoundry/containertagger/container_tagger.go#L131
+
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 
+export DD_TAGS=$(LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py node-agent-tags)
+
 # import utility functions
 source "$DATADOG_DIR/scripts/utils.sh"
-
-datadog_tags=$(LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py node-agent-tags)
-export DD_TAGS=$datadog_tags
-
-echo $datadog_tags > "$DATADOG_DIR/node_agent_tags.txt"
 
 stop_datadog() {
   echo "Stopping agent process, pid: $(cat $DATADOG_DIR/run/agent.pid)"
 
   # first try to stop the agent so we don't lose data and then force it
-  ($DATADOG_DIR/agent stop --cfgpath $DATADOG_DIR/dist/) || true
-  find_pid_kill_and_wait $DATADOG_DIR/agent || true
-  kill_and_wait "$DATADOG_DIR/run/agent.pid" 1
-  rm -f "$DATADOG_DIR/run/agent.pid"
+  if [ -f "$DATADOG_DIR/run/agent.pid" ]; then
+    echo "stopping agent agent"
+    ($DATADOG_DIR/agent stop --cfgpath $DATADOG_DIR/dist/) || true
+    find_pid_kill_and_wait $DATADOG_DIR/agent || true
+    kill_and_wait "$DATADOG_DIR/run/agent.pid" 5
+    rm -f "$DATADOG_DIR/run/agent.pid"
+  fi
 
-  trace_agent_command="$DATADOG_DIR/trace-agent"
-  kill_and_wait "$DATADOG_DIR/run/trace-agent.pid" 1 1
-  find_pid_kill_and_wait $trace_agent_command "$DATADOG_DIR/run/trace-agent.pid"
+  if [ -f "$DATADOG_DIR/run/trace-agent.pid" ]; then
+    echo "stopping trace agent"
+    trace_agent_command="$DATADOG_DIR/trace-agent"
+    kill_and_wait "$DATADOG_DIR/run/trace-agent.pid" 5 1
+    find_pid_kill_and_wait $trace_agent_command "$DATADOG_DIR/run/trace-agent.pid"
+  fi
 
-  dogstatsd_command="$DATADOG_DIR/dogstatsd"
-  kill_and_wait "$DATADOG_DIR/run/dogstatsd.pid" 1 1
-  find_pid_kill_and_wait $dogstatsd_command "$DATADOG_DIR/run/dogstatsd.pid"
+  if [ -f "$DATADOG_DIR/run/dogstatsd.pid" ]; then
+    echo "stopping dogstatsd"
+    dogstatsd_command="$DATADOG_DIR/dogstatsd"
+    kill_and_wait "$DATADOG_DIR/run/dogstatsd.pid" 5 1
+    find_pid_kill_and_wait $dogstatsd_command "$DATADOG_DIR/run/dogstatsd.pid"
+  fi
 }
 
 start_datadog() {
@@ -46,14 +53,14 @@ start_datadog() {
     export LOGS_CONFIG_DIR=$DATADOG_DIR/dist/conf.d/logs.d
     export LOGS_CONFIG
 
-    datadog_tags=$(python $DATADOG_DIR/scripts/create_logs_config.py)
-
     if [ -a ./agent ] && { [ "$DD_LOGS_ENABLED" = "true" ] || [ "$DD_ENABLE_CHECKS" = "true" ]; }; then
       if [ "$DD_LOGS_ENABLED" = "true" -a "$DD_LOGS_VALID_ENDPOINT" = "false" ]; then
         echo "Log endpoint not valid, not starting agent"
       else
         export DD_LOG_FILE=$DATADOG_DIR/agent.log
         export DD_IOT_HOST=false
+
+        echo "starting agent"
         if [ "$SUPPRESS_DD_AGENT_OUTPUT" == "true" ]; then
           ./agent run --cfgpath $DATADOG_DIR/dist/ --pidfile $DATADOG_DIR/run/agent.pid > /dev/null 2>&1 &
         else
@@ -61,6 +68,7 @@ start_datadog() {
         fi
       fi
     else
+      echo "starting dogstatsd"
       export DD_LOG_FILE=$DATADOG_DIR/dogstatsd.log
       if [ "$SUPPRESS_DD_AGENT_OUTPUT" == "true" ]; then
         ./dogstatsd start --cfgpath $DATADOG_DIR/dist/ > /dev/null 2>&1 &
@@ -69,6 +77,7 @@ start_datadog() {
       fi
       echo $! > run/dogstatsd.pid
     fi
+    echo "starting trace agent"
     if [ "$SUPPRESS_DD_AGENT_OUTPUT" == "true" ]; then
       ./trace-agent --config $DATADOG_DIR/dist/datadog.yaml --pid $DATADOG_DIR/run/trace-agent.pid > /dev/null 2>&1 &
     else
@@ -77,7 +86,16 @@ start_datadog() {
   popd
 }
 
-# After the tags are parsed and added to the agent config, we need to restart the agent for the changes to take effect 
-echo "Restarting datadog to refresh tags"
-stop_datadog
-start_datadog
+
+
+main() {
+    echo "$DD_TAGS"> "$DATADOG_DIR/node_agent_tags.txt"
+
+    # After the tags are parsed and added to DD_TAGS, we need to restart the agent for the changes to take effect
+    echo "stop datadog to refresh tags"
+    stop_datadog
+    echo "start datadog to refresh tags"
+    start_datadog
+}
+
+main "$@" >> "${DATADOG_DIR}/update_script.log" 2>&1

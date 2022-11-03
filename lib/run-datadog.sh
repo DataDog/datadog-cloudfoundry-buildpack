@@ -7,6 +7,8 @@
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 LOCKFILE="$DATADOG_DIR/lock"
+datadog_tags=$(python LEGACY_TAGS_FORMAT=true $DATADOG_DIR/scripts/get_tags.py)
+export DD_TAGS=$datadog_tags
 
 start_datadog() {
   pushd $DATADOG_DIR
@@ -37,8 +39,6 @@ start_datadog() {
     # The yaml file requires the tags to be an array,
     # the conf file requires them to be comma separated only
     # so they must be grabbed separately
-    datadog_tags=$(python LEGACY_TAGS_FORMAT=true $DATADOG_DIR/scripts/get_tags.py)
-    export DD_TAGS=$datadog_tags
     sed -i "s~log_file: TRACE_LOG_FILE~log_file: $DATADOG_DIR/trace.log~" $DATADOG_DIR/dist/datadog.yaml
     if [ -n "$DD_SKIP_SSL_VALIDATION" ]; then
       sed -i "s~# skip_ssl_validation: no~skip_ssl_validation: yes~" $DATADOG_DIR/dist/datadog.yaml
