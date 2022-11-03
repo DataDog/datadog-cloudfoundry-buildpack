@@ -9,7 +9,7 @@ SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 LOCKFILE="$DATADOG_DIR/lock"
 datadog_tags=$(python LEGACY_TAGS_FORMAT=true $DATADOG_DIR/scripts/get_tags.py)
 export DD_TAGS=$datadog_tags
-
+echo "export TESTING='TESTS'" >> "/home/vcap/.profile"
 start_datadog() {
   pushd $DATADOG_DIR
     export DD_LOG_FILE=$DATADOG_DIR/dogstatsd.log
@@ -130,6 +130,7 @@ stop_datadog() {
 if [ -z $DD_API_KEY ]; then
   echo "Datadog API Key not set, not starting Datadog"
 else
+  export TESTINGTEST="HEYYY"
   exec 9> "$LOCKFILE" || exit 1
   if flock -x -n 9; then
     echo "starting datadog"
