@@ -1,1 +1,1 @@
-CF_INSTANCE_GUID=$CF_INSTANCE_GUID VCAP_APPLICATION=$VCAP_APPLICATION DD_LOGS_ENABLED=$DD_LOGS_ENABLED DD_ENABLE_CHECKS=$DD_ENABLE_CHECKS SUPPRESS_DD_AGENT_OUTPUT=$SUPPRESS_DD_AGENT_OUTPUT /bin/bash /home/vcap/app/.datadog/scripts/update_agent_config_restart.sh
+/bin/bash /home/vcap/app/.datadog/scripts/update_agent_config_restart.sh

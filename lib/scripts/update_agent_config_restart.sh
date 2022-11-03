@@ -90,8 +90,7 @@ start_datadog() {
 
 main() {
     echo "$DD_TAGS"> "$DATADOG_DIR/node_agent_tags.txt"
-
-    echo "help"
+    echo "here are dd tags $DD_TAGS"
     echo $CF_INSTANCE_GUID
     echo "hii"
     /usr/bin/printenv  
