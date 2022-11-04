@@ -7,9 +7,17 @@
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 LOCKFILE="$DATADOG_DIR/lock"
-datadog_tags=$(python LEGACY_TAGS_FORMAT=true $DATADOG_DIR/scripts/get_tags.py)
+datadog_tags=$(LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py)
 export DD_TAGS=$datadog_tags
-echo "export TESTING='TESTS'" >> "/home/vcap/.profile"
+echo "export DD_TAGS=$DD_TAGS" >> "$DATADOG_DIR/.datadog_env"
+echo "export SUPPRESS_DD_AGENT_OUTPUT=$SUPPRESS_DD_AGENT_OUTPUT" >> "$DATADOG_DIR/.datadog_env"
+echo "export DD_ENABLE_CHECKS=$DD_ENABLE_CHECKS" >> "$DATADOG_DIR/.datadog_env"
+echo "export CF_INSTANCE_GUID=$CF_INSTANCE_GUID" >> "$DATADOG_DIR/.datadog_env"
+echo "export CF_INSTANCE_IP=$CF_INSTANCE_IP" >> "$DATADOG_DIR/.datadog_env"
+echo "export VCAP_APPLICATION=$VCAP_APPLICATION" >> "$DATADOG_DIR/.datadog_env"
+echo "export HEYYY=$CF_INSTANCE_IP" >> "$DATADOG_DIR/.datadog_env"
+echo "export DD_LOGS_ENABLED=$DD_LOGS_ENABLED" >> "$DATADOG_DIR/.datadog_env"
+
 start_datadog() {
   pushd $DATADOG_DIR
     export DD_LOG_FILE=$DATADOG_DIR/dogstatsd.log
