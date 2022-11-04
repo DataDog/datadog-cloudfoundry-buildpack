@@ -11,9 +11,10 @@
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 
+#set -eoupipefail
 source "$DATADOG_DIR/.datadog_env"
 #VCAP_APPLICATION=$VCAP_APPLICATION 
-export DD_TAGS=$(CF_INSTANCE_IP=$CF_INSTANCE_IP CF_INSTANCE_GUID=$CF_INSTANCE_GUID LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py node-agent-tags)
+export DD_TAGS=$(LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py node-agent-tags)
 echo "DD TAGS IS $DD_TAGS" >> "$DATADOG_DIR/testing.log"
 echo "VCAP_APPLICATION IS $VCAP_APPLICATION" >> "$DATADOG_DIR/testing.log"
 echo "DD_LOGS_ENABLED IS $DD_LOGS_ENABLED" >> "$DATADOG_DIR/testing.log"
@@ -67,7 +68,8 @@ start_datadog() {
       else
         export DD_LOG_FILE=$DATADOG_DIR/agent.log
         export DD_IOT_HOST=false 
-        (LOGS_CONFIG_DIR=$LOGS_CONFIG_DIR LOGS_CONFIG=$LOGS_CONFIG CF_INSTANCE_IP=$CF_INSTANCE_IP CF_INSTANCE_GUID=$CF_INSTANCE_GUID python $DATADOG_DIR/scripts/create_logs_config.py)
+        echo "LOGS_CONFIG"
+        (python $DATADOG_DIR/scripts/create_logs_config.py)
 
         echo "starting agent"
         if [ "$SUPPRESS_DD_AGENT_OUTPUT" == "true" ]; then

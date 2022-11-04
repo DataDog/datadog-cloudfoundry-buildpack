@@ -9,15 +9,19 @@ SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 LOCKFILE="$DATADOG_DIR/lock"
 datadog_tags=$(LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py)
 export DD_TAGS=$datadog_tags
-echo "export DD_TAGS=${DD_TAGS:-''}" >> "$DATADOG_DIR/.datadog_env"
-echo "export SUPPRESS_DD_AGENT_OUTPUT=${SUPPRESS_DD_AGENT_OUTPUT:-true}" >> "$DATADOG_DIR/.datadog_env"
-echo "export DD_ENABLE_CHECKS=${DD_ENABLE_CHECKS:-false}" >> "$DATADOG_DIR/.datadog_env"
-echo "export CF_INSTANCE_GUID=$CF_INSTANCE_GUID" >> "$DATADOG_DIR/.datadog_env"
-echo "export CF_INSTANCE_IP=$CF_INSTANCE_IP" >> "$DATADOG_DIR/.datadog_env"
-echo "export HEYYY=$CF_INSTANCE_IP" >> "$DATADOG_DIR/.datadog_env"
-echo "export DD_LOGS_ENABLED=${DD_LOGS_ENABLED:-false}" >> "$DATADOG_DIR/.datadog_env"
-echo "export VCAP_APPLICATION='${VCAP_APPLICATION:-'{}'}'" >> "$DATADOG_DIR/.datadog_env"
-echo "export DD_API_KEY=${DD_API_KEY:-''}" >> "$DATADOG_DIR/.datadog_env"
+env | sed 's/=\(.*\)/="\1"/' > "$DATADOG_DIR/.datadog_env"
+#echo "export DD_TAGS=${DD_TAGS:-''}" >> "$DATADOG_DIR/.datadog_env"
+#echo "export SUPPRESS_DD_AGENT_OUTPUT=${SUPPRESS_DD_AGENT_OUTPUT:-true}" >> "$DATADOG_DIR/.datadog_env"
+#echo "export DD_ENABLE_CHECKS=${DD_ENABLE_CHECKS:-false}" >> "$DATADOG_DIR/.datadog_env"
+#echo "export CF_INSTANCE_GUID=$CF_INSTANCE_GUID" >> "$DATADOG_DIR/.datadog_env"
+#echo "export CF_INSTANCE_IP=$CF_INSTANCE_IP" >> "$DATADOG_DIR/.datadog_env"
+#echo "export HEYYY=$CF_INSTANCE_IP" >> "$DATADOG_DIR/.datadog_env"
+#echo "export DD_LOGS_ENABLED=${DD_LOGS_ENABLED:-false}" >> "$DATADOG_DIR/.datadog_env"
+#echo "export VCAP_APPLICATION='${VCAP_APPLICATION:-'{}'}'" >> "$DATADOG_DIR/.datadog_env"
+#echo "export DD_API_KEY=${DD_API_KEY:-''}" >> "$DATADOG_DIR/.datadog_env"
+#echo "export LOGS_CONFIG='${LOGS_CONFIG:-'{}'}'" >> "$DATADOG_DIR/.datadog_env"
+#DEFAULT_LOGS_CONFIG_DIR=$DATADOG_DIR/dist/conf.d/logs.d
+#echo "export LOGS_CONFIG_DIR=${LOGS_CONFIG_DIR:-$DEFAULT_LOGS_CONFIG_DIR}" >> "$DATADOG_DIR/.datadog_env"
 
 start_datadog() {
   pushd $DATADOG_DIR
@@ -104,6 +108,7 @@ start_datadog() {
         export DD_LOG_FILE=$DATADOG_DIR/agent.log
         export DD_IOT_HOST=false
         sed -i "s~log_file: AGENT_LOG_FILE~log_file: $DD_LOG_FILE~" $DATADOG_DIR/dist/datadog.yaml
+        sed -i "s~# log_to_console: yes~logs_config.run_path: /home/vcap/app/.datadog/test~" $DATADOG_DIR/dist/datadog.yaml
         if [ "$SUPPRESS_DD_AGENT_OUTPUT" == "true" ]; then
           ./agent run --cfgpath $DATADOG_DIR/dist/ --pidfile $DATADOG_DIR/run/agent.pid > /dev/null 2>&1 &
         else

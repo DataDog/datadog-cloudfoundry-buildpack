@@ -59,6 +59,7 @@ if user_tags:
         print("there was an issue parsing the tags in DD_TAGS: {}".format(e))
 
 legacy_tags = os.environ.get('LEGACY_TAGS_FORMAT', False)
+tags = set(tags)
 if legacy_tags:
     print(','.join(tags))
 else:

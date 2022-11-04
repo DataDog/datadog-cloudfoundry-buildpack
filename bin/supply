@@ -11,6 +11,7 @@ ENV_DIR=$3
 echo "Installing Datadog IOT Agent, Dogstatsd and Trace Agent"
 
 mkdir -p $BUILD_DIR/.datadog/scripts
+mkdir -p $BUILD_DIR/.datadog/test/run
 mkdir -p $BUILD_DIR/.profile.d
 
 cp -r $ROOT_DIR/lib/dist $BUILD_DIR/.datadog/
