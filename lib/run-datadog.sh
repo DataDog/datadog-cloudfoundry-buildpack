@@ -14,9 +14,9 @@ echo "export SUPPRESS_DD_AGENT_OUTPUT=$SUPPRESS_DD_AGENT_OUTPUT" >> "$DATADOG_DI
 #echo "export DD_ENABLE_CHECKS=$DD_ENABLE_CHECKS" >> "$DATADOG_DIR/.datadog_env"
 echo "export CF_INSTANCE_GUID=$CF_INSTANCE_GUID" >> "$DATADOG_DIR/.datadog_env"
 echo "export CF_INSTANCE_IP=$CF_INSTANCE_IP" >> "$DATADOG_DIR/.datadog_env"
-#echo "export VCAP_APPLICATION=$VCAP_APPLICATION" >> "$DATADOG_DIR/.datadog_env"
 echo "export HEYYY=$CF_INSTANCE_IP" >> "$DATADOG_DIR/.datadog_env"
 echo "export DD_LOGS_ENABLED=$DD_LOGS_ENABLED" >> "$DATADOG_DIR/.datadog_env"
+echo "export VCAP_APPLICATION='$VCAP_APPLICATION'" >> "$DATADOG_DIR/.datadog_env"
 
 start_datadog() {
   pushd $DATADOG_DIR
