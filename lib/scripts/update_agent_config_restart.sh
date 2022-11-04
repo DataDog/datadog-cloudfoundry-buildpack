@@ -12,9 +12,11 @@ DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 
 source "$DATADOG_DIR/.datadog_env"
-export DD_TAGS=$(VCAP_APPLICATION=$VCAP_APPLICATION CF_INSTANCE_IP=$CF_INSTANCE_IP CF_INSTANCE_GUID=$CF_INSTANCE_GUID LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py node-agent-tags)
-#export DD_TAGS
-# import utility functions
+#VCAP_APPLICATION=$VCAP_APPLICATION 
+export DD_TAGS=$(CF_INSTANCE_IP=$CF_INSTANCE_IP CF_INSTANCE_GUID=$CF_INSTANCE_GUID LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py node-agent-tags)
+echo "DD TAGS IS $DD_TAGS" >> "$DATADOG_DIR/testing.log"
+echo "VCAP_APPLICATION IS $VCAP_APPLICATION" >> "$DATADOG_DIR/testing.log"
+
 source "$DATADOG_DIR/scripts/utils.sh"
 
 stop_datadog() {
@@ -79,6 +81,7 @@ start_datadog() {
       echo $! > run/dogstatsd.pid
     fi
     echo "starting trace agent"
+    sleep 1
     if [ "$SUPPRESS_DD_AGENT_OUTPUT" == "true" ]; then
       ./trace-agent --config $DATADOG_DIR/dist/datadog.yaml --pid $DATADOG_DIR/run/trace-agent.pid > /dev/null 2>&1 &
     else
@@ -90,7 +93,8 @@ start_datadog() {
 
 
 main() {
-    echo "$DD_TAGS"> "$DATADOG_DIR/node_agent_tags.txt"
+    #export DD_TAGS=$(VCAP_APPLICATION=$VCAP_APPLICATION CF_INSTANCE_IP=$CF_INSTANCE_IP CF_INSTANCE_GUID=$CF_INSTANCE_GUID LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py node-agent-tags)
+    echo "$DD_TAGS" >> "$DATADOG_DIR/node_agent_tags.txt"
     echo "CF_INSTANCE_IP: $CF_INSTANCE_IP"
     echo "DD_LOGS_ENABLED: $DD_LOGS_ENABLED"
 
