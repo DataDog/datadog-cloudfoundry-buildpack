@@ -16,7 +16,7 @@ source "$DATADOG_DIR/.datadog_env"
 export DD_TAGS=$(CF_INSTANCE_IP=$CF_INSTANCE_IP CF_INSTANCE_GUID=$CF_INSTANCE_GUID LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py node-agent-tags)
 echo "DD TAGS IS $DD_TAGS" >> "$DATADOG_DIR/testing.log"
 echo "VCAP_APPLICATION IS $VCAP_APPLICATION" >> "$DATADOG_DIR/testing.log"
-
+echo "DD_LOGS_ENABLED IS $DD_LOGS_ENABLED" >> "$DATADOG_DIR/testing.log"
 source "$DATADOG_DIR/scripts/utils.sh"
 
 stop_datadog() {
@@ -94,7 +94,7 @@ start_datadog() {
 
 main() {
     #export DD_TAGS=$(VCAP_APPLICATION=$VCAP_APPLICATION CF_INSTANCE_IP=$CF_INSTANCE_IP CF_INSTANCE_GUID=$CF_INSTANCE_GUID LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py node-agent-tags)
-    echo "$DD_TAGS" >> "$DATADOG_DIR/node_agent_tags.txt"
+    echo "$DD_TAGS" > "$DATADOG_DIR/node_agent_tags.txt"
     echo "CF_INSTANCE_IP: $CF_INSTANCE_IP"
     echo "DD_LOGS_ENABLED: $DD_LOGS_ENABLED"
 
