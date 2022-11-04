@@ -17,6 +17,7 @@ export DD_TAGS=$(CF_INSTANCE_IP=$CF_INSTANCE_IP CF_INSTANCE_GUID=$CF_INSTANCE_GU
 echo "DD TAGS IS $DD_TAGS" >> "$DATADOG_DIR/testing.log"
 echo "VCAP_APPLICATION IS $VCAP_APPLICATION" >> "$DATADOG_DIR/testing.log"
 echo "DD_LOGS_ENABLED IS $DD_LOGS_ENABLED" >> "$DATADOG_DIR/testing.log"
+
 source "$DATADOG_DIR/scripts/utils.sh"
 
 stop_datadog() {
@@ -55,13 +56,18 @@ start_datadog() {
     export DOCKER_DD_AGENT=yes
     export LOGS_CONFIG_DIR=$DATADOG_DIR/dist/conf.d/logs.d
     export LOGS_CONFIG
+    export DD_LOG_LEVEL="debug"
+    export LOG_LEVEL="debug"
+    export DD_API_KEY
+
 
     if [ -a ./agent ] && { [ "$DD_LOGS_ENABLED" = "true" ] || [ "$DD_ENABLE_CHECKS" = "true" ]; }; then
       if [ "$DD_LOGS_ENABLED" = "true" -a "$DD_LOGS_VALID_ENDPOINT" = "false" ]; then
         echo "Log endpoint not valid, not starting agent"
       else
         export DD_LOG_FILE=$DATADOG_DIR/agent.log
-        export DD_IOT_HOST=false
+        export DD_IOT_HOST=false 
+        (LOGS_CONFIG_DIR=$LOGS_CONFIG_DIR LOGS_CONFIG=$LOGS_CONFIG CF_INSTANCE_IP=$CF_INSTANCE_IP CF_INSTANCE_GUID=$CF_INSTANCE_GUID python $DATADOG_DIR/scripts/create_logs_config.py)
 
         echo "starting agent"
         if [ "$SUPPRESS_DD_AGENT_OUTPUT" == "true" ]; then
