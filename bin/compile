@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo "-----> DatadogBuildpack/comply"
+echo "-----> DatadogBuildpack/compile"
 
 
 BIN_DIR=$(cd $(dirname $0); pwd)
@@ -17,7 +17,6 @@ cp $ROOT_DIR/lib/scripts/get_tags.py $BUILD_DIR/.datadog/scripts/get_tags.py
 
 echo "Installing Datadog IOT Agent, Dogstatsd and Trace Agent"
 
-mkdir -p $BUILD_DIR/.datadog/test/run
 mkdir -p $BUILD_DIR/.profile.d
 
 cp -r $ROOT_DIR/lib/dist $BUILD_DIR/.datadog/
@@ -54,5 +53,6 @@ chmod +x $BUILD_DIR/.profile.d/00-test-endpoint.sh
 chmod +x $BUILD_DIR/.profile.d/02-redirect-logs.sh
 chmod +x $BUILD_DIR/.profile.d/01-run-datadog.sh
 
-echo $(date '+%Y-%m-%d %H:%M:%S') "exporting env to .datadog_env" >> $DATADOG_DIR/run-datadog.log
-printenv | sed 's/=\(.*\)/="\1"/' > "$BUILD_DIR/.datadog/.datadog_env"
+# Export all environment variables to a file that scripts can use later
+# We need to handle quotes and comments; sed command found in https://gist.github.com/mihow/9c7f559807069a03e302605691f85572
+printenv | sed -e '/^#/d;/^\s*$/d' -e "s/'/'\\\''/g" -e "s/=\(.*\)/='\1'/g" > "$BUILD_DIR/.datadog/.datadog_env"

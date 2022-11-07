@@ -9,20 +9,19 @@
 # see: https://github.com/DataDog/datadog-agent/blob/7.40.x/pkg/cloudfoundry/containertagger/container_tagger.go#L131
 
 
-# set -eoupipefail
-
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 
-echo "sourcing .datadog_env"
 source "$DATADOG_DIR/.datadog_env"
-source "$DATADOG_DIR/scripts/utils.sh"
 
-export DD_TAGS=$(LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py node-agent-tags)
+datadog_tags=$(VCAP_APPLICATION=$VCAP_APPLICATION CF_INSTANCE_IP=$CF_INSTANCE_IP CF_INSTANCE_GUID=$CF_INSTANCE_GUID LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py node-agent-tags)
+export DD_TAGS=$datadog_tags
+
+echo "$DD_TAGS" > "$DATADOG_DIR/node_agent_tags.txt"
 echo "DD TAGS IS $DD_TAGS" >> "$DATADOG_DIR/testing.log"
 echo "VCAP_APPLICATION IS $VCAP_APPLICATION" >> "$DATADOG_DIR/testing.log"
-echo "DD_LOGS_ENABLED IS $DD_LOGS_ENABLED" >> "$DATADOG_DIR/testing.log"
 
+source "$DATADOG_DIR/scripts/utils.sh"
 
 stop_datadog() {
   echo "Stopping agent process, pid: $(cat $DATADOG_DIR/run/agent.pid)"
@@ -64,18 +63,15 @@ start_datadog() {
     export LOG_LEVEL="debug"
     export DD_API_KEY
 
-
     if [ -a ./agent ] && { [ "$DD_LOGS_ENABLED" = "true" ] || [ "$DD_ENABLE_CHECKS" = "true" ]; }; then
       if [ "$DD_LOGS_ENABLED" = "true" -a "$DD_LOGS_VALID_ENDPOINT" = "false" ]; then
         echo "Log endpoint not valid, not starting agent"
       else
         export DD_LOG_FILE=$DATADOG_DIR/agent.log
         export DD_IOT_HOST=false
-        echo "LOGS_CONFIG"
         python $DATADOG_DIR/scripts/create_logs_config.py
 
-        echo "starting agent"
-        if [ "$SUPPRESS_DD_AGENT_OUTPUT" == "true" ]; then
+        if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
           ./agent run --cfgpath $DATADOG_DIR/dist/ --pidfile $DATADOG_DIR/run/agent.pid > /dev/null 2>&1 &
         else
           ./agent run --cfgpath $DATADOG_DIR/dist/ --pidfile $DATADOG_DIR/run/agent.pid &
@@ -84,7 +80,7 @@ start_datadog() {
     else
       echo "starting dogstatsd"
       export DD_LOG_FILE=$DATADOG_DIR/dogstatsd.log
-      if [ "$SUPPRESS_DD_AGENT_OUTPUT" == "true" ]; then
+      if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
         ./dogstatsd start --cfgpath $DATADOG_DIR/dist/ > /dev/null 2>&1 &
       else
         ./dogstatsd start --cfgpath $DATADOG_DIR/dist/ &
@@ -92,8 +88,7 @@ start_datadog() {
       echo $! > run/dogstatsd.pid
     fi
     echo "starting trace agent"
-    sleep 1
-    if [ "$SUPPRESS_DD_AGENT_OUTPUT" == "true" ]; then
+    if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
       ./trace-agent --config $DATADOG_DIR/dist/datadog.yaml --pid $DATADOG_DIR/run/trace-agent.pid > /dev/null 2>&1 &
     else
       ./trace-agent --config $DATADOG_DIR/dist/datadog.yaml --pid $DATADOG_DIR/run/trace-agent.pid &
@@ -105,10 +100,7 @@ start_datadog() {
 
 main() {
     echo $DD_NODE_AGENT_TAGS >> /home/vcap/app/.datadog/main-testing.log
-    #export DD_TAGS=$(VCAP_APPLICATION=$VCAP_APPLICATION CF_INSTANCE_IP=$CF_INSTANCE_IP CF_INSTANCE_GUID=$CF_INSTANCE_GUID LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py node-agent-tags)
-    echo "$DD_TAGS" > "$DATADOG_DIR/node_agent_tags.txt" >> /home/vcap/app/.datadog/main-testing.log
-    echo "CF_INSTANCE_IP: $CF_INSTANCE_IP" >> /home/vcap/app/.datadog/main-testing.log
-    echo "DD_LOGS_ENABLED: $DD_LOGS_ENABLED" >> /home/vcap/app/.datadog/main-testing.log
+    echo "$DD_TAGS" > "$DATADOG_DIR/node_agent_tags.txt" #>> /home/vcap/app/.datadog/main-testing.log
 
     echo "here are dd tags $DD_TAGS" >> /home/vcap/app/.datadog/main-testing.log
 

@@ -8,12 +8,7 @@ DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 LOCKFILE="$DATADOG_DIR/lock"
 
-echo $(date '+%Y-%m-%d %H:%M:%S') " - exporting DD_TAGS" >> $DATADOG_DIR/run-datadog.log
 export DD_TAGS=$(LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py)
-
-
-echo "$(printenv)" >> "$DATADOG_DIR/run-datadog-env.log"
-echo $(date '+%Y-%m-%d %H:%M:%S') "exporting env to .datadog_env" >> $DATADOG_DIR/run-datadog.log
 
 start_datadog() {
   pushd $DATADOG_DIR
@@ -88,6 +83,8 @@ start_datadog() {
     if [ -n "$DD_CMD_PORT" ]; then
       sed -i "s~# cmd_port: 5001~cmd_port: $DD_CMD_PORT~" $DATADOG_DIR/dist/datadog.yaml
     fi
+
+    sed -i "s~# disable_file_logging: no~logs_enabled: $DD_LOGS_ENABLED~" $DATADOG_DIR/dist/datadog.yaml
     # Create folder for storing PID files
     mkdir run
 
@@ -100,7 +97,6 @@ start_datadog() {
         export DD_LOG_FILE=$DATADOG_DIR/agent.log
         export DD_IOT_HOST=false
         sed -i "s~log_file: AGENT_LOG_FILE~log_file: $DD_LOG_FILE~" $DATADOG_DIR/dist/datadog.yaml
-        sed -i "s~# log_to_console: yes~logs_config.run_path: /home/vcap/app/.datadog/test~" $DATADOG_DIR/dist/datadog.yaml
         if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
           ./agent run --cfgpath $DATADOG_DIR/dist/ --pidfile $DATADOG_DIR/run/agent.pid > /dev/null 2>&1 &
         else

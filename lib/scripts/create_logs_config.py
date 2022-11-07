@@ -12,6 +12,7 @@ LOGS_CONFIG_DIR = os.environ['LOGS_CONFIG_DIR']
 LOGS_CONFIG = os.environ['LOGS_CONFIG']
 
 tags = []
+print(str(os.environ))
 # TODO: check if this is causing duplicate tags and should only use the used-provided DD_TAGS instead
 new_tags = subprocess.check_output(['python', '/home/vcap/app/.datadog/scripts/get_tags.py', 'node-agent-tags'])
 new_tags = new_tags.decode("UTF-8")

@@ -1,4 +1,3 @@
-
 echo "script was called" >> /tmp/script-called.txt
 
 

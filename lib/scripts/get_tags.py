@@ -58,8 +58,7 @@ if user_tags:
     except Exception as e:
         print("there was an issue parsing the tags in DD_TAGS: {}".format(e))
 
-
-tags = set(tags)
+tags = list(set(tags))
 
 legacy_tags = os.environ.get('LEGACY_TAGS_FORMAT', False)
 if legacy_tags:
