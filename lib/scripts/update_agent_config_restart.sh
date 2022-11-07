@@ -8,18 +8,21 @@
 # It sets the DD_NODE_AGENT_TAGS environment variable with these new tags
 # see: https://github.com/DataDog/datadog-agent/blob/7.40.x/pkg/cloudfoundry/containertagger/container_tagger.go#L131
 
+
+# set -eoupipefail
+
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 
-#set -eoupipefail
+echo "sourcing .datadog_env"
 source "$DATADOG_DIR/.datadog_env"
-#VCAP_APPLICATION=$VCAP_APPLICATION 
+source "$DATADOG_DIR/scripts/utils.sh"
+
 export DD_TAGS=$(LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py node-agent-tags)
 echo "DD TAGS IS $DD_TAGS" >> "$DATADOG_DIR/testing.log"
 echo "VCAP_APPLICATION IS $VCAP_APPLICATION" >> "$DATADOG_DIR/testing.log"
 echo "DD_LOGS_ENABLED IS $DD_LOGS_ENABLED" >> "$DATADOG_DIR/testing.log"
 
-source "$DATADOG_DIR/scripts/utils.sh"
 
 stop_datadog() {
   echo "Stopping agent process, pid: $(cat $DATADOG_DIR/run/agent.pid)"
@@ -67,9 +70,9 @@ start_datadog() {
         echo "Log endpoint not valid, not starting agent"
       else
         export DD_LOG_FILE=$DATADOG_DIR/agent.log
-        export DD_IOT_HOST=false 
+        export DD_IOT_HOST=false
         echo "LOGS_CONFIG"
-        (python $DATADOG_DIR/scripts/create_logs_config.py)
+        python $DATADOG_DIR/scripts/create_logs_config.py
 
         echo "starting agent"
         if [ "$SUPPRESS_DD_AGENT_OUTPUT" == "true" ]; then
@@ -101,12 +104,13 @@ start_datadog() {
 
 
 main() {
+    echo $DD_NODE_AGENT_TAGS >> /home/vcap/app/.datadog/main-testing.log
     #export DD_TAGS=$(VCAP_APPLICATION=$VCAP_APPLICATION CF_INSTANCE_IP=$CF_INSTANCE_IP CF_INSTANCE_GUID=$CF_INSTANCE_GUID LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py node-agent-tags)
-    echo "$DD_TAGS" > "$DATADOG_DIR/node_agent_tags.txt"
-    echo "CF_INSTANCE_IP: $CF_INSTANCE_IP"
-    echo "DD_LOGS_ENABLED: $DD_LOGS_ENABLED"
+    echo "$DD_TAGS" > "$DATADOG_DIR/node_agent_tags.txt" >> /home/vcap/app/.datadog/main-testing.log
+    echo "CF_INSTANCE_IP: $CF_INSTANCE_IP" >> /home/vcap/app/.datadog/main-testing.log
+    echo "DD_LOGS_ENABLED: $DD_LOGS_ENABLED" >> /home/vcap/app/.datadog/main-testing.log
 
-    echo "here are dd tags $DD_TAGS"
+    echo "here are dd tags $DD_TAGS" >> /home/vcap/app/.datadog/main-testing.log
 
     # After the tags are parsed and added to DD_TAGS, we need to restart the agent for the changes to take effect
     echo "stop datadog to refresh tags"
