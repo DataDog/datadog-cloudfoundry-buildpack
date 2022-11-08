@@ -12,14 +12,14 @@
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 
-# correct way to export / source the .datadog_env file
+# correct way to export / source the .datadog_env file so that every variable is parsed
 export $(grep -v '^#' $DATADOG_DIR/.datadog_env | xargs)
 export DD_TAGS=$(LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py node-agent-tags)
 
 # the agent cloud_foundry_container workloadmeta collector reads from this file
-echo "$DD_TAGS" > "$DATADOG_DIR/node_agent_tags.txt"
+echo "$DD_TAGS" | awk '{ printf "%s", $0 }' > "$DATADOG_DIR/node_agent_tag.txt"
 
-# for debugging purpose
+# for debugging purposes
 printenv > /home/vcap/app/.datadog/.sourced_datadog_env
 
 # import helper functions
