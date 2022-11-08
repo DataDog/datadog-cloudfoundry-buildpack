@@ -1,6 +1,9 @@
 # wait for agent startup
-while ! [ -f /home/vcap/app/.datadog/run/agent.pid ]; do
+
+timeout=0
+while ! [ -f /home/vcap/app/.datadog/run/agent.pid ] && [ $timeout -lt 120 ]; do
     sleep 0.5
+    timeout=$((timeout+1))
 done
 
 

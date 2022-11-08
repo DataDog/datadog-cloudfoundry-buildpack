@@ -14,7 +14,7 @@ SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 
 source "$DATADOG_DIR/.datadog_env"
 
-export DD_TAGS=$(VCAP_APPLICATION=$VCAP_APPLICATION CF_INSTANCE_IP=$CF_INSTANCE_IP CF_INSTANCE_GUID=$CF_INSTANCE_GUID LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py node-agent-tags)
+export DD_TAGS=$(DD_TAGS=$DD_TAGS VCAP_APPLICATION=$VCAP_APPLICATION CF_INSTANCE_IP=$CF_INSTANCE_IP CF_INSTANCE_GUID=$CF_INSTANCE_GUID LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py node-agent-tags)
 echo "$DD_TAGS" > "$DATADOG_DIR/node_agent_tags.txt"
 
 source "$DATADOG_DIR/scripts/utils.sh"
@@ -65,7 +65,7 @@ start_datadog() {
       else
         export DD_LOG_FILE=$DATADOG_DIR/agent.log
         export DD_IOT_HOST=false
-        (LOGS_CONFIG_DIR=$LOGS_CONFIG_DIR LOGS_CONFIG=$LOGS_CONFIG VCAP_APPLICATION=$VCAP_APPLICATION CF_INSTANCE_IP=$CF_INSTANCE_IP CF_INSTANCE_GUID=$CF_INSTANCE_GUID python $DATADOG_DIR/scripts/create_logs_config.py)
+        (DD_TAGS=$DD_TAGS LOGS_CONFIG_DIR=$LOGS_CONFIG_DIR LOGS_CONFIG=$LOGS_CONFIG VCAP_APPLICATION=$VCAP_APPLICATION CF_INSTANCE_IP=$CF_INSTANCE_IP CF_INSTANCE_GUID=$CF_INSTANCE_GUID python $DATADOG_DIR/scripts/create_logs_config.py)
 
         if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
           ./agent run --cfgpath $DATADOG_DIR/dist/ --pidfile $DATADOG_DIR/run/agent.pid > /dev/null 2>&1 &
