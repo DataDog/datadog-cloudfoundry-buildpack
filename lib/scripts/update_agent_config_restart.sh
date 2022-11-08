@@ -14,21 +14,18 @@ SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 
 source "$DATADOG_DIR/.datadog_env"
 
-datadog_tags=$(VCAP_APPLICATION=$VCAP_APPLICATION CF_INSTANCE_IP=$CF_INSTANCE_IP CF_INSTANCE_GUID=$CF_INSTANCE_GUID LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py node-agent-tags)
-export DD_TAGS=$datadog_tags
-
+export DD_TAGS=$(VCAP_APPLICATION=$VCAP_APPLICATION CF_INSTANCE_IP=$CF_INSTANCE_IP CF_INSTANCE_GUID=$CF_INSTANCE_GUID LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py node-agent-tags)
 echo "$DD_TAGS" > "$DATADOG_DIR/node_agent_tags.txt"
-echo "DD TAGS IS $DD_TAGS" >> "$DATADOG_DIR/testing.log"
-echo "VCAP_APPLICATION IS $VCAP_APPLICATION" >> "$DATADOG_DIR/testing.log"
 
 source "$DATADOG_DIR/scripts/utils.sh"
 
 stop_datadog() {
+
   echo "Stopping agent process, pid: $(cat $DATADOG_DIR/run/agent.pid)"
 
   # first try to stop the agent so we don't lose data and then force it
   if [ -f "$DATADOG_DIR/run/agent.pid" ]; then
-    echo "stopping agent agent"
+    echo "Stopping agent process"
     ($DATADOG_DIR/agent stop --cfgpath $DATADOG_DIR/dist/) || true
     find_pid_kill_and_wait $DATADOG_DIR/agent || true
     kill_and_wait "$DATADOG_DIR/run/agent.pid" 5
@@ -36,14 +33,14 @@ stop_datadog() {
   fi
 
   if [ -f "$DATADOG_DIR/run/trace-agent.pid" ]; then
-    echo "stopping trace agent"
+    echo "Stopping trace agent process"
     trace_agent_command="$DATADOG_DIR/trace-agent"
     kill_and_wait "$DATADOG_DIR/run/trace-agent.pid" 5 1
     find_pid_kill_and_wait $trace_agent_command "$DATADOG_DIR/run/trace-agent.pid"
   fi
 
   if [ -f "$DATADOG_DIR/run/dogstatsd.pid" ]; then
-    echo "stopping dogstatsd"
+    echo "Stopping dogstatsd agent process"
     dogstatsd_command="$DATADOG_DIR/dogstatsd"
     kill_and_wait "$DATADOG_DIR/run/dogstatsd.pid" 5 1
     find_pid_kill_and_wait $dogstatsd_command "$DATADOG_DIR/run/dogstatsd.pid"
@@ -52,6 +49,7 @@ stop_datadog() {
 
 start_datadog() {
   pushd $DATADOG_DIR
+
     export DD_LOG_FILE=$DATADOG_DIR/dogstatsd.log
     export DD_API_KEY
     export DD_DD_URL
@@ -59,8 +57,6 @@ start_datadog() {
     export DOCKER_DD_AGENT=yes
     export LOGS_CONFIG_DIR=$DATADOG_DIR/dist/conf.d/logs.d
     export LOGS_CONFIG
-    export DD_LOG_LEVEL="debug"
-    export LOG_LEVEL="debug"
     export DD_API_KEY
 
     if [ -a ./agent ] && { [ "$DD_LOGS_ENABLED" = "true" ] || [ "$DD_ENABLE_CHECKS" = "true" ]; }; then
@@ -69,7 +65,7 @@ start_datadog() {
       else
         export DD_LOG_FILE=$DATADOG_DIR/agent.log
         export DD_IOT_HOST=false
-        python $DATADOG_DIR/scripts/create_logs_config.py
+        (LOGS_CONFIG_DIR=$LOGS_CONFIG_DIR LOGS_CONFIG=$LOGS_CONFIG VCAP_APPLICATION=$VCAP_APPLICATION CF_INSTANCE_IP=$CF_INSTANCE_IP CF_INSTANCE_GUID=$CF_INSTANCE_GUID python $DATADOG_DIR/scripts/create_logs_config.py)
 
         if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
           ./agent run --cfgpath $DATADOG_DIR/dist/ --pidfile $DATADOG_DIR/run/agent.pid > /dev/null 2>&1 &
@@ -78,7 +74,7 @@ start_datadog() {
         fi
       fi
     else
-      echo "starting dogstatsd"
+      echo "Starting dogstatsd agent"
       export DD_LOG_FILE=$DATADOG_DIR/dogstatsd.log
       if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
         ./dogstatsd start --cfgpath $DATADOG_DIR/dist/ > /dev/null 2>&1 &
@@ -87,7 +83,7 @@ start_datadog() {
       fi
       echo $! > run/dogstatsd.pid
     fi
-    echo "starting trace agent"
+    echo "Starting trace agent"
     if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
       ./trace-agent --config $DATADOG_DIR/dist/datadog.yaml --pid $DATADOG_DIR/run/trace-agent.pid > /dev/null 2>&1 &
     else
@@ -99,10 +95,7 @@ start_datadog() {
 
 
 main() {
-    echo $DD_NODE_AGENT_TAGS >> /home/vcap/app/.datadog/main-testing.log
-    echo "$DD_TAGS" > "$DATADOG_DIR/node_agent_tags.txt" #>> /home/vcap/app/.datadog/main-testing.log
-
-    echo "here are dd tags $DD_TAGS" >> /home/vcap/app/.datadog/main-testing.log
+    export DD_TAGS=$(LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py node-agent-tags)
 
     # After the tags are parsed and added to DD_TAGS, we need to restart the agent for the changes to take effect
     echo "stop datadog to refresh tags"

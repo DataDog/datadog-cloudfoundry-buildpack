@@ -84,7 +84,10 @@ start_datadog() {
       sed -i "s~# cmd_port: 5001~cmd_port: $DD_CMD_PORT~" $DATADOG_DIR/dist/datadog.yaml
     fi
 
-    sed -i "s~# disable_file_logging: no~logs_enabled: $DD_LOGS_ENABLED~" $DATADOG_DIR/dist/datadog.yaml
+    if [ -n "$DD_LOGS_ENABLED" ]; then
+      sed -i "s~# disable_file_logging: no~logs_enabled: $DD_LOGS_ENABLED~" $DATADOG_DIR/dist/datadog.yaml
+    fi
+
     # Create folder for storing PID files
     mkdir run
 
