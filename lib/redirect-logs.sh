@@ -6,7 +6,6 @@
 
 export LOGS_CONFIG
 export STD_LOG_COLLECTION_PORT
-export HELPING="TESTING"
 
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 

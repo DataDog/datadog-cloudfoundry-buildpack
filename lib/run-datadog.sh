@@ -19,8 +19,6 @@ start_datadog() {
     export DOCKER_DD_AGENT=yes
     export LOGS_CONFIG_DIR=$DATADOG_DIR/dist/conf.d/logs.d
     export LOGS_CONFIG
-    export DD_LOG_LEVEL="debug"
-    export LOG_LEVEL="debug"
 
     # create and configure set /conf.d if integrations are enabled
     if [ "$DD_ENABLE_CHECKS" = "true" ] || [ -n "$LOGS_CONFIG" ] ; then
