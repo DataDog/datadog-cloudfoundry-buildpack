@@ -39,6 +39,14 @@ start_datadog() {
     # The yaml file requires the tags to be an array,
     # the conf file requires them to be comma separated only
     # so they must be grabbed separately
+<<<<<<< HEAD
+=======
+    datadog_tags=$(python $DATADOG_DIR/scripts/get_tags.py)
+    unset DD_TAGS
+
+    sed -i "s~# tags:.*~tags: $datadog_tags~" $DATADOG_DIR/dist/datadog.yaml
+    sed -i "s~# dogstatsd_tags:~dogstatsd_tags: $datadog_tags~" $DATADOG_DIR/dist/datadog.yaml
+>>>>>>> master
     sed -i "s~log_file: TRACE_LOG_FILE~log_file: $DATADOG_DIR/trace.log~" $DATADOG_DIR/dist/datadog.yaml
     if [ -n "$DD_SKIP_SSL_VALIDATION" ]; then
       sed -i "s~# skip_ssl_validation: no~skip_ssl_validation: yes~" $DATADOG_DIR/dist/datadog.yaml
