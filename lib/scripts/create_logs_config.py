@@ -6,19 +6,17 @@ from __future__ import print_function
 
 import os
 import json
-import subprocess
 
 LOGS_CONFIG_DIR = os.environ['LOGS_CONFIG_DIR']
 LOGS_CONFIG = os.environ['LOGS_CONFIG']
+DD_TAGS = os.environ['DD_TAGS']
 
-tags = []
-new_tags = subprocess.check_output(['python', '/home/vcap/app/.datadog/scripts/get_tags.py', 'node-agent-tags'])
-new_tags = new_tags.decode("UTF-8")
 
 config = {}
 config["logs"] = json.loads(LOGS_CONFIG)
-config["logs"][0]["tags"] = json.loads(new_tags)
+config["logs"][0]["tags"] = DD_TAGS
 config = json.dumps(config)
+
 path = LOGS_CONFIG_DIR + "/logs.yaml"
 
 with open(path, 'w') as f:
