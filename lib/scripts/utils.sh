@@ -92,7 +92,7 @@ function find_pid_kill_and_wait {
   local find_command=$1
   local pidfile=$2
   local pid=$(find_pid $find_command)
-  if [ ! "$pid" || "$pid" == "" ]; then
+  if [ -z "$pid" ] || [ "$pid" = "" ]; then
     echo "No such PID $pid exists, skipping the hard kill"
   else
     local timeout=${2:-25}

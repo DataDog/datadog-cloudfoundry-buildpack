@@ -7,8 +7,8 @@
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 LOCKFILE="$DATADOG_DIR/lock"
-datadog_tags=$(python LEGACY_TAGS_FORMAT=true $DATADOG_DIR/scripts/get_tags.py)
-export DD_TAGS=$datadog_tags
+
+export DD_TAGS=$(LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py)
 
 start_datadog() {
   pushd $DATADOG_DIR
@@ -81,6 +81,11 @@ start_datadog() {
     if [ -n "$DD_CMD_PORT" ]; then
       sed -i "s~# cmd_port: 5001~cmd_port: $DD_CMD_PORT~" $DATADOG_DIR/dist/datadog.yaml
     fi
+
+    if [ -n "$DD_LOGS_ENABLED" ]; then
+      sed -i "s~# disable_file_logging: no~logs_enabled: $DD_LOGS_ENABLED~" $DATADOG_DIR/dist/datadog.yaml
+    fi
+
     # Create folder for storing PID files
     mkdir run
 
@@ -93,7 +98,7 @@ start_datadog() {
         export DD_LOG_FILE=$DATADOG_DIR/agent.log
         export DD_IOT_HOST=false
         sed -i "s~log_file: AGENT_LOG_FILE~log_file: $DD_LOG_FILE~" $DATADOG_DIR/dist/datadog.yaml
-        if [ "$SUPPRESS_DD_AGENT_OUTPUT" == "true" ]; then
+        if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
           ./agent run --cfgpath $DATADOG_DIR/dist/ --pidfile $DATADOG_DIR/run/agent.pid > /dev/null 2>&1 &
         else
           ./agent run --cfgpath $DATADOG_DIR/dist/ --pidfile $DATADOG_DIR/run/agent.pid &
@@ -102,14 +107,14 @@ start_datadog() {
     else
       export DD_LOG_FILE=$DATADOG_DIR/dogstatsd.log
       sed -i "s~log_file: AGENT_LOG_FILE~log_file: $DD_LOG_FILE~" $DATADOG_DIR/dist/datadog.yaml
-      if [ "$SUPPRESS_DD_AGENT_OUTPUT" == "true" ]; then
+      if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
         ./dogstatsd start --cfgpath $DATADOG_DIR/dist/ > /dev/null 2>&1 &
       else
         ./dogstatsd start --cfgpath $DATADOG_DIR/dist/ &
       fi
       echo $! > run/dogstatsd.pid
     fi
-    if [ "$SUPPRESS_DD_AGENT_OUTPUT" == "true" ]; then
+    if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
       ./trace-agent --config $DATADOG_DIR/dist/datadog.yaml --pid $DATADOG_DIR/run/trace-agent.pid > /dev/null 2>&1 &
     else
       ./trace-agent --config $DATADOG_DIR/dist/datadog.yaml --pid $DATADOG_DIR/run/trace-agent.pid &
@@ -127,14 +132,18 @@ stop_datadog() {
   done
 }
 
-if [ -z $DD_API_KEY ]; then
-  echo "Datadog API Key not set, not starting Datadog"
-else
-  exec 9> "$LOCKFILE" || exit 1
-  if flock -x -n 9; then
-    echo "starting datadog"
-    start_datadog
-    stop_datadog &
-    exec 9>&-
+main() {
+  if [ -z $DD_API_KEY ]; then
+    echo "Datadog API Key not set, not starting Datadog"
+  else
+    exec 9> "$LOCKFILE" || exit 1
+    if flock -x -n 9; then
+      echo "starting datadog"
+      start_datadog
+      stop_datadog &
+      exec 9>&-
+    fi
   fi
-fi
+}
+
+main "$@"
