@@ -12,9 +12,11 @@
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 
-source "$DATADOG_DIR/.datadog_env"
+export $(grep -v '^#' $DATADOG_DIR/.datadog_env | xargs)
 
-export DD_TAGS=$(DD_TAGS=$DD_TAGS VCAP_APPLICATION=$VCAP_APPLICATION CF_INSTANCE_IP=$CF_INSTANCE_IP CF_INSTANCE_GUID=$CF_INSTANCE_GUID LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py node-agent-tags)
+printenv > /home/vcap/app/.datadog/.sourced_datadog_env
+
+export DD_TAGS=$(LEGACY_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py node-agent-tags)
 echo "$DD_TAGS" > "$DATADOG_DIR/node_agent_tags.txt"
 
 source "$DATADOG_DIR/scripts/utils.sh"
