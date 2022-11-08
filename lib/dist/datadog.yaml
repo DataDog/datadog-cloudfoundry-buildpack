@@ -1,6 +1,9 @@
 # The host of the Datadog intake server to send Agent data to
 # dd_url: https://app.datadoghq.com
 
+cloud_foundry: true
+cloud_foundry_buildpack: true
+
 # The Datadog api key to associate your Agent's data with your organization.
 # Can be found here:
 # https://app.datadoghq.com/account/settings
