@@ -2,7 +2,7 @@
 
 # wait for the buildpack scripts to finish
 timeout=0
-while { ! [ "$(pidof ./agent)" = "" ] && ! [ "$(pidof ./dogstatsd)" = "" ]; } && [ $timeout -lt 120 ]; do
+while { ! [ "$(pgrep -f ./agent)" = "" ] && ! [ "$(pgrep -f ./dogstatsd)" = "" ]; } && [ $timeout -lt 120 ]; do
     sleep 1
     timeout=$((timeout+1))
 done
