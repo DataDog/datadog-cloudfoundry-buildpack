@@ -29,7 +29,7 @@ source "$DATADOG_DIR/scripts/utils.sh"
 stop_datadog() {
 
   # first try to stop the agent so we don't lose data and then force it
-  if [ -f "$DATADOG_DIR/run/agent.pid" ]; then
+  if [ -f "$DATADOG_DIR/run/agent.pid" ] || [ "$DD_LOGS_ENABLED" = "true" ] || [ "$DD_ENABLE_CHECKS" = "true" ]; then
     echo "Stopping agent process, pid: $(cat $DATADOG_DIR/run/agent.pid)"
     ($DATADOG_DIR/agent stop --cfgpath $DATADOG_DIR/dist/) || true
     find_pid_kill_and_wait $DATADOG_DIR/agent || true
