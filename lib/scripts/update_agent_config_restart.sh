@@ -45,7 +45,7 @@ stop_datadog() {
   fi
 
   if [ -f "$DATADOG_DIR/run/dogstatsd.pid" ]; then
-    echo "Stopping dogstatsd agent process, pid: $(cat $DATADOG_DIR/run/dogstatsd.pid)""
+    echo "Stopping dogstatsd agent process, pid: $(cat $DATADOG_DIR/run/dogstatsd.pid)"
     dogstatsd_command="$DATADOG_DIR/dogstatsd"
     kill_and_wait "$DATADOG_DIR/run/dogstatsd.pid" 5 1
     find_pid_kill_and_wait $dogstatsd_command "$DATADOG_DIR/run/dogstatsd.pid"
