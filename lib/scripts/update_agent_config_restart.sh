@@ -17,7 +17,8 @@ export $(grep -v '^#' $DATADOG_DIR/.datadog_env | xargs)
 export DD_TAGS=$(LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py node-agent-tags)
 
 # the agent cloud_foundry_container workloadmeta collector reads from this file
-echo "$DD_TAGS" | awk '{ printf "%s", $0 }' > "$DATADOG_DIR/node_agent_tag.txt"
+# See: https://github.com/DataDog/datadog-agent/blob/main/pkg/workloadmeta/collectors/internal/cloudfoundry/cf_container/cloudfoundry_container.go#L24
+echo "$DD_TAGS" | awk '{ printf "%s", $0 }' > "$DATADOG_DIR/node_agent_tags.txt"
 
 # for debugging purposes
 printenv > /home/vcap/app/.datadog/.sourced_datadog_env
@@ -27,11 +28,9 @@ source "$DATADOG_DIR/scripts/utils.sh"
 
 stop_datadog() {
 
-  echo "Stopping agent process, pid: $(cat $DATADOG_DIR/run/agent.pid)"
-
   # first try to stop the agent so we don't lose data and then force it
   if [ -f "$DATADOG_DIR/run/agent.pid" ]; then
-    echo "Stopping agent process"
+    echo "Stopping agent process, pid: $(cat $DATADOG_DIR/run/agent.pid)"
     ($DATADOG_DIR/agent stop --cfgpath $DATADOG_DIR/dist/) || true
     find_pid_kill_and_wait $DATADOG_DIR/agent || true
     kill_and_wait "$DATADOG_DIR/run/agent.pid" 5
@@ -39,14 +38,14 @@ stop_datadog() {
   fi
 
   if [ -f "$DATADOG_DIR/run/trace-agent.pid" ]; then
-    echo "Stopping trace agent process"
+    echo "Stopping trace agent process, pid: $(cat $DATADOG_DIR/run/trace-agent.pid)"
     trace_agent_command="$DATADOG_DIR/trace-agent"
     kill_and_wait "$DATADOG_DIR/run/trace-agent.pid" 5 1
     find_pid_kill_and_wait $trace_agent_command "$DATADOG_DIR/run/trace-agent.pid"
   fi
 
   if [ -f "$DATADOG_DIR/run/dogstatsd.pid" ]; then
-    echo "Stopping dogstatsd agent process"
+    echo "Stopping dogstatsd agent process, pid: $(cat $DATADOG_DIR/run/dogstatsd.pid)""
     dogstatsd_command="$DATADOG_DIR/dogstatsd"
     kill_and_wait "$DATADOG_DIR/run/dogstatsd.pid" 5 1
     find_pid_kill_and_wait $dogstatsd_command "$DATADOG_DIR/run/dogstatsd.pid"

@@ -25,6 +25,7 @@ if len(sys.argv) > 1 and sys.argv[1] == 'node-agent-tags':
     node_agent_tags = os.environ.get('DD_NODE_AGENT_TAGS', None)
 
     if node_agent_tags is not None:
+        # we do this to separate commas inside json values from tags separator commas
         node_agent_tags = node_agent_tags.replace(",\"", ";\"")
         all_node_agent_tags = node_agent_tags.split(",")
         tags = tags + [tag for tag in all_node_agent_tags if ";" not in tag]
