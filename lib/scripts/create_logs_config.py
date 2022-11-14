@@ -7,14 +7,19 @@ from __future__ import print_function
 import os
 import json
 
-LOGS_CONFIG_DIR = os.environ['LOGS_CONFIG_DIR']
-LOGS_CONFIG = os.environ['LOGS_CONFIG']
-DD_TAGS = os.environ['DD_TAGS']
+LOGS_CONFIG_DIR = os.environ.get('LOGS_CONFIG_DIR')
+LOGS_CONFIG = os.environ.get('LOGS_CONFIG')
+DD_TAGS = os.environ.get('DD_TAGS')
 
 
 config = {}
-config["logs"] = json.loads(LOGS_CONFIG)
-config["logs"][0]["tags"] = DD_TAGS
+
+if LOGS_CONFIG:
+  config["logs"] = json.loads(LOGS_CONFIG)
+
+if DD_TAGS:
+  config["logs"][0]["tags"] = DD_TAGS
+
 config = json.dumps(config)
 
 path = LOGS_CONFIG_DIR + "/logs.yaml"
