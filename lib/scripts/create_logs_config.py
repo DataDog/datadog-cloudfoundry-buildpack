@@ -17,8 +17,8 @@ config = {}
 if LOGS_CONFIG:
   config["logs"] = json.loads(LOGS_CONFIG)
 
-if DD_TAGS:
-  config["logs"][0]["tags"] = DD_TAGS
+  if DD_TAGS:
+    config["logs"][0]["tags"] = DD_TAGS
 
 config = json.dumps(config)
 
