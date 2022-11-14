@@ -4,11 +4,11 @@
 # This product includes software developed at Datadog (https://www.datadoghq.com/).
 # Copyright 2017-Present Datadog, Inc.
 
-# Start dogstatsd
-
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 LOCKFILE="$DATADOG_DIR/lock"
+
+export DD_TAGS=$(LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py)
 
 start_datadog() {
   pushd $DATADOG_DIR
@@ -39,12 +39,8 @@ start_datadog() {
     # The yaml file requires the tags to be an array,
     # the conf file requires them to be comma separated only
     # so they must be grabbed separately
-    datadog_tags=$(python $DATADOG_DIR/scripts/get_tags.py)
-    unset DD_TAGS
-
-    sed -i "s~# tags:.*~tags: $datadog_tags~" $DATADOG_DIR/dist/datadog.yaml
-    sed -i "s~# dogstatsd_tags:~dogstatsd_tags: $datadog_tags~" $DATADOG_DIR/dist/datadog.yaml
     sed -i "s~log_file: TRACE_LOG_FILE~log_file: $DATADOG_DIR/trace.log~" $DATADOG_DIR/dist/datadog.yaml
+
     if [ -n "$DD_SKIP_SSL_VALIDATION" ]; then
       sed -i "s~# skip_ssl_validation: no~skip_ssl_validation: yes~" $DATADOG_DIR/dist/datadog.yaml
     fi
@@ -88,6 +84,7 @@ start_datadog() {
     if [ -n "$DD_CMD_PORT" ]; then
       sed -i "s~# cmd_port: 5001~cmd_port: $DD_CMD_PORT~" $DATADOG_DIR/dist/datadog.yaml
     fi
+
     # Create folder for storing PID files
     mkdir run
 
@@ -100,7 +97,7 @@ start_datadog() {
         export DD_LOG_FILE=$DATADOG_DIR/agent.log
         export DD_IOT_HOST=false
         sed -i "s~log_file: AGENT_LOG_FILE~log_file: $DD_LOG_FILE~" $DATADOG_DIR/dist/datadog.yaml
-        if [ "$SUPPRESS_DD_AGENT_OUTPUT" == "true" ]; then
+        if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
           ./agent run --cfgpath $DATADOG_DIR/dist/ --pidfile $DATADOG_DIR/run/agent.pid > /dev/null 2>&1 &
         else
           ./agent run --cfgpath $DATADOG_DIR/dist/ --pidfile $DATADOG_DIR/run/agent.pid &
@@ -109,14 +106,14 @@ start_datadog() {
     else
       export DD_LOG_FILE=$DATADOG_DIR/dogstatsd.log
       sed -i "s~log_file: AGENT_LOG_FILE~log_file: $DD_LOG_FILE~" $DATADOG_DIR/dist/datadog.yaml
-      if [ "$SUPPRESS_DD_AGENT_OUTPUT" == "true" ]; then
+      if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
         ./dogstatsd start --cfgpath $DATADOG_DIR/dist/ > /dev/null 2>&1 &
       else
         ./dogstatsd start --cfgpath $DATADOG_DIR/dist/ &
       fi
       echo $! > run/dogstatsd.pid
     fi
-    if [ "$SUPPRESS_DD_AGENT_OUTPUT" == "true" ]; then
+    if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
       ./trace-agent --config $DATADOG_DIR/dist/datadog.yaml --pid $DATADOG_DIR/run/trace-agent.pid > /dev/null 2>&1 &
     else
       ./trace-agent --config $DATADOG_DIR/dist/datadog.yaml --pid $DATADOG_DIR/run/trace-agent.pid &
@@ -134,14 +131,18 @@ stop_datadog() {
   done
 }
 
-if [ -z $DD_API_KEY ]; then
-  echo "Datadog API Key not set, not starting Datadog"
-else
-  exec 9> "$LOCKFILE" || exit 1
-  if flock -x -n 9; then
-    echo "starting datadog"
-    start_datadog
-    stop_datadog &
-    exec 9>&-
+main() {
+  if [ -z $DD_API_KEY ]; then
+    echo "Datadog API Key not set, not starting Datadog"
+  else
+    exec 9> "$LOCKFILE" || exit 1
+    if flock -x -n 9; then
+      echo "starting datadog"
+      start_datadog
+      stop_datadog &
+      exec 9>&-
+    fi
   fi
-fi
+}
+
+main "$@"
