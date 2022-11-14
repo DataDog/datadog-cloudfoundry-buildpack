@@ -19,6 +19,9 @@ if LOGS_CONFIG:
 
   if DD_TAGS:
     config["logs"][0]["tags"] = DD_TAGS
+else:
+  print("ERROR: `LOGS_CONFIG` must be set in order to collect logs. For more info, see: https://github.com/DataDog/datadog-cloudfoundry-buildpack#log-collection")
+  exit(1)
 
 config = json.dumps(config)
 
