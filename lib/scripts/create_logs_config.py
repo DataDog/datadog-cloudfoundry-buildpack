@@ -14,6 +14,10 @@ DD_TAGS = os.environ.get('DD_TAGS')
 
 config = {}
 
+if not LOGS_CONFIG_DIR:
+  print("ERROR: `LOGS_CONFIG_DIR` must be set in order to collect logs. For more info, see: https://github.com/DataDog/datadog-cloudfoundry-buildpack#log-collection")
+  exit(1)
+
 if LOGS_CONFIG:
   config["logs"] = json.loads(LOGS_CONFIG)
 
