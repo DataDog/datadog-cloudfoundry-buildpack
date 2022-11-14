@@ -5,13 +5,11 @@
 * [Added] Add support for CAPI metadata and DCA tags injection. See [#136](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/136).
 * [Added] Set hostname to container hostname when 'DD_ENABLE_CHECKS' is enabled. See [#143](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/143).
 * [Added] Bump agent version to 7.40.1. [read more about it here](https://github.com/DataDog/datadog-agent/blob/master/CHANGELOG.rst#7401--6401)
-
 * [Fixed] Fix `KeyError` in create_logs_config python script. See [#140](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/140).
 * [Fixed] Fix `DD_TAGS` format issues. See [#135](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/135).
 
 ## 4.33.0 / 2022-08-03
 
-* [Added] Bump embedded Datadog Agent version to 7.40.1. Read more about it [here](https://github.com/DataDog/datadog-agent/blob/main/CHANGELOG.rst#7401--6401).
 * [Added] Bump agent version to 7.37.1, [read more about it here](https://github.com/DataDog/datadog-agent/blob/master/CHANGELOG.rst#7371--6371)
 
 ## 4.32.0 / 2022-06-09
