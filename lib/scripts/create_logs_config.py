@@ -7,14 +7,26 @@ from __future__ import print_function
 import os
 import json
 
-LOGS_CONFIG_DIR = os.environ['LOGS_CONFIG_DIR']
-LOGS_CONFIG = os.environ['LOGS_CONFIG']
-DD_TAGS = os.environ['DD_TAGS']
+LOGS_CONFIG_DIR = os.environ.get('LOGS_CONFIG_DIR')
+LOGS_CONFIG = os.environ.get('LOGS_CONFIG')
+DD_TAGS = os.environ.get('DD_TAGS')
 
 
 config = {}
-config["logs"] = json.loads(LOGS_CONFIG)
-config["logs"][0]["tags"] = DD_TAGS
+
+if not LOGS_CONFIG_DIR:
+  print("ERROR: `LOGS_CONFIG_DIR` must be set in order to collect logs. For more info, see: https://github.com/DataDog/datadog-cloudfoundry-buildpack#log-collection")
+  exit(1)
+
+if LOGS_CONFIG:
+  config["logs"] = json.loads(LOGS_CONFIG)
+
+  if DD_TAGS:
+    config["logs"][0]["tags"] = DD_TAGS
+else:
+  print("ERROR: `LOGS_CONFIG` must be set in order to collect logs. For more info, see: https://github.com/DataDog/datadog-cloudfoundry-buildpack#log-collection")
+  exit(1)
+
 config = json.dumps(config)
 
 path = LOGS_CONFIG_DIR + "/logs.yaml"
