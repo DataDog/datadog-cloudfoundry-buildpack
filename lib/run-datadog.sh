@@ -57,6 +57,8 @@ start_datadog() {
           IFS=. read -a VM_HOSTNAME <<< $(host $CF_INSTANCE_IP | awk '{print $5}')
           sed -i "s~# hostname: mymachine.mydomain~hostname: $VM_HOSTNAME~" $DATADOG_DIR/dist/datadog.yaml
       fi
+    else
+      sed -i "s~# hostname: mymachine.mydomain~hostname: $(hostname)~" $DATADOG_DIR/dist/datadog.yaml
     fi
 
     if [ -n "$DD_HTTP_PROXY" ]; then
