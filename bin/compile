@@ -13,6 +13,7 @@ mkdir -p $BUILD_DIR/.datadog/scripts
 cp $ROOT_DIR/lib/scripts/update_agent_config.sh $BUILD_DIR/.datadog/scripts/update_agent_config.sh
 chmod +x $BUILD_DIR/.datadog/scripts/update_agent_config.sh
 cp $ROOT_DIR/lib/scripts/get_tags.py $BUILD_DIR/.datadog/scripts/get_tags.py
+cp $ROOT_DIR/lib/scripts/parse_env_vars.py $BUILD_DIR/.datadog/scripts/parse_env_vars.py
 
 
 echo "Installing Datadog IOT Agent, Dogstatsd and Trace Agent"

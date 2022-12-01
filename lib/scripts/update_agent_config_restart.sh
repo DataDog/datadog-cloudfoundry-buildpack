@@ -10,13 +10,12 @@
 
 
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
+SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 
 # correct way to export / source the .datadog_env file so that every variable is parsed
-export $(grep -v '^#' $DATADOG_DIR/.datadog_env | xargs -0)
+export $(python parse_env_vars.py $DATADOG_DIR/.datadog_env)
 
 export DD_TAGS=$(LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py node-agent-tags)
-
-SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 
 # the agent cloud_foundry_container workloadmeta collector reads from this file
 # See: https://github.com/DataDog/datadog-agent/blob/main/pkg/workloadmeta/collectors/internal/cloudfoundry/cf_container/cloudfoundry_container.go#L24
