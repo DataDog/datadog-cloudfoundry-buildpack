@@ -11,18 +11,20 @@ LOGS_CONFIG_DIR = os.environ.get('LOGS_CONFIG_DIR')
 LOGS_CONFIG = os.environ.get('LOGS_CONFIG')
 DD_TAGS = os.environ.get('DD_TAGS')
 
-
 config = {}
 
-if not LOGS_CONFIG_DIR:
+if LOGS_CONFIG_DIR is None:
   print("ERROR: `LOGS_CONFIG_DIR` must be set in order to collect logs. For more info, see: https://github.com/DataDog/datadog-cloudfoundry-buildpack#log-collection")
   exit(1)
 
-if LOGS_CONFIG:
+if LOGS_CONFIG is not None:
   config["logs"] = json.loads(LOGS_CONFIG)
 
-  if DD_TAGS:
+  if DD_TAGS is not None:
     config["logs"][0]["tags"] = DD_TAGS
+  else:
+    print("Could not find DD_TAGS env var")
+
 else:
   print("ERROR: `LOGS_CONFIG` must be set in order to collect logs. For more info, see: https://github.com/DataDog/datadog-cloudfoundry-buildpack#log-collection")
   exit(1)
@@ -30,8 +32,10 @@ else:
 config = json.dumps(config)
 
 path = LOGS_CONFIG_DIR + "/logs.yaml"
-
-with open(path, 'w') as f:
-  print("writing {} to {}".format(config, path))
-  f.write(config)
-  f.write("\n")
+try:
+  with open(path, 'w') as f:
+    print("writing {} to {}".format(config, path))
+    f.write(config)
+    f.write("\n")
+except Exception as e:
+  print("Could not write to log file: {}".format(str(e)))
