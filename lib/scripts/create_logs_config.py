@@ -33,7 +33,9 @@ config = json.dumps(config)
 
 path = LOGS_CONFIG_DIR + "/logs.yaml"
 try:
-  with open(path, 'w') as f:
+  if not os.path.exists(LOGS_CONFIG_DIR):
+    os.makedirs(LOGS_CONFIG_DIR)
+  with open(path, 'w+') as f:
     print("writing {} to {}".format(config, path))
     f.write(config)
     f.write("\n")
