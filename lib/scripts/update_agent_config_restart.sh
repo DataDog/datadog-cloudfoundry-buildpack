@@ -13,14 +13,19 @@ DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 
 # correct way to export / source the .datadog_env file so that every variable is parsed
-export $(python parse_env_vars.py $DATADOG_DIR/.datadog_env)
+#export $(python parse_env_vars.py $DATADOG_DIR/.datadog_env | xargs -0)
 
-export DD_TAGS=$(LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py node-agent-tags)
+touch "$DATADOG_DIR/.new_datadog_env"
+python parse_env_vars.py "$DATADOG_DIR/.datadog_env" "$DATADOG_DIR/.new_datadog_env"
+source "$DATADOG_DIR/.new_datadog_env"
+printenv > /home/vcap/app/.datadog/.sourced_datadog_envs
 
+export DD_TAGS=$(LEGACY_TAGS_FORMAT=true $DATADOG_DIR/scripts/get_tags.py node-agent-tags)
 # the agent cloud_foundry_container workloadmeta collector reads from this file
 # See: https://github.com/DataDog/datadog-agent/blob/main/pkg/workloadmeta/collectors/internal/cloudfoundry/cf_container/cloudfoundry_container.go#L24
 echo "$DD_TAGS" | awk '{ printf "%s", $0 }' > "$DATADOG_DIR/node_agent_tags.txt"
 # for debugging purposes
+
 printenv > /home/vcap/app/.datadog/.sourced_datadog_env
 
 # import helper functions
