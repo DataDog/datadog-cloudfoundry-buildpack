@@ -13,7 +13,6 @@ DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 
 # correct way to export / source the .datadog_env file so that every variable is parsed
-touch "$DATADOG_DIR/.new_datadog_env"
 python "$DATADOG_DIR/scripts/parse_env_vars.py" "$DATADOG_DIR/.datadog_env" "$DATADOG_DIR/.new_datadog_env"
 source "$DATADOG_DIR/.new_datadog_env"
 
@@ -34,8 +33,8 @@ stop_datadog() {
   # first try to stop the agent so we don't lose data and then force it
   if ! [ "$(find_pid ./agent)" = "" ]; then
     echo "Stopping agent process, pid: $(cat $DATADOG_DIR/run/agent.pid)"
-    ($DATADOG_DIR/agent stop --cfgpath $DATADOG_DIR/dist/) || true
-    find_pid_kill_and_wait $DATADOG_DIR/agent || true
+    ("$DATADOG_DIR/agent" stop --cfgpath "$DATADOG_DIR/dist/") || true
+    find_pid_kill_and_wait "$DATADOG_DIR/agent" || true
     kill_and_wait "$DATADOG_DIR/run/agent.pid" 5
     rm -f "$DATADOG_DIR/run/agent.pid"
   fi

@@ -11,12 +11,11 @@ if len(sys.argv) > 1:
 
     if len(sys.argv) > 2:
         new_env_file_name = sys.argv[2]
-        with open(new_env_file_name, 'w') as new_env_file:
+        with open(new_env_file_name, 'w+') as new_env_file:
             for env_var in env_vars:
                 env_var = env_var.strip()
                 if env_var.startswith("#"):
                     continue
-                env_var = env_var.replace(" ", "_")
                 new_env_file.write("export {}\n".format(env_var))
     else:
         print("Destination file not specified")
