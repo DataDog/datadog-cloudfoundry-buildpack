@@ -13,7 +13,9 @@ DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 
 # correct way to export / source the .datadog_env file so that every variable is parsed
-export $(grep -v '^#' $DATADOG_DIR/.datadog_env | xargs)
+python "$DATADOG_DIR/scripts/parse_env_vars.py" "$DATADOG_DIR/.datadog_env" "$DATADOG_DIR/.new_datadog_env"
+source "$DATADOG_DIR/.new_datadog_env"
+
 export DD_TAGS=$(LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py node-agent-tags)
 
 # the agent cloud_foundry_container workloadmeta collector reads from this file
@@ -21,7 +23,7 @@ export DD_TAGS=$(LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py
 echo "$DD_TAGS" | awk '{ printf "%s", $0 }' > "$DATADOG_DIR/node_agent_tags.txt"
 
 # for debugging purposes
-printenv > /home/vcap/app/.datadog/.sourced_datadog_env
+printenv > "$DATADOG_DIR/.sourced_datadog_env"
 
 # import helper functions
 source "$DATADOG_DIR/scripts/utils.sh"
@@ -31,8 +33,8 @@ stop_datadog() {
   # first try to stop the agent so we don't lose data and then force it
   if ! [ "$(find_pid ./agent)" = "" ]; then
     echo "Stopping agent process, pid: $(cat $DATADOG_DIR/run/agent.pid)"
-    ($DATADOG_DIR/agent stop --cfgpath $DATADOG_DIR/dist/) || true
-    find_pid_kill_and_wait $DATADOG_DIR/agent || true
+    ("$DATADOG_DIR/agent" stop --cfgpath "$DATADOG_DIR/dist/") || true
+    find_pid_kill_and_wait "$DATADOG_DIR/agent" || true
     kill_and_wait "$DATADOG_DIR/run/agent.pid" 5
     rm -f "$DATADOG_DIR/run/agent.pid"
   fi
@@ -71,6 +73,7 @@ start_datadog() {
         export DD_LOG_FILE=$DATADOG_DIR/agent.log
         export DD_IOT_HOST=false
 
+        echo "Starting Datadog agent"
         python $DATADOG_DIR/scripts/create_logs_config.py
 
         if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
