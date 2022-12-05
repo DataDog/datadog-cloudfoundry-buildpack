@@ -1,13 +1,30 @@
 #!/bin/sh
 
 # wait for the buildpack scripts to finish
-timeout=0
-while { ! [ "$(pgrep -f ./agent)" = "" ] && ! [ "$(pgrep -f ./dogstatsd)" = "" ]; } && [ $timeout -lt 120 ]; do
-    sleep 1
-    timeout=$((timeout+1))
-done
+DEBUG_FILE="/home/vcap/app/.datadog/update_agent_config_out.log"
 
+main() {
+    echo "Starting to wait for agent process to start"
+    timeout=0
+
+    while [ $timeout -lt 120 ]; do
+        echo "Waiting for agent process to start"
+
+        if pgrep -f ./agent; then
+            echo "Found agent process"
+            break
+        fi
+
+        if pgrep -f ./dogstatsd; then
+            echo "Found dogstatsd process"
+            break
+        fi
+        sleep 1
+        timeout=$((timeout+1))
+    done
+    echo "$DD_NODE_AGENT_TAGS"
+
+    /bin/bash /home/vcap/app/.datadog/scripts/update_agent_config_restart.sh
+}
 # for debugging purposes
-echo $DD_NODE_AGENT_TAGS >> /home/vcap/app/.datadog/dd-node-agent-tags.log
-
-/bin/bash /home/vcap/app/.datadog/scripts/update_agent_config_restart.sh
+main "$@" >> "$DEBUG_FILE" 2>&1
