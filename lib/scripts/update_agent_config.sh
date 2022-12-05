@@ -8,11 +8,14 @@ main() {
     timeout=0
 
     while [ $timeout -lt 120 ]; do
-        echo "Waiting for agent process to start"
+        echo "Waiting for agent or dogstatsd process to start"
 
         if pgrep -f ./agent; then
             echo "Found agent process"
-            break
+            if test -f "/home/vcap/app/.datadog/dist/auth_token"; then
+                echo "Found agent token"
+                break
+            fi
         fi
 
         if pgrep -f ./dogstatsd; then
