@@ -13,56 +13,57 @@ DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 
 # correct way to export / source the .datadog_env file so that every variable is parsed
-python "$DATADOG_DIR/scripts/parse_env_vars.py" "$DATADOG_DIR/.datadog_env" "$DATADOG_DIR/.new_datadog_env"
-source "$DATADOG_DIR/.new_datadog_env"
+python "${DATADOG_DIR}/scripts/parse_env_vars.py" "${DATADOG_DIR}/.datadog_env" "${DATADOG_DIR}/.new_datadog_env"
+source "${DATADOG_DIR}/.new_datadog_env"
 
-export DD_TAGS=$(LEGACY_TAGS_FORMAT=true python $DATADOG_DIR/scripts/get_tags.py node-agent-tags)
+export DD_TAGS=$(LEGACY_TAGS_FORMAT=true python "${DATADOG_DIR}/scripts/get_tags.py" node-agent-tags)
 
 # the agent cloud_foundry_container workloadmeta collector reads from this file
 # See: https://github.com/DataDog/datadog-agent/blob/main/pkg/workloadmeta/collectors/internal/cloudfoundry/cf_container/cloudfoundry_container.go#L24
-echo "$DD_TAGS" | awk '{ printf "%s", $0 }' > "$DATADOG_DIR/node_agent_tags.txt"
+echo "$DD_TAGS" | awk '{ printf "%s", $0 }' > "${DATADOG_DIR}/node_agent_tags.txt"
 
 # for debugging purposes
-printenv > "$DATADOG_DIR/.sourced_datadog_env"
+printenv > "${DATADOG_DIR}/.sourced_datadog_env"
 
 # import helper functions
-source "$DATADOG_DIR/scripts/utils.sh"
+source "${DATADOG_DIR}/scripts/utils.sh"
 
 stop_datadog() {
+  pushd "${DATADOG_DIR}"
+    # first try to stop the agent so we don't lose data and then force it
+    if [ -f run/agent.pid ]; then
+      echo "Stopping agent process, pid: $(cat run/agent.pid)"
+      (./agent stop --cfgpath dist/) || true
+      find_pid_kill_and_wait "agent" || true
+      kill_and_wait "run/agent.pid" 5
+      rm -f "run/agent.pid"
+    fi
 
-  # first try to stop the agent so we don't lose data and then force it
-  if ! [ "$(find_pid ./agent)" = "" ]; then
-    echo "Stopping agent process, pid: $(cat $DATADOG_DIR/run/agent.pid)"
-    ("$DATADOG_DIR/agent" stop --cfgpath "$DATADOG_DIR/dist/") || true
-    find_pid_kill_and_wait "$DATADOG_DIR/agent" || true
-    kill_and_wait "$DATADOG_DIR/run/agent.pid" 5
-    rm -f "$DATADOG_DIR/run/agent.pid"
-  fi
+    if [ -f run/trace.pid ]; then
+      echo "Stopping trace agent process, pid: $(cat run/trace-agent.pid)"
+      trace_agent_command="trace-agent"
+      kill_and_wait "run/trace-agent.pid" 5 1
+      find_pid_kill_and_wait $trace_agent_command "run/trace-agent.pid"
+    fi
 
-  if ! [ "$(find_pid ./trace-agent)" = "" ]; then
-    echo "Stopping trace agent process, pid: $(cat $DATADOG_DIR/run/trace-agent.pid)"
-    trace_agent_command="$DATADOG_DIR/trace-agent"
-    kill_and_wait "$DATADOG_DIR/run/trace-agent.pid" 5 1
-    find_pid_kill_and_wait $trace_agent_command "$DATADOG_DIR/run/trace-agent.pid"
-  fi
-
-  if ! [ "$(find_pid ./dogstatsd)" = "" ]; then
-    echo "Stopping dogstatsd agent process, pid: $(cat $DATADOG_DIR/run/dogstatsd.pid)"
-    dogstatsd_command="$DATADOG_DIR/dogstatsd"
-    kill_and_wait "$DATADOG_DIR/run/dogstatsd.pid" 5 1
-    find_pid_kill_and_wait $dogstatsd_command "$DATADOG_DIR/run/dogstatsd.pid"
-  fi
+    if [ -f run/dogstatsd.pid ]; then
+      echo "Stopping dogstatsd agent process, pid: $(cat run/dogstatsd.pid)"
+      dogstatsd_command="dogstatsd"
+      kill_and_wait "run/dogstatsd.pid" 5 1
+      find_pid_kill_and_wait $dogstatsd_command "run/dogstatsd.pid"
+    fi
+  popd
 }
 
 start_datadog() {
-  pushd $DATADOG_DIR
+  pushd "${DATADOG_DIR}"
 
-    export DD_LOG_FILE=$DATADOG_DIR/dogstatsd.log
+    export DD_LOG_FILE="${DATADOG_DIR}/dogstatsd.log"
     export DD_API_KEY
     export DD_DD_URL
     export DD_ENABLE_CHECKS="${DD_ENABLE_CHECKS:-false}"
     export DOCKER_DD_AGENT=yes
-    export LOGS_CONFIG_DIR=$DATADOG_DIR/dist/conf.d/logs.d
+    export LOGS_CONFIG_DIR="${DATADOG_DIR}/dist/conf.d/logs.d"
     export LOGS_CONFIG
     export DD_API_KEY
 
@@ -70,33 +71,33 @@ start_datadog() {
       if [ "$DD_LOGS_ENABLED" = "true" -a "$DD_LOGS_VALID_ENDPOINT" = "false" ]; then
         echo "Log endpoint not valid, not starting agent"
       else
-        export DD_LOG_FILE=$DATADOG_DIR/agent.log
+        export DD_LOG_FILE=agent.log
         export DD_IOT_HOST=false
 
         echo "Starting Datadog agent"
-        python $DATADOG_DIR/scripts/create_logs_config.py
+        python scripts/create_logs_config.py
 
         if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
-          ./agent run --cfgpath $DATADOG_DIR/dist/ --pidfile $DATADOG_DIR/run/agent.pid > /dev/null 2>&1 &
+          ./agent run --cfgpath dist/ --pidfile run/agent.pid > /dev/null 2>&1 &
         else
-          ./agent run --cfgpath $DATADOG_DIR/dist/ --pidfile $DATADOG_DIR/run/agent.pid &
+          ./agent run --cfgpath dist/ --pidfile run/agent.pid &
         fi
       fi
     else
       echo "Starting dogstatsd agent"
-      export DD_LOG_FILE=$DATADOG_DIR/dogstatsd.log
+      export DD_LOG_FILE=dogstatsd.log
       if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
-        ./dogstatsd start --cfgpath $DATADOG_DIR/dist/ > /dev/null 2>&1 &
+        ./dogstatsd start --cfgpath dist/ > /dev/null 2>&1 &
       else
-        ./dogstatsd start --cfgpath $DATADOG_DIR/dist/ &
+        ./dogstatsd start --cfgpath dist/ &
       fi
       echo $! > run/dogstatsd.pid
     fi
     echo "Starting trace agent"
     if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
-      ./trace-agent --config $DATADOG_DIR/dist/datadog.yaml --pid $DATADOG_DIR/run/trace-agent.pid > /dev/null 2>&1 &
+      ./trace-agent --config dist/datadog.yaml --pid run/trace-agent.pid > /dev/null 2>&1 &
     else
-      ./trace-agent --config $DATADOG_DIR/dist/datadog.yaml --pid $DATADOG_DIR/run/trace-agent.pid &
+      ./trace-agent --config dist/datadog.yaml --pid run/trace-agent.pid &
     fi
   popd
 }

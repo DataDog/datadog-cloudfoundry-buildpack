@@ -8,52 +8,53 @@ ROOT_DIR=$(dirname $BIN_DIR)
 BUILD_DIR=$1
 CACHE_DIR=$2
 ENV_DIR=$3
+DATADOG_DIR="${BUILD_DIR}/.datadog"
 
-mkdir -p $BUILD_DIR/.datadog/scripts
-cp $ROOT_DIR/lib/scripts/update_agent_config.sh $BUILD_DIR/.datadog/scripts/update_agent_config.sh
-chmod +x $BUILD_DIR/.datadog/scripts/update_agent_config.sh
-cp $ROOT_DIR/lib/scripts/get_tags.py $BUILD_DIR/.datadog/scripts/get_tags.py
+mkdir -p "${DATADOG_DIR}/scripts"
+cp "${ROOT_DIR}/lib/scripts/update_agent_config.sh" "${DATADOG_DIR}/scripts/update_agent_config.sh"
+chmod +x "${DATADOG_DIR}/scripts/update_agent_config.sh"
+cp "${ROOT_DIR}/lib/scripts/get_tags.py" "${DATADOG_DIR}/scripts/get_tags.py"
 
 
 echo "Installing Datadog IOT Agent, Dogstatsd and Trace Agent"
 
-mkdir -p $BUILD_DIR/.profile.d
+mkdir -p "${BUILD_DIR}/.profile.d"
 
-cp -r $ROOT_DIR/lib/dist $BUILD_DIR/.datadog/
-cp -r $ROOT_DIR/lib/conf.d $BUILD_DIR/.datadog/
-if [ -f $ROOT_DIR/lib/agent ]; then
-  cp $ROOT_DIR/lib/agent $BUILD_DIR/.datadog/agent
+cp -r "${ROOT_DIR}/lib/dist" "${DATADOG_DIR}"
+cp -r "${ROOT_DIR}/lib/conf.d" "${DATADOG_DIR}"
+if [ -f "${ROOT_DIR}/lib/agent" ]; then
+  cp "${ROOT_DIR}/lib/agent" "${DATADOG_DIR}/agent"
 fi
-if [ -f $ROOT_DIR/lib/dogstatsd ]; then
-  cp $ROOT_DIR/lib/dogstatsd $BUILD_DIR/.datadog/dogstatsd
+if [ -f "${ROOT_DIR}/lib/dogstatsd" ]; then
+  cp "${ROOT_DIR}/lib/dogstatsd" "${DATADOG_DIR}/dogstatsd"
 fi
-cp $ROOT_DIR/lib/trace-agent $BUILD_DIR/.datadog/trace-agent
+cp "${ROOT_DIR}/lib/trace-agent" "${DATADOG_DIR}/trace-agent"
 
-cp $ROOT_DIR/lib/scripts/create_logs_config.py $BUILD_DIR/.datadog/scripts/create_logs_config.py
-cp $ROOT_DIR/lib/scripts/parse_env_vars.py $BUILD_DIR/.datadog/scripts/parse_env_vars.py
-cp $ROOT_DIR/lib/scripts/nc.py $BUILD_DIR/.datadog/scripts/nc.py
-cp $ROOT_DIR/lib/scripts/utils.sh $BUILD_DIR/.datadog/scripts/utils.sh
+cp "${ROOT_DIR}/lib/scripts/create_logs_config.py" "${DATADOG_DIR}/scripts/create_logs_config.py"
+cp "${ROOT_DIR}/lib/scripts/parse_env_vars.py" "${DATADOG_DIR}/scripts/parse_env_vars.py"
+cp "${ROOT_DIR}/lib/scripts/nc.py" "${DATADOG_DIR}/scripts/nc.py"
+cp "${ROOT_DIR}/lib/scripts/utils.sh" "${DATADOG_DIR}/scripts/utils.sh"
 
-cp $ROOT_DIR/lib/scripts/update_agent_config_restart.sh $BUILD_DIR/.datadog/scripts/update_agent_config_restart.sh
-cp -r $ROOT_DIR/lib/test-endpoint.sh $BUILD_DIR/.profile.d/00-test-endpoint.sh # Make sure this is sourced first
-cp $ROOT_DIR/lib/run-datadog.sh $BUILD_DIR/.profile.d/01-run-datadog.sh
-cp $ROOT_DIR/lib/redirect-logs.sh $BUILD_DIR/.profile.d/02-redirect-logs.sh
+cp "${ROOT_DIR}/lib/scripts/update_agent_config_restart.sh" "${DATADOG_DIR}/scripts/update_agent_config_restart.sh"
+cp -r "${ROOT_DIR}/lib/test-endpoint.sh" "${BUILD_DIR}/.profile.d/00-test-endpoint.sh" # Make sure this is sourced first
+cp "${ROOT_DIR}/lib/run-datadog.sh" "${BUILD_DIR}/.profile.d/01-run-datadog.sh"
+cp "${ROOT_DIR}/lib/redirect-logs.sh" "${BUILD_DIR}/.profile.d/02-redirect-logs.sh"
 
-if [ -f $BUILD_DIR/.datadog/agent ]; then
-  chmod +x $BUILD_DIR/.datadog/agent
+if [ -f "${DATADOG_DIR}/agent" ]; then
+  chmod +x "${DATADOG_DIR}/agent"
 fi
-if [ -f $BUILD_DIR/.datadog/dogstatsd ]; then
-  chmod +x $BUILD_DIR/.datadog/dogstatsd
+if [ -f "${DATADOG_DIR}/dogstatsd" ]; then
+  chmod +x "${DATADOG_DIR}/dogstatsd"
 fi
 
-chmod +x $BUILD_DIR/.datadog/scripts/utils.sh
+chmod +x "${DATADOG_DIR}/scripts/utils.sh"
 
-chmod +x $BUILD_DIR/.datadog/scripts/update_agent_config_restart.sh
-chmod +x $BUILD_DIR/.datadog/trace-agent
-chmod +x $BUILD_DIR/.profile.d/00-test-endpoint.sh
-chmod +x $BUILD_DIR/.profile.d/02-redirect-logs.sh
-chmod +x $BUILD_DIR/.profile.d/01-run-datadog.sh
+chmod +x "${DATADOG_DIR}/scripts/update_agent_config_restart.sh"
+chmod +x "${DATADOG_DIR}/trace-agent"
+chmod +x "${BUILD_DIR}/.profile.d/00-test-endpoint.sh"
+chmod +x "${BUILD_DIR}/.profile.d/02-redirect-logs.sh"
+chmod +x "${BUILD_DIR}/.profile.d/01-run-datadog.sh"
 
 # Export all environment variables to a file that scripts can use later
 # We need to handle quotes and comments; sed command found in https://gist.github.com/mihow/9c7f559807069a03e302605691f85572
-printenv | sed -e '/^#/d;/^\s*$/d' -e "s/'/'\\\''/g" -e "s/=\(.*\)/='\1'/g" > "$BUILD_DIR/.datadog/.datadog_env"
+printenv | sed -e '/^#/d;/^\s*$/d' -e "s/'/'\\\''/g" -e "s/=\(.*\)/='\1'/g" > "${DATADOG_DIR}/.datadog_env"
