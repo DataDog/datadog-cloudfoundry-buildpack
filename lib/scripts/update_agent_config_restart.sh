@@ -30,9 +30,8 @@ source "${DATADOG_DIR}/scripts/utils.sh"
 
 stop_datadog() {
   pushd "${DATADOG_DIR}"
-
     # first try to stop the agent so we don't lose data and then force it
-    if ! [ "$(find_pid ./agent)" = "" ]; then
+    if [ -f run/agent.pid ]; then
       echo "Stopping agent process, pid: $(cat run/agent.pid)"
       (./agent stop --cfgpath dist/) || true
       find_pid_kill_and_wait "agent" || true
@@ -40,19 +39,20 @@ stop_datadog() {
       rm -f "run/agent.pid"
     fi
 
-    if ! [ "$(find_pid ./trace-agent)" = "" ]; then
+    if [ -f run/trace.pid ]; then
       echo "Stopping trace agent process, pid: $(cat run/trace-agent.pid)"
       trace_agent_command="trace-agent"
       kill_and_wait "run/trace-agent.pid" 5 1
       find_pid_kill_and_wait $trace_agent_command "run/trace-agent.pid"
     fi
 
-    if ! [ "$(find_pid ./dogstatsd)" = "" ]; then
+    if [ -f run/dogstatsd.pid ]; then
       echo "Stopping dogstatsd agent process, pid: $(cat run/dogstatsd.pid)"
       dogstatsd_command="dogstatsd"
       kill_and_wait "run/dogstatsd.pid" 5 1
       find_pid_kill_and_wait $dogstatsd_command "run/dogstatsd.pid"
     fi
+  popd
 }
 
 start_datadog() {

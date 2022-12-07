@@ -21,7 +21,7 @@ fi
 redirect() {
   while kill -0 $$; do
     if [ "$DD_SPARSE_APP_LOGS" = "true" ]; then
-        python "$DATADOG_DIR/scripts/nc.py" "$STD_LOG_COLLECTION_PORT" || sleep 0.5
+        python "${DATADOG_DIR}/scripts/nc.py" "$STD_LOG_COLLECTION_PORT" || sleep 0.5
     else
         nc localhost "$STD_LOG_COLLECTION_PORT" || sleep 0.5
     fi
@@ -33,7 +33,7 @@ redirect() {
             \"title\": \"Resetting buildpack log redirection\",
             \"text\": \"TCP socket on port $STD_LOG_COLLECTION_PORT for log redirection closed. Restarting it.\",
             \"priority\": \"normal\",
-            \"tags\": $(python $DATADOG_DIR/scripts/get_tags.py),
+            \"tags\": $(python ${DATADOG_DIR}/scripts/get_tags.py),
             \"alert_type\": \"info\"
       }" "${DD_API_SITE}v1/events?api_key=$DD_API_KEY"
     fi

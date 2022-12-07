@@ -11,7 +11,7 @@ LOCKFILE="${DATADOG_DIR}/lock"
 export DD_TAGS=$(LEGACY_TAGS_FORMAT=true python "${DATADOG_DIR}"/scripts/get_tags.py)
 
 start_datadog() {
-  pushd $DATADOG_DIR
+  pushd ${DATADOG_DIR}
     export DD_LOG_FILE="${DATADOG_DIR}/dogstatsd.log"
     export DD_API_KEY
     export DD_DD_URL
@@ -39,7 +39,7 @@ start_datadog() {
     # The yaml file requires the tags to be an array,
     # the conf file requires them to be comma separated only
     # so they must be grabbed separately
-    sed -i "s~log_file: TRACE_LOG_FILE~log_file: $DATADOG_DIR/trace.log~" dist/datadog.yaml
+    sed -i "s~log_file: TRACE_LOG_FILE~log_file: ${DATADOG_DIR}/trace.log~" dist/datadog.yaml
 
     if [ -n "$DD_SKIP_SSL_VALIDATION" ]; then
       sed -i "s~# skip_ssl_validation: no~skip_ssl_validation: yes~" dist/datadog.yaml
@@ -94,7 +94,7 @@ start_datadog() {
       if [ "$DD_LOGS_ENABLED" = "true" -a "$DD_LOGS_VALID_ENDPOINT" = "false" ]; then
         echo "Log endpoint not valid, not starting agent"
       else
-        export DD_LOG_FILE=$DATADOG_DIR/agent.log
+        export DD_LOG_FILE=${DATADOG_DIR}/agent.log
         export DD_IOT_HOST=false
         sed -i "s~log_file: AGENT_LOG_FILE~log_file: $DD_LOG_FILE~" dist/datadog.yaml
         if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
@@ -104,7 +104,7 @@ start_datadog() {
         fi
       fi
     else
-      export DD_LOG_FILE=$DATADOG_DIR/dogstatsd.log
+      export DD_LOG_FILE=${DATADOG_DIR}/dogstatsd.log
       sed -i "s~log_file: AGENT_LOG_FILE~log_file: $DD_LOG_FILE~" dist/datadog.yaml
       if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
         ./dogstatsd start --cfgpath dist/ > /dev/null 2>&1 &
