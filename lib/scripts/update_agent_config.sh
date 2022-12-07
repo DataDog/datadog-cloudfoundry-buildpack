@@ -1,30 +1,13 @@
 #!/bin/sh
 
-# wait for the buildpack scripts to finish
+DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 DEBUG_FILE="/home/vcap/app/.datadog/update_agent_config_out.log"
 
 main() {
+    # wait for the buildpack scripts to finish
     echo "Starting to wait for agent process to start"
-    timeout=0
+    timeout 120s "${DATADOG_DIR}/scripts/check_datadog.sh"
 
-    while [ $timeout -lt 120 ]; do
-        echo "Waiting for agent or dogstatsd process to start"
-
-        if pgrep -f ./agent; then
-            echo "Found agent process"
-            if test -f "/home/vcap/app/.datadog/dist/auth_token"; then
-                echo "Found agent token"
-                break
-            fi
-        fi
-
-        if pgrep -f ./dogstatsd; then
-            echo "Found dogstatsd process"
-            break
-        fi
-        sleep 1
-        timeout=$((timeout+1))
-    done
     echo "$DD_NODE_AGENT_TAGS"
 
     /bin/bash /home/vcap/app/.datadog/scripts/update_agent_config_restart.sh
