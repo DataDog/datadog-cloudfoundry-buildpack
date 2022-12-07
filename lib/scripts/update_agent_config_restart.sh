@@ -40,7 +40,7 @@ stop_datadog() {
       rm -f "run/agent.pid"
     fi
 
-    if [ -f run/trace.pid ]; then
+    if [ -f run/trace-agent.pid ]; then
       echo "Stopping trace agent process, pid: $(cat run/trace-agent.pid)"
       trace_agent_command="./trace-agent --config dist/datadog.yaml --pid run/trace-agent.pid"
       kill_and_wait "${DATADOG_DIR}/run/trace-agent.pid" 5 1
