@@ -31,7 +31,7 @@ start_datadog() {
     fi
 
     # add logs configs
-    if [ -n "$LOGS_CONFIG" ]; then
+    if [ -n "$LOGS_CONFIG" ] && [ "$DD_LOGS_ENABLED" = "true" ]; then
       mkdir -p $LOGS_CONFIG_DIR
       python scripts/create_logs_config.py
     fi

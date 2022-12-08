@@ -75,7 +75,9 @@ start_datadog() {
         export DD_IOT_HOST=false
 
         echo "Starting Datadog agent"
-        python scripts/create_logs_config.py
+        if [ "$DD_LOGS_ENABLED" = "true" ]; then
+          python scripts/create_logs_config.py
+        fi
 
         if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
           ./agent run --cfgpath dist/ --pidfile run/agent.pid > /dev/null 2>&1 &
