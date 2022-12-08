@@ -37,27 +37,27 @@ stop_datadog() {
   pushd "${DATADOG_DIR}"
     # first try to stop the agent so we don't lose data and then force it
     if [ -f run/agent.pid ]; then
-      log_message $0 "Stopping agent process, pid: $(cat run/agent.pid)"
+      log_message "${0}" "Stopping agent process, pid: $(cat run/agent.pid)"
       (./agent stop --cfgpath dist/) || true
       agent_commad="./agent run --cfgpath dist/ --pidfile run/agent.pid"
       find_pid_kill_and_wait "$agent_commad" || true
-      kill_and_wait "${DATADOG_DIR}/run/agent.pid" 5
+      kill_and_wait "${DATADOG_DIR}/run/agent.pid" 5 1
       rm -f "run/agent.pid"
     fi
 
     if [ -f run/trace-agent.pid ]; then
-      log_message $0 "Stopping trace agent process, pid: $(cat run/trace-agent.pid)"
+      log_message "${0}" "Stopping trace agent process, pid: $(cat run/trace-agent.pid)"
       trace_agent_command="./trace-agent --config dist/datadog.yaml --pid run/trace-agent.pid"
       kill_and_wait "${DATADOG_DIR}/run/trace-agent.pid" 5 1
-      find_pid_kill_and_wait "$trace_agent_command" "${DATADOG_DIR}/run/trace-agent.pid"
+      find_pid_kill_and_wait "${trace_agent_command}" "${DATADOG_DIR}/run/trace-agent.pid"
       rm -f "run/trace-agent.pid"
     fi
 
     if [ -f run/dogstatsd.pid ]; then
-      log_message $0 "Stopping dogstatsd agent process, pid: $(cat run/dogstatsd.pid)"
+      log_message "${0}" "Stopping dogstatsd agent process, pid: $(cat run/dogstatsd.pid)"
       dogstatsd_command="./dogstatsd start --cfgpath dist/"
       kill_and_wait "${DATADOG_DIR}/run/dogstatsd.pid" 5 1
-      find_pid_kill_and_wait "$dogstatsd_command" "${DATADOG_DIR}/run/dogstatsd.pid"
+      find_pid_kill_and_wait "${dogstatsd_command}" "${DATADOG_DIR}/run/dogstatsd.pid"
       rm -f "run/dogstatsd.pid"
     fi
   popd

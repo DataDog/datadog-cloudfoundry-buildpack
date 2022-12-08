@@ -19,7 +19,7 @@ main() {
 
     echo "$DD_NODE_AGENT_TAGS"
 
-    /bin/bash -x "${DATADOG_DIR}/scripts/update_agent_config_restart.sh"
+    /bin/bash "${DATADOG_DIR}/scripts/update_agent_config_restart.sh"
 }
 # for debugging purposes
 main "$@" 2>&1 | tee -a "$DEBUG_FILE" 
