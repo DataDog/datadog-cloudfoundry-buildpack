@@ -10,9 +10,9 @@
 . "${DATADOG_DIR}/scripts/common.sh"
 
 wait_pid() {
-  local pidfile="${1}"
-  local pid="${2}"
-  local try_kill="${3}"
+  local pidfile="$1"
+  local pid="$2"
+  local try_kill="$3"
   local timeout="${4:-0}"
   local force="${5:-0}"
   local countdown=$(( 100 )) # temporary to workaround a /bin/dash syntax error
@@ -51,14 +51,14 @@ wait_pid() {
 }
 
 find_pid() {
-  local find_command="${1}"
+  local find_command="$1"
   local pid=$(pgrep -f "${find_command}")
   echo "${pid:-None}"
 }
 
 wait_pidfile() {
-  local pidfile="${1}"
-  local try_kill="${2}"
+  local pidfile="$1"
+  local try_kill="$2"
   local timeout="${3:-0}"
   local force="${4:-0}"
   local countdown=$(( "${timeout}" * 10 ))
@@ -76,7 +76,7 @@ wait_pidfile() {
 }
 
 kill_and_wait() {
-  local pidfile="${1}"
+  local pidfile="$1"
   local timeout="${2:-25}"
   local force="${3:-1}"
 
@@ -84,15 +84,15 @@ kill_and_wait() {
     wait_pidfile "${pidfile}" 1 "${timeout}" "${force}"
   else
     # TODO assume $1 is something to grep from 'ps ax'
-    pid="$(ps auwwx | grep "'${1}'" | awk '{print $2}')"
+    pid="$(ps auwwx | grep "'$1'" | awk '{print $2}')"
     wait_pid "${pidfile}" "${pid}" 1 "${timeout}" "${force}"
   fi
 }
 
 
 find_pid_kill_and_wait() {
-  local find_command="${1}"
-  local pidfile="${2}"
+  local find_command="$1"
+  local pidfile="$2"
   local pid=$(find_pid "${find_command}")
   if [ -z "${pid}" ] || [ "${pid}" = "" ] ||  [ "${pid}" = "None" ]; then
     log_message "${0}" "No such PID ${pid} exists, skipping the hard kill"
