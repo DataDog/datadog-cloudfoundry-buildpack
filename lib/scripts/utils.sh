@@ -20,7 +20,7 @@ wait_pid() {
 
   if [ -e "/proc/${pid}" -o -n "${ps_out}" ]; then
     if [ "${try_kill}" = "1" ]; then
-      log_message "${0}" "Killing ${pidfile}: ${pid}"
+      log_message "$0" "Killing ${pidfile}: ${pid}"
       kill "${pid}"
     fi
     while [ -e "/proc/${pid}" ]; do
@@ -30,7 +30,7 @@ wait_pid() {
         if [ "${countdown}" -eq 0 ]; then
           if [ "${force}" = "1" ]; then
             echo
-            log_message "${0}" "Kill timed out, using kill -9 on ${pid} ..."
+            log_message "$0" "Kill timed out, using kill -9 on ${pid} ..."
             kill -9 "${pid}"
             sleep 0.5
           fi
@@ -41,12 +41,12 @@ wait_pid() {
       fi
     done
     if [ -e "/proc/${pid}" ]; then
-      log_message "${0}" "Timed Out"
+      log_message "$0" "Timed Out"
     else
-      log_message "${0}" "Stopped ${pid}"
+      log_message "$0" "Stopped ${pid}"
     fi
   else
-    log_message "${0}" "Process ${pid} is not running"
+    log_message "$0" "Process ${pid} is not running"
   fi
 }
 
@@ -95,7 +95,7 @@ find_pid_kill_and_wait() {
   local pidfile="$2"
   local pid=$(find_pid "${find_command}")
   if [ -z "${pid}" ] || [ "${pid}" = "" ] ||  [ "${pid}" = "None" ]; then
-    log_message "${0}" "No such PID ${pid} exists, skipping the hard kill"
+    log_message "$0" "No such PID ${pid} exists, skipping the hard kill"
   else
     local timeout="${2:-25}"
     local force="${3:-1}"
@@ -111,7 +111,7 @@ redirect() {
     else
         nc localhost "$STD_LOG_COLLECTION_PORT" || sleep 0.5
     fi
-    log_message "${0}" "Resetting buildpack log redirection"
+    log_message "$0" "Resetting buildpack log redirection"
     if [ "$DD_DEBUG_STD_REDIRECTION" = "true" ]; then
       HTTP_PROXY=$DD_HTTP_PROXY HTTPS_PROXY=$DD_HTTPS_PROXY NO_PROXY=$DD_NO_PROXY curl \
       -X POST -H "Content-type: application/json" \
