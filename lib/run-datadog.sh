@@ -9,9 +9,11 @@ SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 LOCKFILE="${DATADOG_DIR}/lock"
 
 export DD_TAGS=$(LEGACY_TAGS_FORMAT=true python "${DATADOG_DIR}"/scripts/get_tags.py)
+FIRST_RUN=${FIRST_RUN:-true}
 
-start_datadog() {
-  pushd ${DATADOG_DIR}
+setup_datadog() {
+  pushd "${DATADOG_DIR}"
+
     export DD_LOG_FILE="${DATADOG_DIR}/dogstatsd.log"
     export DD_API_KEY
     export DD_DD_URL
@@ -90,6 +92,7 @@ start_datadog() {
 
     # DSD requires its own config file
     cp dist/datadog.yaml dist/dogstatsd.yaml
+
     if [ -a ./agent ] && { [ "$DD_LOGS_ENABLED" = "true" ] || [ "$DD_ENABLE_CHECKS" = "true" ]; }; then
       if [ "$DD_LOGS_ENABLED" = "true" -a "$DD_LOGS_VALID_ENDPOINT" = "false" ]; then
         echo "Log endpoint not valid, not starting agent"
@@ -97,6 +100,39 @@ start_datadog() {
         export DD_LOG_FILE=${DATADOG_DIR}/agent.log
         export DD_IOT_HOST=false
         sed -i "s~log_file: AGENT_LOG_FILE~log_file: $DD_LOG_FILE~" dist/datadog.yaml
+      fi
+    else
+      export DD_LOG_FILE=${DATADOG_DIR}/dogstatsd.log
+      sed -i "s~log_file: AGENT_LOG_FILE~log_file: $DD_LOG_FILE~" dist/datadog.yaml
+    fi
+  popd
+}
+
+start_datadog() {
+  pushd ${DATADOG_DIR}
+    export DD_LOG_FILE="${DATADOG_DIR}/dogstatsd.log"
+    export DD_API_KEY
+    export DD_DD_URL
+    export DD_ENABLE_CHECKS="${DD_ENABLE_CHECKS:-false}"
+    export DOCKER_DD_AGENT=yes
+    export LOGS_CONFIG_DIR="${DATADOG_DIR}/dist/conf.d/logs.d"
+    export LOGS_CONFIG
+
+    if [ "${FIRST_RUN}" = "true" ]; then
+      echo "[DEBUG] First run DATADOG"
+      setup_datadog
+      FIRST_RUN=false
+    else
+      echo "[DEBUG] Not A FIRST run DATADOG"
+      unset DD_TAGS
+    fi
+    
+    if [ -a ./agent ] && { [ "$DD_LOGS_ENABLED" = "true" ] || [ "$DD_ENABLE_CHECKS" = "true" ]; }; then
+      if [ "$DD_LOGS_ENABLED" = "true" -a "$DD_LOGS_VALID_ENDPOINT" = "false" ]; then
+        echo "Log endpoint not valid, not starting agent"
+      else
+        export DD_LOG_FILE=${DATADOG_DIR}/agent.log
+        export DD_IOT_HOST=false
         if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
           ./agent run --cfgpath dist/ --pidfile run/agent.pid > /dev/null 2>&1 &
         else
@@ -105,7 +141,6 @@ start_datadog() {
       fi
     else
       export DD_LOG_FILE=${DATADOG_DIR}/dogstatsd.log
-      sed -i "s~log_file: AGENT_LOG_FILE~log_file: $DD_LOG_FILE~" dist/datadog.yaml
       if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
         ./dogstatsd start --cfgpath dist/ > /dev/null 2>&1 &
       else
@@ -122,26 +157,38 @@ start_datadog() {
 }
 
 stop_datadog() {
-  while kill -0 $$; do
+  while kill -0 $$ && [ -f ${DATADOG_DIR}/run/trace-agent.pid ]; do
     sleep 1
   done
-  echo "main process exited, stopping agent"
-  for pidfile in "${DATADOG_DIR}"/run/*; do
-    kill $(cat $pidfile)
-  done
+
+  if ! kill -0 $$; then
+    echo "main process exited, stopping agent"
+    for pidfile in "${DATADOG_DIR}"/run/*; do
+      kill $(cat $pidfile)
+    done
+    exit
+  fi
+}
+
+
+monit_datadog() {
+  while true; do
+      exec 9> "$LOCKFILE" || exit 1
+      if flock -x -n 9; then
+        source "${DATADOG_DIR}/.sourced_datadog_env"
+        echo "starting datadog"
+        start_datadog
+        stop_datadog  &
+        exec 9>&-
+      fi
+    done
 }
 
 main() {
   if [ -z "$DD_API_KEY" ]; then
     echo "Datadog API Key not set, not starting Datadog"
   else
-    exec 9> "$LOCKFILE" || exit 1
-    if flock -x -n 9; then
-      echo "starting datadog"
-      start_datadog
-      stop_datadog &
-      exec 9>&-
-    fi
+    monit_datadog &
   fi
 }
 

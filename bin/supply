@@ -31,6 +31,8 @@ fi
 cp "${ROOT_DIR}/lib/trace-agent" "${DATADOG_DIR}/trace-agent"
 
 cp "${ROOT_DIR}/lib/scripts/create_logs_config.py" "${DATADOG_DIR}/scripts/create_logs_config.py"
+cp "${ROOT_DIR}/lib/scripts/update_yaml_config.rb" "${DATADOG_DIR}/scripts/update_yaml_config.rb"
+
 cp "${ROOT_DIR}/lib/scripts/parse_env_vars.py" "${DATADOG_DIR}/scripts/parse_env_vars.py"
 cp "${ROOT_DIR}/lib/scripts/nc.py" "${DATADOG_DIR}/scripts/nc.py"
 cp "${ROOT_DIR}/lib/scripts/utils.sh" "${DATADOG_DIR}/scripts/utils.sh"
@@ -65,3 +67,4 @@ printenv | sed -e '/^#/d;/^\s*$/d' -e "s/'/'\\\''/g" -e "s/=\(.*\)/='\1'/g" > "$
 
 # sanitize env vars and export a new a env file
 python "$DATADOG_DIR/scripts/parse_env_vars.py" "$DATADOG_DIR/.raw_datadog_env" "$DATADOG_DIR/.datadog_env"
+

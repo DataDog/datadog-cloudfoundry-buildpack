@@ -4,10 +4,11 @@
 # This product includes software developed at Datadog (https://www.datadoghq.com/).
 # Copyright 2022-Present Datadog, Inc.
 
-DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
+export DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
+export DEBUG_FILE="${DATADOG_DIR}/update_agent_script.log"
 
 log_message() {
   local component=$1
-  local message=$2
-  echo "$(date +'%d/%m/%Y %H:%M:%S') [${1#/home/vcap/app/}] - ${3:-INFO} - $2"
+  local message=$3
+  echo "$(date +'%d-%m-%Y %H:%M:%S') - [${1#/home/vcap/app/}][PID:$2] - ${4:-INFO} - $3"
 }

@@ -12,13 +12,13 @@
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 
+# import log_message and DATADOG_DIR
 source "${DATADOG_DIR}/scripts/common.sh"
 
 export DD_NODE_AGENT_TAGS_NEW=${DD_NODE_AGENT_TAGS}
 
-# correct way to export / source the .datadog_env file so that every variable is parsed
-python "${DATADOG_DIR}/scripts/parse_env_vars.py" "${DATADOG_DIR}/.datadog_env" "${DATADOG_DIR}/.new_datadog_env"
-source "${DATADOG_DIR}/.new_datadog_env"
+# correct way to export / source the .datadog_env file so that every variable is parsed and sanitized
+source "${DATADOG_DIR}/.datadog_env"
 
 export DD_NODE_AGENT_TAGS=${DD_NODE_AGENT_TAGS_NEW}
 export DD_TAGS=$(LEGACY_TAGS_FORMAT=true python "${DATADOG_DIR}/scripts/get_tags.py" node-agent-tags)
@@ -29,6 +29,9 @@ echo "$DD_TAGS" | awk '{ printf "%s", $0 }' >  "${DATADOG_DIR}/node_agent_tags.t
 
 # for debugging purposes
 printenv > "${DATADOG_DIR}/.sourced_datadog_env"
+
+echo "running ruby script"
+ruby "${DATADOG_DIR}/scripts/update_yaml_config.rb"
 
 # import helper functions
 source "${DATADOG_DIR}/scripts/utils.sh"
@@ -77,12 +80,12 @@ start_datadog() {
 
     if [ -a ./agent ] && { [ "$DD_LOGS_ENABLED" = "true" ] || [ "$DD_ENABLE_CHECKS" = "true" ]; }; then
       if [ "$DD_LOGS_ENABLED" = "true" -a "$DD_LOGS_VALID_ENDPOINT" = "false" ]; then
-        log_message $0 "Log endpoint not valid, not starting agent"
+        log_message $0 $$ "Log endpoint not valid, not starting agent"
       else
         export DD_LOG_FILE=agent.log
         export DD_IOT_HOST=false
 
-        log_message $0 "Starting Datadog agent"
+        log_message $0 $$ "Starting Datadog agent"
         python scripts/create_logs_config.py
 
         if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
@@ -92,7 +95,7 @@ start_datadog() {
         fi
       fi
     else
-      log_message $0 "Starting dogstatsd agent"
+      log_message $0 $$ "Starting dogstatsd agent"
       export DD_LOG_FILE=dogstatsd.log
       if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
         ./dogstatsd start --cfgpath dist/ > /dev/null 2>&1 &
@@ -101,7 +104,7 @@ start_datadog() {
       fi
       echo $! > run/dogstatsd.pid
     fi
-    log_message $0 "Starting trace agent"
+    log_message $0 $$ "Starting trace agent"
     if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
       ./trace-agent --config dist/datadog.yaml --pid run/trace-agent.pid > /dev/null 2>&1 &
     else
@@ -113,27 +116,9 @@ start_datadog() {
 
 main() {
     # After the tags are parsed and added to DD_TAGS, we need to restart the agent for the changes to take effect
-    log_message $0 "stop datadog to refresh tags"
+    log_message $0 $$ "stop datadog to refresh tags"
     stop_datadog
-
-    # setup the redirection from stdout/stderr to the logs-agent.
-    if [ "$DD_LOGS_ENABLED" = "true" ]; then
-        if [ "$DD_LOGS_VALID_ENDPOINT" = "false" ]; then
-            echo "Log endpoint not valid, not starting log redirection"
-        else
-            if [ -z "$LOGS_CONFIG" ]; then
-                echo "can't collect logs, LOGS_CONFIG is not set"
-                else
-                echo "collect all logs for config $LOGS_CONFIG"
-                if [ -n "$STD_LOG_COLLECTION_PORT" ]; then
-                    echo "forward all logs from stdout/stderr to agent port $STD_LOG_COLLECTION_PORT"
-                    exec &> >(tee >(redirect))
-                fi
-            fi
-        fi
-    fi
-    log_message $0 "start datadog to refresh tags"
-    start_datadog
+    log_message $0 $$ "start datadog to refresh tags"
 }
 
 main "$@"
