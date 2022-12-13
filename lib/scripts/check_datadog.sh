@@ -10,19 +10,19 @@ source "${DATADOG_DIR}/scripts/common.sh"
 
 check_datadog() {
   while true; do
-    log_message $0 $$ "Waiting for agent or dogstatsd process to start"
+    log_message "$0" "$$" "Waiting for agent or dogstatsd process to start"
     if [ -f "${DATADOG_DIR}/run/agent.pid" ]; then
-        log_message $0 $$ "Found agent process"
+        log_message "$0" "$$" "Found agent process"
         if [ -f "${DATADOG_DIR}/dist/auth_token" ]; then
-          log_message $0 $$ "Found agent token"
+          log_message "$0" "$$" "Found agent token"
           break
         else 
-          log_message $0 $$ "Agent token not found"
+          log_message "$0" "$$" "Agent token not found"
         fi
     fi
 
     if [ -f "${DATADOG_DIR}/run/dogstatsd.pid" ]; then
-        log_message $0 $$ "Found dogstatsd process"
+        log_message "$0" "$$" "Found dogstatsd process"
         break
     fi
     sleep 1
