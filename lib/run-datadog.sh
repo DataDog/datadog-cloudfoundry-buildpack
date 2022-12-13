@@ -129,12 +129,12 @@ start_datadog() {
 
     if [ -a ./agent ] && { [ "$DD_LOGS_ENABLED" = "true" ] || [ "$DD_ENABLE_CHECKS" = "true" ]; }; then
       if [ "$DD_LOGS_ENABLED" = "true" -a "$DD_LOGS_VALID_ENDPOINT" = "false" ]; then
-        log_message "$0" "$$" "Log endpoint not valid, not starting agent"
+        echo "Log endpoint not valid, not starting agent"
       else
         export DD_LOG_FILE=agent.log
         export DD_IOT_HOST=false
 
-        log_message "$0" "$$" "Starting Datadog agent"
+        echo "Starting Datadog agent"
         python scripts/create_logs_config.py
 
         if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
@@ -144,7 +144,7 @@ start_datadog() {
         fi
       fi
     else
-      log_message "$0" "$$" "Starting dogstatsd agent"
+      echo "Starting dogstatsd agent"
       export DD_LOG_FILE=dogstatsd.log
       if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
         ./dogstatsd start --cfgpath dist/ > /dev/null 2>&1 &
@@ -153,7 +153,7 @@ start_datadog() {
       fi
       echo $! > run/dogstatsd.pid
     fi
-    log_message "$0" "$$" "Starting trace agent"
+    echo "Starting trace agent"
     if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
       ./trace-agent --config dist/datadog.yaml --pid run/trace-agent.pid > /dev/null 2>&1 &
     else
@@ -172,6 +172,7 @@ stop_datadog() {
     for pidfile in "${DATADOG_DIR}"/run/*; do
       kill $(cat $pidfile)
     done
+    exec 9>&-
     exit
   fi
 }
@@ -182,14 +183,15 @@ monit_datadog() {
       exec 9> "$LOCKFILE" || exit 1
       if flock -x -n 9; then
         if [ -f "${DATADOG_DIR}/.sourced_datadog_env" ]; then
-          source"${DATADOG_DIR}/.sourced_datadog_env"
+          source "${DATADOG_DIR}/.sourced_datadog_env"
         else 
           source "${DATADOG_DIR}/.datadog_env"
         fi
         echo "starting datadog hey"
         start_datadog
-        stop_datadog  &
-        exec 9>&-
+        stop_datadog
+      else
+        exit
       fi
     done
 }
