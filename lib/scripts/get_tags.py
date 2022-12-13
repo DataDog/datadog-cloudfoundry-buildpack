@@ -17,7 +17,10 @@ vcap_variables = ["application_id", "name", "instance_index", "space_name"]
 
 cf_instance_ip = os.environ.get("CF_INSTANCE_IP")
 
-tags = ["cf_instance_ip:{}".format(cf_instance_ip)]
+tags = []
+if cf_instance_ip is not None:
+    tags.append("cf_instance_ip:{}".format(cf_instance_ip))
+
 tags.append("container_id:{}".format(os.environ.get("CF_INSTANCE_GUID")))
 
 if len(sys.argv) > 1 and sys.argv[1] == 'node-agent-tags':
