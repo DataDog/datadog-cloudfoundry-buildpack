@@ -42,7 +42,7 @@ stop_datadog() {
       log_message "$0" "Stopping agent process, pid: $(cat run/agent.pid)"
       (./agent stop --cfgpath dist/) || true
       agent_commad="./agent run --cfgpath dist/ --pidfile run/agent.pid"
-      find_pid_kill_and_wait "$agent_commad" "${DATADOG_DIR}run/agent.pid" 5 1 || true
+      find_pid_kill_and_wait "$agent_commad" "${DATADOG_DIR}/run/agent.pid" 5 1 || true
       kill_and_wait "${DATADOG_DIR}/run/agent.pid" 5 1
       rm -f "run/agent.pid"
     fi
