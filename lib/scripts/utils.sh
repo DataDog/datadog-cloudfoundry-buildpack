@@ -97,8 +97,8 @@ find_pid_kill_and_wait() {
   if [ -z "${pid}" ] || [ "${pid}" = "" ] ||  [ "${pid}" = "None" ]; then
     log_message "$0" "No such PID ${pid} exists, skipping the hard kill"
   else
-    local timeout="${2:-25}"
-    local force="${3:-1}"
+    local timeout="${3:-25}"
+    local force="${4:-1}"
     wait_pid "${pidfile}" "${pid}" 1 "${timeout}" "${force}"
   fi
 }

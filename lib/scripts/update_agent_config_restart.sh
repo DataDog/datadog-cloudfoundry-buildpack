@@ -8,7 +8,6 @@
 # It sets the DD_NODE_AGENT_TAGS environment variable with these new tags
 # see: https://github.com/DataDog/datadog-agent/blob/7.40.x/pkg/cloudfoundry/containertagger/container_tagger.go#L131
 
-set -x 
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 
@@ -59,7 +58,7 @@ stop_datadog() {
     if [ -f run/dogstatsd.pid ]; then
       log_message "$0" "Stopping dogstatsd agent process, pid: $(cat run/dogstatsd.pid)"
       dogstatsd_command="./dogstatsd start --cfgpath dist/"
-      kill_and_wait "${DATADOG_DIR}/run/dogstatsd.pid" 5 1 0 0
+      kill_and_wait "${DATADOG_DIR}/run/dogstatsd.pid" 5 1
       find_pid_kill_and_wait "${dogstatsd_command}" "${DATADOG_DIR}/run/dogstatsd.pid" 5 1 
       rm -f "run/dogstatsd.pid"
     fi

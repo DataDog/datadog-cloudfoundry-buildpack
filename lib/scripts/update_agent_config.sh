@@ -4,8 +4,6 @@
 # This product includes software developed at Datadog (https://www.datadoghq.com/).
 # Copyright 2022-Present Datadog, Inc.
 
-set -x 
-
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 LOCKFILE="${DATADOG_DIR}/update.lock"
 
