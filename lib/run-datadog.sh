@@ -8,6 +8,11 @@ DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 LOCKFILE="${DATADOG_DIR}/lock"
 
+AGENT_CMD="./agent run --cfgpath dist/ --pidfile run/agent.pid"
+DOGSTATSD_CMD="./dogstatsd start --cfgpath dist/"
+TRACE_AGENT_CMD="./trace-agent --config dist/datadog.yaml --pid run/trace-agent.pid"
+
+
 export DD_TAGS=$(LEGACY_TAGS_FORMAT=true python "${DATADOG_DIR}"/scripts/get_tags.py)
 FIRST_RUN=${FIRST_RUN:-true}
 
@@ -35,7 +40,7 @@ setup_datadog() {
     # add logs configs
     if [ -n "$LOGS_CONFIG" ]; then
       mkdir -p $LOGS_CONFIG_DIR
-      python scripts/create_logs_config.py
+      ruby scripts/create_logs_config.rb
     fi
 
     # The yaml file requires the tags to be an array,
@@ -124,7 +129,7 @@ start_datadog() {
       FIRST_RUN=false
     else
       echo "[DEBUG] Not A FIRST run DATADOG"
-      unset DD_TAGS
+      source "${DATADOG_DIR}/.sourced_datadog_env"
     fi
 
     if [ -a ./agent ] && { [ "$DD_LOGS_ENABLED" = "true" ] || [ "$DD_ENABLE_CHECKS" = "true" ]; }; then
@@ -135,7 +140,7 @@ start_datadog() {
         export DD_IOT_HOST=false
 
         echo "Starting Datadog agent"
-        python scripts/create_logs_config.py
+        ruby scripts/create_logs_config.rb
 
         if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
           ./agent run --cfgpath dist/ --pidfile run/agent.pid > /dev/null 2>&1 &
@@ -162,46 +167,66 @@ start_datadog() {
   popd
 }
 
-stop_datadog() {
-  while kill -0 $$ && [ -f ${DATADOG_DIR}/run/trace-agent.pid ]; do
-    sleep 1
-  done
 
-  if ! kill -0 $$; then
-    echo "main process exited, stopping agent"
-    for pidfile in "${DATADOG_DIR}"/run/*; do
-      kill $(cat $pidfile)
-    done
-    exec 9>&-
-    exit
-  fi
+stop_datadog() {
+  pushd "${DATADOG_DIR}"
+    if pgrep "${AGENT_CMD}"; then
+      log_message "$0" "Stopping agent process, pid: $(cat run/agent.pid)"
+      # first try to stop the agent so we don't lose data and then force it
+      (./agent stop --cfgpath dist/) || true
+      agent_command="./agent run --cfgpath dist/ --pidfile run/agent.pid"
+      find_pid_kill_and_wait "$agent_command" "${DATADOG_DIR}/run/agent.pid" 5 1 || true
+      kill_and_wait "${DATADOG_DIR}/run/agent.pid" 5 1
+      rm -f "run/agent.pid"
+    fi
+
+    if pgrep "${DOGSTATSD_CMD}"; then
+      log_message "$0" "Stopping dogstatsd agent process, pid: $(cat run/dogstatsd.pid)"
+      dogstatsd_command="./dogstatsd start --cfgpath dist/"
+      kill_and_wait "${DATADOG_DIR}/run/dogstatsd.pid" 5 1
+      find_pid_kill_and_wait "${dogstatsd_command}" "${DATADOG_DIR}/run/dogstatsd.pid" 5 1 
+      rm -f "run/dogstatsd.pid"
+    fi
+
+    if pgrep "${TRACE_AGENT_CMD}"; then
+      log_message "$0" "Stopping trace agent process, pid: $(cat run/trace-agent.pid)"
+      trace_agent_command="./trace-agent --config dist/datadog.yaml --pid run/trace-agent.pid"
+      kill_and_wait "${DATADOG_DIR}/run/trace-agent.pid" 5 1
+      find_pid_kill_and_wait "${trace_agent_command}" "${DATADOG_DIR}/run/trace-agent.pid" 5 1
+      rm -f "run/trace-agent.pid"
+    fi
+  popd
 }
 
 
 monit_datadog() {
   while true; do
-      exec 9> "$LOCKFILE" || exit 1
-      if flock -x -n 9; then
-        if [ -f "${DATADOG_DIR}/.sourced_datadog_env" ]; then
-          source "${DATADOG_DIR}/.sourced_datadog_env"
-        else 
-          source "${DATADOG_DIR}/.datadog_env"
-        fi
-        echo "starting datadog hey"
-        start_datadog
-        stop_datadog
-      else
-        exit
-      fi
-    done
+    if ! kill -0 $$; then
+      echo "main process exited, stopping agent"
+      for pidfile in "${DATADOG_DIR}"/run/*; do
+        kill $(cat $pidfile)
+      done
+      exit
+    elif [ -f "${DATADOG_DIR}"/tags_updated ]; then
+      echo "RESTARTING DATADOG"
+      start_datadog
+      rm -f "${DATADOG_DIR}"/tags_updated
+    fi
+    sleep 1
+  done
 }
 
 main() {
   if [ -z "$DD_API_KEY" ]; then
     echo "Datadog API Key not set, not starting Datadog"
   else
-    monit_datadog &
+    exec 9> "$LOCKFILE" || exit 1
+    if flock -x -n 9; then
+      echo "starting datadog"
+      start_datadog
+      monit_datadog &
+      exec 9>&-
+    fi
   fi
 }
-
 main "$@"

@@ -31,6 +31,7 @@ fi
 cp "${ROOT_DIR}/lib/trace-agent" "${DATADOG_DIR}/trace-agent"
 
 cp "${ROOT_DIR}/lib/scripts/create_logs_config.py" "${DATADOG_DIR}/scripts/create_logs_config.py"
+cp "${ROOT_DIR}/lib/scripts/create_logs_config.rb" "${DATADOG_DIR}/scripts/create_logs_config.rb"
 cp "${ROOT_DIR}/lib/scripts/parse_env_vars.py" "${DATADOG_DIR}/scripts/parse_env_vars.py"
 cp "${ROOT_DIR}/lib/scripts/update_yaml_config.rb" "${DATADOG_DIR}/scripts/update_yaml_config.rb"
 

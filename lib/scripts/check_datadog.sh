@@ -27,6 +27,7 @@ check_datadog() {
     fi
     sleep 1
   done
+  sleep 5
 }
 
 main() {
