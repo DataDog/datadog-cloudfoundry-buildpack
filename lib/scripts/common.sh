@@ -8,7 +8,9 @@ export DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 export DEBUG_FILE="${DATADOG_DIR}/update_agent_script.log"
 
 log_message() {
-  local component="${1}"
-  local message="${3}"
-  echo "$(date +'%d-%m-%Y %H:%M:%S') - [${1#/home/vcap/app/}][PID:$2] - ${4:-INFO} - ${3}"
+  local component="${1#/home/vcap/app/}"
+  local pid="$2"
+  local message="$3"
+  local log_level="${4:-INFO}"
+  echo "$(date +'%d-%m-%Y %H:%M:%S') - [${component}][PID:${pid}] - ${log_level} - ${message}"
 }

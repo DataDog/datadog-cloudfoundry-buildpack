@@ -111,7 +111,7 @@ redirect() {
     else
         nc localhost "$STD_LOG_COLLECTION_PORT" || sleep 0.5
     fi
-    log_message "$0" "Resetting buildpack log redirection"
+    log_message "$0" "$$" "Resetting buildpack log redirection"
     if [ "$DD_DEBUG_STD_REDIRECTION" = "true" ]; then
       HTTP_PROXY=$DD_HTTP_PROXY HTTPS_PROXY=$DD_HTTPS_PROXY NO_PROXY=$DD_NO_PROXY curl \
       -X POST -H "Content-type: application/json" \

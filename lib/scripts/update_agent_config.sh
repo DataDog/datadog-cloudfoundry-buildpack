@@ -45,8 +45,6 @@ main() {
 
     log_message "$0" "$$" "DD_NODE_AGENT_TAGS=${DD_NODE_AGENT_TAGS}"
   
-
-
     /bin/bash "${DATADOG_DIR}/scripts/update_agent_config_restart.sh"
 
     log_message "$0" "$$" "Finished Update Script"

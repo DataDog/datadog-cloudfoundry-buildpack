@@ -117,8 +117,8 @@ main() {
     # After the tags are parsed and added to DD_TAGS, we need to restart the agent for the changes to take effect
     log_message "$0" "$$" "stop datadog to refresh tags"
     stop_datadog
-    log_message "$0" "$$" "start datadog to refresh tags"
-    start_datadog
+    # log_message "$0" "$$" "start datadog to refresh tags"
+    # start_datadog
 }
 
 main "$@"
