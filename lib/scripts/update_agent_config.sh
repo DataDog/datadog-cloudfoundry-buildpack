@@ -45,6 +45,10 @@ main() {
     fi
 
     export DD_TAGS=$(LEGACY_TAGS_FORMAT=true python "${DATADOG_DIR}/scripts/get_tags.py" node-agent-tags)
+    export LOGS_CONFIG_DIR="${DATADOG_DIR}/dist/conf.d/logs.d"
+    export LOGS_CONFIG
+    echo "running ruby script"
+    ruby ${DATADOG_DIR}/scripts/update_yaml_config.rb 2>&1 | tee -a "$DATADOG_DIR/ruby_script.3.log"
 
     log_message "$0" "$$" "DD_TAGS=${DD_TAGS}"
     # the agent cloud_foundry_container workloadmeta collector reads from this file
@@ -53,9 +57,6 @@ main() {
     echo "${DD_TAGS}" | awk '{ printf "%s", $0 }' >  "${DATADOG_DIR}/node_agent_tags.txt"
     log_message "$0" "$$" "node_agent_tags.txt=$(cat ${DATADOG_DIR}/node_agent_tags.txt)"
     
-
-    echo "running ruby script"
-    # /usr/bin/env ruby ${DATADOG_DIR}/scripts/update_yaml_config.rb
 
     log_message "$0" "$$" "DD_NODE_AGENT_TAGS=${DD_NODE_AGENT_TAGS}"
   

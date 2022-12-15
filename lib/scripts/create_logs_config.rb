@@ -4,9 +4,21 @@
 
 require 'json'
 
+dd_env_file = "/home/vcap/app/.datadog/.sourced_env_datadog"
+node_agent_tags = "/home/vcap/app/.datadog/node_agent_tags.txt"
+
+if File.file?(dd_env_file)
+  File.readlines().each do |line|
+    values = line.split("=")
+    ENV[values[0]] = values[1]
+  end
+  puts "ruby: sourced datadog env file"
+end
+
 logs_config_dir = ENV['LOGS_CONFIG_DIR']
 logs_config = ENV['LOGS_CONFIG']
 dd_tags = ENV['DD_TAGS']
+dd_node_agent_tags = ENV['DD_NODE_AGENTS_TAGS'] || (File.file?(node_agent_tags) ? File.read(node_agent_tags) : "")
 
 config = {}
 
@@ -17,11 +29,28 @@ end
 
 if !logs_config.nil?
   config["logs"] = JSON.parse(logs_config)
+
+  tags_list = []
+
   if !dd_tags.nil?
-    config["logs"][0]["tags"] = dd_tags
+    tags_list += dd_tags.split(',')
+    puts "DD_TAGS found in ruby script=#{dd_tags}"
   else
     puts "Could not find DD_TAGS env var"
   end
+
+  if !dd_node_agent_tags.nil?
+    tags_list += dd_node_agent_tags.split(',')
+    puts "DD_NODE_AGENTS_TAGS found in ruby script=#{dd_node_agent_tags}"
+  else
+    puts "Could not find DD_NODE_AGENTS_TAGS env var"
+  end
+
+  if !tags_list.empty?
+    tags_list = tags_list.uniq
+    config["logs"][0]["tags"] = tags_list.join(",")
+  end
+  
 else
   puts "ERROR: `LOGS_CONFIG` must be set in order to collect logs. For more info, see: https://github.com/DataDog/datadog-cloudfoundry-buildpack#log-collection"
   exit(1)

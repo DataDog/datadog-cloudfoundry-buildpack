@@ -7,9 +7,8 @@
 export DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 export DEBUG_FILE="${DATADOG_DIR}/update_agent_script.log"
 
-export AGENT_CMD="./agent run --cfgpath dist/ --pidfile run/agent.pid"
-export DOGSTATSD_CMD="./dogstatsd start --cfgpath dist/"
-export TRACE_AGENT_CMD="./trace-agent --config dist/datadog.yaml --pid run/trace-agent.pid"
+export LOGS_CONFIG_DIR="${DATADOG_DIR}/dist/conf.d/logs.d"
+export LOGS_CONFIG
 
 
 log_message() {
