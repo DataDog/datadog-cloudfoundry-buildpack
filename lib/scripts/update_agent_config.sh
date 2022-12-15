@@ -44,11 +44,13 @@ main() {
         fi
     fi
 
-    export DD_TAGS=$(LEGACY_TAGS_FORMAT=true python "${DATADOG_DIR}/scripts/get_tags.py" node-agent-tags)
+    . $DATADOG_DIR/.datadog_env
+
+    export DD_TAGS=$(LEGACY_TAGS_FORMAT=true python "${DATADOG_DIR}/scripts/get_tags.py" node-agent-tags)   
     export LOGS_CONFIG_DIR="${DATADOG_DIR}/dist/conf.d/logs.d"
     export LOGS_CONFIG
+
     echo "running ruby script"
-    # ruby ${DATADOG_DIR}/scripts/update_yaml_config.rb 2>&1 | tee -a "$DATADOG_DIR/ruby_script.3.log"
     ruby ${DATADOG_DIR}/scripts/create_logs_config.rb 2>&1 | tee -a "$DATADOG_DIR/ruby_script.3.log"
 
     log_message "$0" "$$" "DD_TAGS=${DD_TAGS}"
@@ -56,9 +58,9 @@ main() {
     # See: https://github.com/DataDog/datadog-agent/blob/main/pkg/workloadmeta/collectors/internal/cloudfoundry/cf_container/cloudfoundry_container.go#L24
     log_message "$0" "$$" "Writing DD_TAGS to node_agent_tags.txt"
     echo "${DD_TAGS}" | awk '{ printf "%s", $0 }' >  "${DATADOG_DIR}/node_agent_tags.txt"
+    
     log_message "$0" "$$" "node_agent_tags.txt=$(cat ${DATADOG_DIR}/node_agent_tags.txt)"
     
-
     log_message "$0" "$$" "DD_NODE_AGENT_TAGS=${DD_NODE_AGENT_TAGS}"
   
     /bin/bash "${DATADOG_DIR}/scripts/update_agent_config_restart.sh"
@@ -68,4 +70,4 @@ main() {
     touch $DATADOG_DIR/tags_updated
 }
 # for debugging purposes
-main "$@" 2>&1 | tee /dev/fd/1 -a "$DEBUG_FILE"
+main "$@" 2>&1 | tee -a "$DEBUG_FILE"

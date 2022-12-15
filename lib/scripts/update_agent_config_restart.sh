@@ -26,9 +26,6 @@ export LOGS_CONFIG
 
 echo "running ruby script"
 ruby $DATADOG_DIR/scripts/create_logs_config.rb 2>&1 | tee -a "$DATADOG_DIR/ruby_script.2.log"
-# ruby "${DATADOG_DIR}/scripts/update_yaml_config.rb" 2>&1 | tee -a "$DATADOG_DIR/ruby_script.2.log"
-
-echo "LOGS_CONFIG: $(cat ${DATADOG_DIR}/dist/conf.d/logs.d/logs.yaml)"
 
 # the agent cloud_foundry_container workloadmeta collector reads from this file
 # See: https://github.com/DataDog/datadog-agent/blob/main/pkg/workloadmeta/collectors/internal/cloudfoundry/cf_container/cloudfoundry_container.go#L24
@@ -36,9 +33,3 @@ echo "$DD_TAGS" | awk '{ printf "%s", $0 }' >  "${DATADOG_DIR}/node_agent_tags.t
 
 # for debugging purposes
 printenv > "${DATADOG_DIR}/.sourced_datadog_env"
-
-
-
-
-# import helper functions
-source "${DATADOG_DIR}/scripts/utils.sh"
