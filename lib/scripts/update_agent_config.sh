@@ -48,7 +48,8 @@ main() {
     export LOGS_CONFIG_DIR="${DATADOG_DIR}/dist/conf.d/logs.d"
     export LOGS_CONFIG
     echo "running ruby script"
-    ruby ${DATADOG_DIR}/scripts/update_yaml_config.rb 2>&1 | tee -a "$DATADOG_DIR/ruby_script.3.log"
+    # ruby ${DATADOG_DIR}/scripts/update_yaml_config.rb 2>&1 | tee -a "$DATADOG_DIR/ruby_script.3.log"
+    ruby ${DATADOG_DIR}/scripts/create_logs_config.rb 2>&1 | tee -a "$DATADOG_DIR/ruby_script.3.log"
 
     log_message "$0" "$$" "DD_TAGS=${DD_TAGS}"
     # the agent cloud_foundry_container workloadmeta collector reads from this file

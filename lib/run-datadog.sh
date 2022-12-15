@@ -142,7 +142,7 @@ start_datadog() {
         export DD_IOT_HOST=false
 
         echo "Starting Datadog agent"
-      # ruby scripts/create_logs_config.rb
+        ruby scripts/create_logs_config.rb 2>&1 | tee -a "$DATADOG_DIR/ruby_script.4.log"
 
         if [ "$SUPPRESS_DD_AGENT_OUTPUT" = "true" ]; then
           ./agent run --cfgpath dist/ --pidfile run/agent.pid > /dev/null 2>&1 &
