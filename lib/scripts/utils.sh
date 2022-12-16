@@ -105,7 +105,7 @@ find_pid_kill_and_wait() {
 
 # redirect forwards all standard inputs to a TCP socket listening on port STD_LOG_COLLECTION_PORT.
 redirect() {
-  while kill -0 $$; do
+  while kill -0 $$ 2>/dev/null; do
     if [ "$DD_SPARSE_APP_LOGS" = "true" ]; then
         python "${DATADOG_DIR}/scripts/nc.py" "$STD_LOG_COLLECTION_PORT" || sleep 0.5
     else

@@ -34,14 +34,14 @@ if !logs_config.nil?
 
   if !dd_tags.nil?
     tags_list += dd_tags.split(',')
-    puts "DD_TAGS found in ruby script=#{dd_tags}"
+    # puts "DD_TAGS found in ruby script=#{dd_tags}"
   else
     puts "Could not find DD_TAGS env var"
   end
 
   if !dd_node_agent_tags.nil?
     tags_list += dd_node_agent_tags.split(',')
-    puts "DD_NODE_AGENTS_TAGS found in ruby script=#{dd_node_agent_tags}"
+    # puts "DD_NODE_AGENTS_TAGS found in ruby script=#{dd_node_agent_tags}"
   else
     puts "Could not find DD_NODE_AGENTS_TAGS env var"
   end

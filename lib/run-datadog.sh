@@ -112,7 +112,7 @@ setup_datadog() {
 }
 
 start_datadog() {
-  pushd ${DATADOG_DIR}
+  pushd "${DATADOG_DIR}"
     export DD_LOG_FILE="${DATADOG_DIR}/dogstatsd.log"
     export DD_API_KEY
     export DD_DD_URL
@@ -122,14 +122,15 @@ start_datadog() {
     export LOGS_CONFIG
 
     if [ "${FIRST_RUN}" = "true" ]; then
-      echo "First run datadog"
+      echo "setting up datadog"
       setup_datadog
       FIRST_RUN=false
     else
-      echo "Not first run datadog"
       if [ -f  "${DATADOG_DIR}/.sourced_datadog_env" ]; then
+        echo "sourcing .sourced_datadog_env file"
         source "${DATADOG_DIR}/.sourced_datadog_env"
       elif [ -f  "${DATADOG_DIR}/.datadog_env" ]; then
+        echo "sourcing .datadog_env file"
         source "${DATADOG_DIR}/.datadog_env"
       fi
     fi
@@ -169,10 +170,21 @@ start_datadog() {
   popd
 }
 
+# check_if_running() {
+#   local pidfile="$1"
+#   local command="${2:-none}"
+  
+#   if [ -f "${pidfile}" ] && 
+#     return kill -0 "$(cat ${pidfile})" > /dev/null; then
+#   else 
+
+#   fi
+# }
 
 stop_datadog() {
   pushd "${DATADOG_DIR}"
-    if kill -0 $(cat ${DATADOG_DIR}/run/agent.pid) > /dev/null; then
+    # TODO: use a fallback approach in case the pid file is missing
+    if kill -0 "$(cat ${DATADOG_DIR}/run/agent.pid)" >/dev/null; then
       echo "Stopping agent process, pid: $(cat run/agent.pid)"
       # first try to stop the agent so we don't lose data and then force it
       (./agent stop --cfgpath dist/) || true
@@ -182,7 +194,7 @@ stop_datadog() {
       rm -f "run/agent.pid"
     fi
 
-    if kill -0 $(cat "${DATADOG_DIR}/run/dogstatsd.pid") > /dev/null; then
+    if kill -0 "$(cat "${DATADOG_DIR}/run/dogstatsd.pid")" > /dev/null; then
       echo "Stopping dogstatsd agent process, pid: $(cat run/dogstatsd.pid)"
       dogstatsd_command="./dogstatsd start --cfgpath dist/"
       kill_and_wait "${DATADOG_DIR}/run/dogstatsd.pid" 5 1
@@ -190,7 +202,7 @@ stop_datadog() {
       rm -f "run/dogstatsd.pid"
     fi
 
-    if kill -0 $(cat "${DATADOG_DIR}/run/trace-agent.pid"); then
+    if kill -0 "$(cat "${DATADOG_DIR}/run/trace-agent.pid")" >/dev/null; then
       echo "Stopping trace agent process, pid: $(cat run/trace-agent.pid)"
       trace_agent_command="./trace-agent --config dist/datadog.yaml --pid run/trace-agent.pid"
       kill_and_wait "${DATADOG_DIR}/run/trace-agent.pid" 5 1
@@ -206,15 +218,16 @@ monit_datadog() {
     if ! kill -0 $$; then
       echo "main process exited, stopping agent"
       for pidfile in "${DATADOG_DIR}"/run/*; do
-        kill $(cat $pidfile)
+        kill "$(cat "${pidfile}")"
       done
       exit
     elif [ -f "${DATADOG_DIR}"/tags_updated ]; then
-      echo "STOPPING DATADOG"
+      echo "tags_updated found, stopping datadog agents"
       stop_datadog
-      echo "STARTING DATADOG"
+      echo "tags_updated found, starting datadog agents"
       start_datadog
-      rm -f "${DATADOG_DIR}"/tags_updated
+      echo "deleting tags_updated"
+      rm -f "${DATADOG_DIR}"/tags_updated # TODO: check for race conditions
     fi
     sleep 1
   done
