@@ -64,16 +64,14 @@ if [ -z "${DD_LOGS_CONFIG_LOGS_DD_URL}" ]; then
   fi
 fi
 
-if [ "${DD_LOGS_ENABLED}" = "true" -a -n ${DD_LOGS_CONFIG_LOGS_DD_URL} -a "${DD_SKIP_LOGS_TEST}" != "true" ]; then
+if [ "${DD_LOGS_ENABLED}" = "true" ] && [ -n "${DD_LOGS_CONFIG_LOGS_DD_URL}" ] && [ "${DD_SKIP_LOGS_TEST}" != "true" ]; then
   echo "Validating log endpoint ${DD_LOGS_CONFIG_LOGS_DD_URL}"
-  LOGS_ENDPOINT=`echo ${DD_LOGS_CONFIG_LOGS_DD_URL} | cut -d ":" -f1`
-  LOGS_PORT=`echo ${DD_LOGS_CONFIG_LOGS_DD_URL} | cut -d ":" -f2`
+  LOGS_ENDPOINT=$(echo "${DD_LOGS_CONFIG_LOGS_DD_URL}" | cut -d ":" -f1)
+  LOGS_PORT=$(echo "${DD_LOGS_CONFIG_LOGS_DD_URL}" | cut -d ":" -f2)
 
   # Try establishing tcp connection to logs endpoint with 5s timeout
-  nc -w5 ${LOGS_ENDPOINT} ${LOGS_PORT} < /dev/null
-
   # Check out exit code and export a variable for subsequent scripts to use
-  if [ $? -ne 0 ]; then
+  if ! nc -w5 "${LOGS_ENDPOINT}" "${LOGS_PORT}" < /dev/null; then
     export DD_LOGS_VALID_ENDPOINT="false"
     echo "Could not establish a connection to ${DD_LOGS_CONFIG_LOGS_DD_URL}."
     # Post alert to datadog
@@ -83,7 +81,7 @@ if [ "${DD_LOGS_ENABLED}" = "true" -a -n ${DD_LOGS_CONFIG_LOGS_DD_URL} -a "${DD_
             \"title\": \"Log endpoint cannot be reached - Log collection not started\",
             \"text\": \"Could not establish a connection to ${DD_LOGS_CONFIG_LOGS_DD_URL} after 5 seconds. Log collection has not been started.\",
             \"priority\": \"normal\",
-            \"tags\": $(python ${DATADOG_DIR}/scripts/get_tags.py),
+            \"tags\": $(python "${DATADOG_DIR}"/scripts/get_tags.py),
             \"alert_type\": \"error\"
       }" "${DD_API_SITE}v1/events?api_key=${DD_API_KEY}"
   else

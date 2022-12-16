@@ -40,14 +40,14 @@ wait_pid() {
   local countdown=$(( 100 )) # temporary to workaround a /bin/dash syntax error
   local ps_out="$(ps ax | grep ${pid} | grep -v grep)"
 
-  if [ -e "/proc/${pid}" -o -n "${ps_out}" ]; then
+  if [ -e "/proc/${pid}" ] || [ -n "${ps_out}" ]; then
     if [ "${try_kill}" = "1" ]; then
       log_message "$0" "Killing ${pidfile}: ${pid}"
       kill "${pid}"
     fi
     while [ -e "/proc/${pid}" ]; do
       sleep 0.1
-      [ "${countdown}" != '0' -a $(( "${countdown}" % 10 )) = '0' ] && echo -n .
+      [ "${countdown}" != '0' ] && [ $(( "${countdown}" % 10 )) = '0' ] && echo -n .
       if [ "${timeout}" -gt 0 ]; then
         if [ "${countdown}" -eq 0 ]; then
           if [ "${force}" = "1" ]; then

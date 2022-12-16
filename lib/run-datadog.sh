@@ -13,8 +13,6 @@ source ${DATADOG_DIR}/scripts/utils.sh
 
 export DD_TAGS=$(LEGACY_TAGS_FORMAT=true python "${DATADOG_DIR}"/scripts/get_tags.py)
 
-
-
 setup_datadog() {
   pushd "${DATADOG_DIR}"
 
@@ -137,7 +135,7 @@ start_datadog() {
     fi
 
     if [ -a ./agent ] && { [ "${DD_LOGS_ENABLED}" = "true" ] || [ "${DD_ENABLE_CHECKS}" = "true" ]; }; then
-      if [ "${DD_LOGS_ENABLED}" = "true" -a "${DD_LOGS_VALID_ENDPOINT}" = "false" ]; then
+      if [ "${DD_LOGS_ENABLED}" = "true" ] && [ "${DD_LOGS_VALID_ENDPOINT}" = "false" ]; then
         echo "Log endpoint not valid, not starting agent"
       else
         export DD_LOG_FILE=agent.log
