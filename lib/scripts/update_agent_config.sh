@@ -54,7 +54,7 @@ main() {
 
     # update logs configs with the new tags
     log_message "$0" "$$" "running create_logs_config ruby script"
-    ruby "${DATADOG_DIR}/scripts/create_logs_config.rb" 2>&1 | tee -a "$DATADOG_DIR/ruby_script.3.log"
+    ruby "${DATADOG_DIR}/scripts/create_logs_config.rb" 2>&1 | tee -a "${DATADOG_DIR}/ruby_script.3.log"
 
     # the agent cloud_foundry_container workloadmeta collector reads from this file
     # See: https://github.com/DataDog/datadog-agent/blob/main/pkg/workloadmeta/collectors/internal/cloudfoundry/cf_container/cloudfoundry_container.go#L24
@@ -78,4 +78,4 @@ main() {
 }
 
 # for debugging purposes
-main "$@" 2>&1 | tee -a "$DEBUG_FILE"
+main "$@" 2>&1 | tee -a "${DEBUG_FILE}"

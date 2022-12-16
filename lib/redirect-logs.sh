@@ -13,23 +13,23 @@ source "${DATADOG_DIR}/scripts/utils.sh"
 
 DD_EU_API_SITE="https://api.datadoghq.eu/api/"
 DD_US_API_SITE="https://api.datadoghq.com/api/"
-DD_API_SITE=$DD_US_API_SITE
+DD_API_SITE=${DD_US_API_SITE}
 
-if [ -n "$DD_SITE" ] && [ "$DD_SITE" = "datadoghq.eu" ]; then
-  DD_API_SITE=$DD_EU_API_SITE
+if [ -n "${DD_SITE}" ] && [ "${DD_SITE}" = "datadoghq.eu" ]; then
+  DD_API_SITE=${DD_EU_API_SITE}
 fi
 
 # setup the redirection from stdout/stderr to the logs-agent.
-if [ "$DD_LOGS_ENABLED" = "true" ]; then
-  if [ "$DD_LOGS_VALID_ENDPOINT" = "false" ]; then
+if [ "${DD_LOGS_ENABLED}" = "true" ]; then
+  if [ "${DD_LOGS_VALID_ENDPOINT}" = "false" ]; then
     echo "Log endpoint not valid, not starting log redirection"
   else
-    if [ -z "$LOGS_CONFIG" ]; then
+    if [ -z "${LOGS_CONFIG}" ]; then
       echo "can't collect logs, LOGS_CONFIG is not set"
     else
-      echo "collect all logs for config $LOGS_CONFIG"
-      if [ -n "$STD_LOG_COLLECTION_PORT" ]; then
-        echo "forward all logs from stdout/stderr to agent port $STD_LOG_COLLECTION_PORT"
+      echo "collect all logs for config ${LOGS_CONFIG}"
+      if [ -n "${STD_LOG_COLLECTION_PORT}" ]; then
+        echo "forward all logs from stdout/stderr to agent port ${STD_LOG_COLLECTION_PORT}"
         exec &> >(tee >(redirect))
       fi
     fi
