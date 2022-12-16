@@ -7,12 +7,13 @@
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 LOCKFILE="${DATADOG_DIR}/lock"
+FIRST_RUN="${FIRST_RUN:-true}"
+
+source $DATADOG_DIR/scripts/utils.sh
 
 export DD_TAGS=$(LEGACY_TAGS_FORMAT=true python "${DATADOG_DIR}"/scripts/get_tags.py)
-FIRST_RUN=${FIRST_RUN:-true}
 
-source $DATADOG_DIR/scripts/common.sh
-source $DATADOG_DIR/scripts/utils.sh
+
 
 setup_datadog() {
   pushd "${DATADOG_DIR}"
@@ -169,17 +170,6 @@ start_datadog() {
     fi
   popd
 }
-
-# check_if_running() {
-#   local pidfile="$1"
-#   local command="${2:-none}"
-  
-#   if [ -f "${pidfile}" ] && 
-#     return kill -0 "$(cat ${pidfile})" > /dev/null; then
-#   else 
-
-#   fi
-# }
 
 stop_datadog() {
   pushd "${DATADOG_DIR}"

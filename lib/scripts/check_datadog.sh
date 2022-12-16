@@ -6,7 +6,7 @@
 
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 
-source "${DATADOG_DIR}/scripts/common.sh"
+source "${DATADOG_DIR}/scripts/utils.sh"
 
 check_datadog() {
   while true; do

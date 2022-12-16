@@ -1,13 +1,16 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # Unless explicitly stated otherwise all files in this repository are licensed under the Apache 2.0 License.
 # This product includes software developed at Datadog (https://www.datadoghq.com/).
 # Copyright 2022-Present Datadog, Inc.
 
+
+
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 LOCK="${DATADOG_DIR}/update.lock"
 
-. "${DATADOG_DIR}/scripts/common.sh"
+# import utils function such as log_message
+. "${DATADOG_DIR}/scripts/utils.sh"
 
 release_lock() {
     log_message "$0" "$$" "releasing LOCK ${LOCK}"

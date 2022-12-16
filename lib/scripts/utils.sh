@@ -7,7 +7,29 @@
 # These utils are taken from
 # https://github.com/DataDog/datadog-agent-boshrelease/blob/4.11.2/src/helpers/lib.sh
 
-. "${DATADOG_DIR}/scripts/common.sh"
+export DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
+export DEBUG_FILE="${DATADOG_DIR}/update_agent_script.log"
+export LOGS_CONFIG_DIR="${DATADOG_DIR}/dist/conf.d/logs.d"
+export LOGS_CONFIG
+
+log_message() {
+  local component="${1#/home/vcap/app/}"
+  local pid="$2"
+  local message="$3"
+  local log_level="${4:-INFO}"
+  echo "$(date +'%d-%m-%Y %H:%M:%S') - [${component}][PID:${pid}] - ${log_level} - ${message}"
+}
+
+check_if_running() {
+  local pidfile="$1"
+  local command="${2:-none}"
+  
+  if [ -f "${pidfile}" ]; then
+    kill -0 "$(cat "${pidfile}")" > /dev/null
+  else
+    pgrep -f "${command}"
+  fi
+}
 
 wait_pid() {
   local pidfile="$1"

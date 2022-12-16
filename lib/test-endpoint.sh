@@ -64,7 +64,7 @@ if [ -z "$DD_LOGS_CONFIG_LOGS_DD_URL" ]; then
   fi
 fi
 
-if [ "$DD_LOGS_ENABLED" = "true" -a -n $DD_LOGS_CONFIG_LOGS_DD_URL -a "$DD_SKIP_LOGS_TEST" != "true" ]; then
+if [ "${DD_LOGS_ENABLED}" = "true" -a -n $DD_LOGS_CONFIG_LOGS_DD_URL -a "$DD_SKIP_LOGS_TEST" != "true" ]; then
   echo "Validating log endpoint $DD_LOGS_CONFIG_LOGS_DD_URL"
   LOGS_ENDPOINT=`echo $DD_LOGS_CONFIG_LOGS_DD_URL | cut -d ":" -f1`
   LOGS_PORT=`echo $DD_LOGS_CONFIG_LOGS_DD_URL | cut -d ":" -f2`
