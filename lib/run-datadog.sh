@@ -121,6 +121,7 @@ start_datadog() {
     export LOGS_CONFIG
 
     if [ "${FIRST_RUN}" = "true" ]; then
+      date +%s > "${DATADOG_DIR}/startup_time"
       echo "setting up datadog"
       setup_datadog
       FIRST_RUN=false
