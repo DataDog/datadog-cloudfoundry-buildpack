@@ -64,7 +64,9 @@ main() {
     # the agent cloud_foundry_container workloadmeta collector reads from this file
     # See: https://github.com/DataDog/datadog-agent/blob/main/pkg/workloadmeta/collectors/internal/cloudfoundry/cf_container/cloudfoundry_container.go#L24
     log_message "$0" "$$" "Writing DD_TAGS to node_agent_tags.txt"
-    echo "${DD_TAGS}" | awk '{ printf "%s", $0 }' >  "${DATADOG_DIR}/node_agent_tags.txt"
+    
+    # update node_agent_tags.txt
+    ruby "${DATADOG_DIR}"/scripts/update_tags.rb
     
     # log DD_TAGS and DD_NODE_AGENT_TAGS values
     log_message "$0" "$$" "node_agent_tags.txt=$(cat ${DATADOG_DIR}/node_agent_tags.txt)"
