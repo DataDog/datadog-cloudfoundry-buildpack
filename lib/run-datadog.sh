@@ -37,7 +37,7 @@ setup_datadog() {
     # add logs configs
     if [ -n "${LOGS_CONFIG}" ]; then
       mkdir -p ${LOGS_CONFIG_DIR}
-      ruby scripts/create_logs_config.rb 2>&1 | tee -a "${DATADOG_DIR}/ruby_script.1.log"
+      ruby scripts/create_logs_config.rb
     fi
 
     # The yaml file requires the tags to be an array,
@@ -141,9 +141,13 @@ start_datadog() {
         export DD_LOG_FILE=agent.log
         export DD_IOT_HOST=false
 
-        echo "Starting Datadog agent"
-        ruby scripts/create_logs_config.rb 2>&1 | tee -a "${DATADOG_DIR}/ruby_script.4.log"
+        # update logs configs
+        if [ -n "${LOGS_CONFIG}" ]; then
+          mkdir -p "${LOGS_CONFIG_DIR}"
+          ruby scripts/create_logs_config.rb
+        fi
 
+        echo "Starting Datadog agent"
         if [ "${SUPPRESS_DD_AGENT_OUTPUT}" = "true" ]; then
           ./agent run --cfgpath dist/ --pidfile run/agent.pid > /dev/null 2>&1 &
         else
@@ -171,35 +175,30 @@ start_datadog() {
 
 stop_datadog() {
   pushd "${DATADOG_DIR}"
-    # TODO: use a fallback approach in case the pid file is missing
-    if kill -0 "$(cat ${DATADOG_DIR}/run/agent.pid)" >/dev/null; then
-      echo "Stopping agent process, pid: $(cat run/agent.pid)"
+    if check_if_running "${AGENT_PIDFILE}" "${AGENT_CMD}"; then
+      echo "Stopping agent process, pid: $(cat "${AGENT_PIDFILE}")"
       # first try to stop the agent so we don't lose data and then force it
       (./agent stop --cfgpath dist/) || true
-      agent_command="./agent run --cfgpath dist/ --pidfile run/agent.pid"
-      find_pid_kill_and_wait "${agent_command}" "${DATADOG_DIR}/run/agent.pid" 5 1 || true
-      kill_and_wait "${DATADOG_DIR}/run/agent.pid" 5 1
-      rm -f "run/agent.pid"
+      find_pid_kill_and_wait "${AGENT_CMD}" "${AGENT_PIDFILE}" 5 1 || true
+      kill_and_wait "${AGENT_PIDFILE}" 5 1
+      rm -f "${AGENT_PIDFILE}"
     fi
 
-    if kill -0 "$(cat "${DATADOG_DIR}/run/dogstatsd.pid")" > /dev/null; then
-      echo "Stopping dogstatsd agent process, pid: $(cat run/dogstatsd.pid)"
-      dogstatsd_command="./dogstatsd start --cfgpath dist/"
-      kill_and_wait "${DATADOG_DIR}/run/dogstatsd.pid" 5 1
-      find_pid_kill_and_wait "${dogstatsd_command}" "${DATADOG_DIR}/run/dogstatsd.pid" 5 1 
-      rm -f "run/dogstatsd.pid"
+    if check_if_running "${DOGSTATSD_PIDFILE}" "${DOGSTATSD_CMD}"; then
+      echo "Stopping dogstatsd agent process, pid: $(cat "${DOGSTATSD_PIDFILE}")"
+      kill_and_wait "${DOGSTATSD_PIDFILE}" 5 1
+      find_pid_kill_and_wait "${DOGSTATSD_CMD}" "${DOGSTATSD_PIDFILE}" 5 1
+      rm -f "${DOGSTATSD_PIDFILE}"
     fi
 
-    if kill -0 "$(cat "${DATADOG_DIR}/run/trace-agent.pid")" >/dev/null; then
-      echo "Stopping trace agent process, pid: $(cat run/trace-agent.pid)"
-      trace_agent_command="./trace-agent --config dist/datadog.yaml --pid run/trace-agent.pid"
-      kill_and_wait "${DATADOG_DIR}/run/trace-agent.pid" 5 1
-      find_pid_kill_and_wait "${trace_agent_command}" "${DATADOG_DIR}/run/trace-agent.pid" 5 1
-      rm -f "run/trace-agent.pid"
+     if check_if_running "${TRACE_AGENT_PIDFILE}" "${TRACE_AGENT_CMD}"; then
+      echo "Stopping trace agent process, pid: $(cat "${TRACE_AGENT_PIDFILE}")"
+      kill_and_wait "${TRACE_AGENT_PIDFILE}" 5 1
+      find_pid_kill_and_wait "${TRACE_AGENT_CMD}" "${TRACE_AGENT_PIDFILE}" 5 1
+      rm -f "${TRACE_AGENT_PIDFILE}"
     fi
   popd
 }
-
 
 monit_datadog() {
   while true; do

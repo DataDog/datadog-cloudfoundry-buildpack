@@ -12,6 +12,17 @@ export DEBUG_FILE="${DATADOG_DIR}/update_agent_script.log"
 export LOGS_CONFIG_DIR="${DATADOG_DIR}/dist/conf.d/logs.d"
 export LOGS_CONFIG
 
+export AGENT_PIDFILE="${DATADOG_DIR}/run/agent.pid"
+export AGENT_CMD="./agent run --cfgpath dist/ --pidfile run/agent.pid"
+
+export TRACE_AGENT_PIDFILE="${DATADOG_DIR}/run/trace-agent.pid"
+export TRACE_AGENT_CMD="./trace-agent --config dist/datadog.yaml --pid run/trace-agent.pid"
+
+export DOGSTATSD_PIDFILE="${DATADOG_DIR}/run/trace-agent.pid"
+export DOGSTATSD_CMD="./dogstatsd start --cfgpath dist/"
+
+
+
 log_message() {
   local component="${1#/home/vcap/app/}"
   local pid="$2"
@@ -127,7 +138,7 @@ find_pid_kill_and_wait() {
 
 # redirect forwards all standard inputs to a TCP socket listening on port STD_LOG_COLLECTION_PORT.
 redirect() {
-  while kill -0 $$ 2>/dev/null; do
+  while kill -0 $$; do
     if [ "${DD_SPARSE_APP_LOGS}" = "true" ]; then
         python "${DATADOG_DIR}/scripts/nc.py" "${STD_LOG_COLLECTION_PORT}" || sleep 0.5
     else

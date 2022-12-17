@@ -4,8 +4,6 @@
 # This product includes software developed at Datadog (https://www.datadoghq.com/).
 # Copyright 2022-Present Datadog, Inc.
 
-
-
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 LOCK="${DATADOG_DIR}/update.lock"
 
@@ -13,7 +11,7 @@ LOCK="${DATADOG_DIR}/update.lock"
 . "${DATADOG_DIR}/scripts/utils.sh"
 
 release_lock() {
-    log_message "$0" "$$" "releasing LOCK ${LOCK}"
+    log_message "$0" "$$" "releasing lock '${LOCK}'"
     rmdir "${LOCK}"
 }
 
@@ -27,22 +25,29 @@ main() {
         sleep 1
     done
 
-    log_message "$0" "$$" "acquired LOCK ${LOCK}"
+    log_message "$0" "$$" "acquired lock '${LOCK}'"
    
     # ensures the lock is released on exit
     trap release_lock INT TERM EXIT
 
     # wait for the buildpack scripts to finish
     log_message "$0" "$$" "starting check_datadog script"
+
+    while ! [ -f "${DATADOG_DIR}/scripts/check_datadog.sh" ]; do
+        log_message "$0" "$$" "check_datadog.sh script not found, waiting..."
+        sleep 2
+    done
+
     timeout 300s "${DATADOG_DIR}/scripts/check_datadog.sh" 
     exit_code=$?
-    log_message "$0" "$$" "finished check_datadog script"
-
-    # verify that check_datadog didn't end because of the timeout
+    
+    # verify that check_datadog exited successfully 
     if [ ${exit_code} -ne  0 ]; then
         log_message "$0" "$$" "could not find agent, aborting update script!"
         exit ${exit_code}
     fi
+
+    log_message "$0" "$$" "finished check_datadog script"
 
     # source relevant DD tags
     . "${DATADOG_DIR}/.datadog_env"
@@ -53,8 +58,8 @@ main() {
     export LOGS_CONFIG
 
     # update logs configs with the new tags
-    log_message "$0" "$$" "running create_logs_config ruby script"
-    ruby "${DATADOG_DIR}/scripts/create_logs_config.rb" 2>&1 | tee -a "${DATADOG_DIR}/ruby_script.3.log"
+    log_message "$0" "$$" "Creating logs config"
+    ruby "${DATADOG_DIR}/scripts/create_logs_config.rb"
 
     # the agent cloud_foundry_container workloadmeta collector reads from this file
     # See: https://github.com/DataDog/datadog-agent/blob/main/pkg/workloadmeta/collectors/internal/cloudfoundry/cf_container/cloudfoundry_container.go#L24
@@ -65,7 +70,6 @@ main() {
     log_message "$0" "$$" "node_agent_tags.txt=$(cat ${DATADOG_DIR}/node_agent_tags.txt)"
     log_message "$0" "$$" "(AFTER)DD_NODE_AGENT_TAGS=${DD_NODE_AGENT_TAGS}"
 
-    
     # finishing up
     log_message "$0" "$$" "exporting .sourced_datadog_env file"
     printenv > "${DATADOG_DIR}/.sourced_datadog_env"
