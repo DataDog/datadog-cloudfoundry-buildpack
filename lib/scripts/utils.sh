@@ -21,13 +21,23 @@ export TRACE_AGENT_CMD="./trace-agent --config dist/datadog.yaml --pid run/trace
 export DOGSTATSD_PIDFILE="${DATADOG_DIR}/run/trace-agent.pid"
 export DOGSTATSD_CMD="./dogstatsd start --cfgpath dist/"
 
+log_info() {
+  log_message "$0" "$$" "$@" "INFO"
+}
 
+log_debug() {
+  log_message "$0" "$$" "$@" "DEBUG"
+}
+
+log_error() {
+  log_message "$0" "$$" "$@" "ERROR" 1>&2
+}
 
 log_message() {
   local component="${1#/home/vcap/app/}"
   local pid="$2"
   local message="$3"
-  local log_level="${4:-INFO}"
+  local log_level="$4"
   echo "$(date +'%d-%m-%Y %H:%M:%S') - [${component}][PID:${pid}] - ${log_level} - ${message}"
 }
 
@@ -144,7 +154,7 @@ redirect() {
     else
         nc localhost "${STD_LOG_COLLECTION_PORT}" || sleep 0.5
     fi
-    log_message "$0" "$$" "Resetting buildpack log redirection"
+    log_info "Resetting buildpack log redirection"
     if [ "${DD_DEBUG_STD_REDIRECTION}" = "true" ]; then
       HTTP_PROXY=${DD_HTTP_PROXY} HTTPS_PROXY=${DD_HTTPS_PROXY} NO_PROXY=${DD_NO_PROXY} curl \
       -X POST -H "Content-type: application/json" \

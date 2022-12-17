@@ -11,30 +11,30 @@ LOCK="${DATADOG_DIR}/update.lock"
 . "${DATADOG_DIR}/scripts/utils.sh"
 
 release_lock() {
-    log_message "$0" "$$" "releasing lock '${LOCK}'"
+    log_info "releasing lock '${LOCK}'"
     rmdir "${LOCK}"
 }
 
 main() {
-    log_message "$0" "$$" "starting update_agent_config script"
-    log_message "$0" "$$" "(BEFORE)DD_NODE_AGENT_TAGS=${DD_NODE_AGENT_TAGS}"
+    log_info "starting update_agent_config script"
+    log_debug "(BEFORE)DD_NODE_AGENT_TAGS=${DD_NODE_AGENT_TAGS}"
 
     # try to create the LOCK
     while ! mkdir "${LOCK}" 2>/dev/null; do
-        log_message "$0" "$$" "cannot acquire lock, script is already running"
+        log_info "cannot acquire lock, script is already running"
         sleep 1
     done
 
-    log_message "$0" "$$" "acquired lock '${LOCK}'"
+    log_info "acquired lock '${LOCK}'"
    
     # ensures the lock is released on exit
     trap release_lock INT TERM EXIT
 
     # wait for the buildpack scripts to finish
-    log_message "$0" "$$" "starting check_datadog script"
+    log_info "starting check_datadog script"
 
     while ! [ -f "${DATADOG_DIR}/scripts/check_datadog.sh" ]; do
-        log_message "$0" "$$" "check_datadog.sh script not found, waiting..."
+        log_info "check_datadog.sh script not found, waiting..."
         sleep 2
     done
 
@@ -43,11 +43,11 @@ main() {
     
     # verify that check_datadog exited successfully 
     if [ ${exit_code} -ne  0 ]; then
-        log_message "$0" "$$" "could not find agent, aborting update script!"
+        log_error "could not find agent, aborting update script!"
         exit ${exit_code}
     fi
 
-    log_message "$0" "$$" "finished check_datadog script"
+    log_info "finished check_datadog script"
 
     # source relevant DD tags
     . "${DATADOG_DIR}/.datadog_env"
@@ -58,30 +58,30 @@ main() {
     export LOGS_CONFIG
 
     # update logs configs with the new tags
-    log_message "$0" "$$" "Creating logs config"
+    log_info "Creating logs config"
     ruby "${DATADOG_DIR}/scripts/create_logs_config.rb"
 
     # the agent cloud_foundry_container workloadmeta collector reads from this file
     # See: https://github.com/DataDog/datadog-agent/blob/main/pkg/workloadmeta/collectors/internal/cloudfoundry/cf_container/cloudfoundry_container.go#L24
-    log_message "$0" "$$" "Writing DD_TAGS to node_agent_tags.txt"
+    log_info "Writing DD_TAGS to node_agent_tags.txt"
     
     # update node_agent_tags.txt
-    log_message "$0" "$$" "Updating node_agent_tags.txt"
+    log_info "Updating node_agent_tags.txt"
     ruby "${DATADOG_DIR}"/scripts/update_tags.rb
     
     # log DD_TAGS and DD_NODE_AGENT_TAGS values
-    log_message "$0" "$$" "node_agent_tags.txt=$(cat ${DATADOG_DIR}/node_agent_tags.txt)"
-    log_message "$0" "$$" "(AFTER)DD_NODE_AGENT_TAGS=${DD_NODE_AGENT_TAGS}"
+    log_debug "node_agent_tags.txt=$(cat ${DATADOG_DIR}/node_agent_tags.txt)"
+    log_debug "(AFTER)DD_NODE_AGENT_TAGS=${DD_NODE_AGENT_TAGS}"
 
     # finishing up
-    log_message "$0" "$$" "exporting .sourced_datadog_env file"
+    log_info "exporting .sourced_datadog_env file"
     printenv > "${DATADOG_DIR}/.sourced_datadog_env"
 
     # mark to the monit_datadog function in run-datadog.sh that the script is finished
-    log_message "$0" "$$" "creating tags_updated file"
+    log_info "creating tags_updated file"
     touch "${DATADOG_DIR}/tags_updated"
 
-    log_message "$0" "$$" "finished update_agent_config script"
+    log_info "finished update_agent_config script"
 }
 
 # for debugging purposes
