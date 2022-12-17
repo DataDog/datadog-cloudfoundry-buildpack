@@ -15,24 +15,26 @@ timestamp_file = File.join(DATADOG_DIR, "startup_time")
 node_agent_tags_file = File.join(DATADOG_DIR, "node_agent_tags.txt")
 
 # read startup time set by the buildpack supply script
-timestamp = File.read(timestamp_file).strip
-time = Time.parse(timestamp)
+timestamp = File.read(timestamp_file).strip.to_i
 
 # storing all tags on this variable
 tags = []
 
 if ! DD_NODE_AGENT_TAGS.empty?
     tags.concat(DD_NODE_AGENT_TAGS.split(','))
+end
 
 if ! DD_TAGS.empty?
     tags.concat(DD_TAGS.split(','))
+end
 
 # if the script is executed during the warmup period, merge incoming tags with the existing tags
 # otherwise, override existing tags
-if Time.now - time <= DD_UPDATE_SCRIPT_WARMUP.to_i
+if Time.now.to_i - timestamp <= DD_UPDATE_SCRIPT_WARMUP.to_i
     if File.exists?(node_agent_tags_file)
         node_tags = File.read(node_agent_tags_file).split(',')
         tags.concat(node_tags)
+    end
 end
 
 # remove duplicates
@@ -40,6 +42,3 @@ tags = tags.uniq
 
 # export tags
 File.write(node_agent_tags_file, tags.join(","))
-
-
-

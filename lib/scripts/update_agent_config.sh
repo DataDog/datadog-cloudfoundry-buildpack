@@ -66,6 +66,7 @@ main() {
     log_message "$0" "$$" "Writing DD_TAGS to node_agent_tags.txt"
     
     # update node_agent_tags.txt
+    log_message "$0" "$$" "Updating node_agent_tags.txt"
     ruby "${DATADOG_DIR}"/scripts/update_tags.rb
     
     # log DD_TAGS and DD_NODE_AGENT_TAGS values
