@@ -16,6 +16,14 @@ release_lock() {
 }
 
 main() {
+    # source relevant DD tags
+    . "${DATADOG_DIR}/.datadog_env"
+
+    if [ "${DD_ENABLE_METADATA_COLLECTION}" != "true" ]; then
+        log_info "update script aborted. set DD_ENABLE_METADATA_COLLECTION to true to enable metadata tags collection"
+        exit 0
+    fi
+
     log_info "starting update_agent_config script"
     log_debug "(BEFORE)DD_NODE_AGENT_TAGS=${DD_NODE_AGENT_TAGS}"
 
@@ -48,9 +56,6 @@ main() {
     fi
 
     log_info "finished check_datadog script"
-
-    # source relevant DD tags
-    . "${DATADOG_DIR}/.datadog_env"
 
     # combine DD_TAGS and DD_NODE_AGENT_TAGS into DD_TAGS
     export DD_TAGS="$(LEGACY_TAGS_FORMAT=true python "${DATADOG_DIR}/scripts/get_tags.py" node-agent-tags)"
