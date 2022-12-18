@@ -223,6 +223,9 @@ monit_datadog() {
 }
 
 main() {
+  if [ "${DD_ENABLE_METADATA_COLLECTION}" != "true" ]; then
+        touch "${DATADOG_DIR}/.dd_enable_metadata_collection"
+  fi
   if [ -z "${DD_API_KEY}" ]; then
     echo "Datadog API Key not set, not starting Datadog"
   else
