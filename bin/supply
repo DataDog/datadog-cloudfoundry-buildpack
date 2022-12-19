@@ -38,7 +38,6 @@ cp "${ROOT_DIR}/lib/scripts/update_tags.rb" "${DATADOG_DIR}/scripts/update_tags.
 cp "${ROOT_DIR}/lib/scripts/parse_env_vars.py" "${DATADOG_DIR}/scripts/parse_env_vars.py"
 cp "${ROOT_DIR}/lib/scripts/nc.py" "${DATADOG_DIR}/scripts/nc.py"
 cp "${ROOT_DIR}/lib/scripts/utils.sh" "${DATADOG_DIR}/scripts/utils.sh"
-cp "${ROOT_DIR}/lib/scripts/common.sh" "${DATADOG_DIR}/scripts/common.sh"
 cp "${ROOT_DIR}/lib/scripts/check_datadog.sh" "${DATADOG_DIR}/scripts/check_datadog.sh"
 
 cp "${ROOT_DIR}/lib/scripts/update_agent_config_restart.sh" "${DATADOG_DIR}/scripts/update_agent_config_restart.sh"
@@ -54,7 +53,6 @@ if [ -f "${DATADOG_DIR}/dogstatsd" ]; then
 fi
 
 chmod +x "${DATADOG_DIR}/scripts/utils.sh"
-chmod +x "${DATADOG_DIR}/scripts/common.sh"
 chmod +x "${DATADOG_DIR}/scripts/check_datadog.sh"
 
 chmod +x "${DATADOG_DIR}/scripts/update_agent_config_restart.sh"
