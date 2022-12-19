@@ -12,8 +12,6 @@ FIRST_RUN="${FIRST_RUN:-true}"
 
 source "${DATADOG_DIR}/scripts/utils.sh"
 
-export DD_TAGS=$(LEGACY_TAGS_FORMAT=true python "${DATADOG_DIR}"/scripts/get_tags.py)
-
 setup_datadog() {
   pushd "${DATADOG_DIR}"
 
@@ -214,6 +212,9 @@ monit_datadog() {
       echo "tags_updated found, stopping datadog agents"
       stop_datadog
       echo "tags_updated found, starting datadog agents"
+      export DD_TAGS=$(LEGACY_TAGS_FORMAT=true python "${DATADOG_DIR}"/scripts/get_tags.py)
+      ruby "${DATADOG_DIR}/scripts/update_yaml_config.rb"
+      unset DD_TAGS
       start_datadog
       echo "deleting tags_updated"
       rm -f "${DATADOG_DIR}"/tags_updated # TODO: check for race conditions
