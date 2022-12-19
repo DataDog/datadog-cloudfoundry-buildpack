@@ -9,14 +9,6 @@ require 'json'
 dd_env_file = "/home/vcap/app/.datadog/.sourced_env_datadog"
 node_agent_tags = "/home/vcap/app/.datadog/node_agent_tags.txt"
 
-if File.file?(dd_env_file)
-  File.readlines().each do |line|
-    values = line.split("=")
-    ENV[values[0]] = values[1]
-  end
-  puts "ruby: sourced datadog env file"
-end
-
 logs_config_dir = ENV['LOGS_CONFIG_DIR']
 logs_config = ENV['LOGS_CONFIG']
 dd_tags = ENV['DD_TAGS']

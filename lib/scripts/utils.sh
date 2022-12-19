@@ -58,7 +58,7 @@ wait_pid() {
   local try_kill="$3"
   local timeout="${4:-0}"
   local force="${5:-0}"
-  local countdown=$(( 100 )) # temporary to workaround a /bin/dash syntax error
+  local countdown=$(( ${timeout} * 10 ))
   local ps_out="$(ps ax | grep ${pid} | grep -v grep)"
 
   if [ -e "/proc/${pid}" ] || [ -n "${ps_out}" ]; then

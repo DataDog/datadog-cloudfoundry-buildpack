@@ -10,7 +10,7 @@ DD_ENABLE_METADATA_COLLECTION="${DD_ENABLE_METADATA_COLLECTION:-false}"
 LOCKFILE="${DATADOG_DIR}/lock"
 FIRST_RUN="${FIRST_RUN:-true}"
 
-source ${DATADOG_DIR}/scripts/utils.sh
+source "${DATADOG_DIR}/scripts/utils.sh"
 
 export DD_TAGS=$(LEGACY_TAGS_FORMAT=true python "${DATADOG_DIR}"/scripts/get_tags.py)
 
