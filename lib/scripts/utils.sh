@@ -18,7 +18,7 @@ export AGENT_CMD="./agent run --cfgpath dist/ --pidfile run/agent.pid"
 export TRACE_AGENT_PIDFILE="${DATADOG_DIR}/run/trace-agent.pid"
 export TRACE_AGENT_CMD="./trace-agent --config dist/datadog.yaml --pid run/trace-agent.pid"
 
-export DOGSTATSD_PIDFILE="${DATADOG_DIR}/run/trace-agent.pid"
+export DOGSTATSD_PIDFILE="${DATADOG_DIR}/run/dogstatsd.pid"
 export DOGSTATSD_CMD="./dogstatsd start --cfgpath dist/"
 
 log_info() {
