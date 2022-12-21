@@ -63,9 +63,12 @@ main() {
     export LOGS_CONFIG
 
     # update logs configs with the new tags
-    log_info "Creating logs config"
-    ruby "${DATADOG_DIR}/scripts/create_logs_config.rb"
-
+    if [ -n "${LOGS_CONFIG}" ]; then
+        mkdir -p "${LOGS_CONFIG_DIR}"
+        log_info "Creating logs config"
+        ruby "${DATADOG_DIR}/scripts/create_logs_config.rb"
+    fi
+    
     # the agent cloud_foundry_container workloadmeta collector reads from this file
     # See: https://github.com/DataDog/datadog-agent/blob/main/pkg/workloadmeta/collectors/internal/cloudfoundry/cf_container/cloudfoundry_container.go#L24
     log_info "Writing DD_TAGS to node_agent_tags.txt"

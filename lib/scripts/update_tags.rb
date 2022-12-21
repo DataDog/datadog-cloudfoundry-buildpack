@@ -15,7 +15,7 @@ timestamp_file = File.join(DATADOG_DIR, "startup_time")
 node_agent_tags_file = File.join(DATADOG_DIR, "node_agent_tags.txt")
 
 # read startup time set by the buildpack supply script
-timestamp = File.read(timestamp_file).strip.to_i
+timestamp = File.exists?(timestamp_file) ? File.read(timestamp_file).strip.to_i : 0
 
 # storing all tags on this variable
 tags = []
