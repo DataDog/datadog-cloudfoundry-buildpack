@@ -8,6 +8,14 @@ import os
 import json
 import sys
 
+def parse_tags(tags):
+    delimiter = ','
+    if ' ' in tags:
+        delimiter = ' '
+    try:
+        return tags.split(delimiter)
+    except Exception as e:
+        print("there was an issue parsing the tags in {tags.__name__}: {}".format(e))
 
 vcap_app_string = os.environ.get('VCAP_APPLICATION', '{}')
 
@@ -30,7 +38,7 @@ if len(sys.argv) > 1 and sys.argv[1] == 'node-agent-tags':
     if node_agent_tags is not None:
         # we do this to separate commas inside json values from tags separator commas
         node_agent_tags = node_agent_tags.replace(",\"", ";\"")
-        all_node_agent_tags = node_agent_tags.split(",")
+        all_node_agent_tags = parse_tags(node_agent_tags)
         tags = tags + [tag for tag in all_node_agent_tags if ";" not in tag]
 
 
@@ -50,7 +58,7 @@ if uris:
 user_tags = os.environ.get('TAGS', None)
 if user_tags:
     try:
-        user_tags = user_tags.split(',')
+        user_tags = parse_tags(user_tags)
         for tag in user_tags:
             tags.append(tag)
     except Exception as e:
@@ -59,7 +67,7 @@ if user_tags:
 user_tags = os.environ.get('DD_TAGS', None)
 if user_tags:
     try:
-        user_tags = user_tags.split(',')
+        user_tags = parse_tags(user_tags)
         for tag in user_tags:
             tags.append(tag)
     except Exception as e:
@@ -67,6 +75,7 @@ if user_tags:
 
 tags = [ tag.replace(" ", "_") for tag in tags ]
 tags = list(dict.fromkeys(tags))
+
 legacy_tags = os.environ.get('LEGACY_TAGS_FORMAT', False)
 if legacy_tags:
     print(','.join(tags))

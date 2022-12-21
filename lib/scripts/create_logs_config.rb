@@ -14,6 +14,12 @@ logs_config = ENV['LOGS_CONFIG']
 dd_tags = ENV['DD_TAGS']
 dd_node_agent_tags = ENV['DD_NODE_AGENTS_TAGS'] || (File.file?(node_agent_tags) ? File.read(node_agent_tags) : "")
 
+def sanitize(tags_env_var)
+  tags_list = tags_env_var.gsub(",\"", ";\"").split(",")
+  tags_list.keep_if { |element| !element.include?(";") }
+  return tags_list
+end
+
 config = {}
 
 if logs_config_dir.nil?
@@ -27,14 +33,14 @@ if !logs_config.nil?
   tags_list = []
 
   if !dd_tags.nil?
-    tags_list += dd_tags.split(',')
+    tags_list += sanitize(dd_tags)
     # puts "DD_TAGS found in ruby script=#{dd_tags}"
   else
     puts "Could not find DD_TAGS env var"
   end
 
   if !dd_node_agent_tags.nil?
-    tags_list += dd_node_agent_tags.split(',')
+    tags_list += sanitize(dd_node_agent_tags)
     # puts "DD_NODE_AGENTS_TAGS found in ruby script=#{dd_node_agent_tags}"
   else
     puts "Could not find DD_NODE_AGENTS_TAGS env var"
