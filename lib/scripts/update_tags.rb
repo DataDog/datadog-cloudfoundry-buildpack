@@ -23,6 +23,7 @@ tags = []
 def sanitize(tags_env_var)
     tags_list = tags_env_var.gsub(",\"", ";\"").split(",")
     tags_list.keep_if { |element| !element.include?(";") }
+    tags_list.each { |tag| tag = tag.gsub(" ", "_") unless !tag.include? "org" }
     return tags_list
 end
 

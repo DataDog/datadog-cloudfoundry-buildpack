@@ -10,7 +10,7 @@ import sys
 
 def parse_tags(tags):
     delimiter = ','
-    if ' ' in tags:
+    if tags.count(' ') > tags.count(','):
         delimiter = ' '
     try:
         return tags.split(delimiter)
