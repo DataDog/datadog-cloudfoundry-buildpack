@@ -26,6 +26,7 @@ yaml_data = YAML.load(file)
 tags = sanitize(DD_TAGS) + sanitize(DD_NODE_AGENT_TAGS)
 
 # remove duplicates
+# TODO: add dogstatsd_tags
 yaml_data['tags'] = tags.uniq
 
 File.write(datadog_config_filepath, yaml_data.to_yaml)

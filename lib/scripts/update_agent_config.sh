@@ -58,7 +58,7 @@ main() {
     . "${DATADOG_DIR}/.datadog_env"
 
     # combine DD_TAGS and DD_NODE_AGENT_TAGS into DD_TAGS
-    export DD_TAGS="$(LEGACY_TAGS_FORMAT=true python "${DATADOG_DIR}/scripts/get_tags.py" node-agent-tags)"
+    export DD_TAGS="$(LEGACY_TAGS_FORMAT=true python "${DATADOG_DIR}/scripts/get_tags.py")"
     export LOGS_CONFIG_DIR="${DATADOG_DIR}/dist/conf.d/logs.d"
     export LOGS_CONFIG
 
@@ -71,11 +71,9 @@ main() {
     
     # the agent cloud_foundry_container workloadmeta collector reads from this file
     # See: https://github.com/DataDog/datadog-agent/blob/main/pkg/workloadmeta/collectors/internal/cloudfoundry/cf_container/cloudfoundry_container.go#L24
-    log_info "Writing DD_TAGS to node_agent_tags.txt"
-    
     # update node_agent_tags.txt
     log_info "Updating node_agent_tags.txt"
-    ruby "${DATADOG_DIR}"/scripts/update_tags.rb
+    ruby "${DATADOG_DIR}"/scripts/update_tags.rb"
     
     # log DD_TAGS and DD_NODE_AGENT_TAGS values
     log_debug "node_agent_tags.txt=$(cat ${DATADOG_DIR}/node_agent_tags.txt)"

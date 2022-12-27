@@ -8,6 +8,9 @@ import os
 import json
 import sys
 
+# if DD_TAGS[0] is comma or space, then set is as delimiter
+# else continue as usual
+
 def parse_tags(tags):
     delimiter = ','
     if tags.count(' ') > tags.count(','):
@@ -31,16 +34,15 @@ if cf_instance_ip is not None:
 
 tags.append("container_id:{}".format(os.environ.get("CF_INSTANCE_GUID")))
 
-if len(sys.argv) > 1 and sys.argv[1] == 'node-agent-tags':
-    # These are always comma separated - See https://github.com/DataDog/datadog-agent/blob/main/pkg/cloudfoundry/containertagger/container_tagger.go#L133
-    node_agent_tags = os.environ.get('DD_NODE_AGENT_TAGS', None)
-
-    if node_agent_tags is not None:
-        # we do this to separate commas inside json values from tags separator commas
-        node_agent_tags = node_agent_tags.replace(",\"", ";\"")
-        all_node_agent_tags = parse_tags(node_agent_tags)
-        tags = tags + [tag for tag in all_node_agent_tags if ";" not in tag]
-
+node_agent_tags = os.environ.get('DD_NODE_AGENT_TAGS', None)
+if node_agent_tags:
+    # These are always comma separated
+    # See https://github.com/DataDog/datadog-agent/blob/main/pkg/cloudfoundry/containertagger/container_tagger.go#L133
+    
+    # we do this to separate commas inside json values from tags separator commas
+    node_agent_tags = node_agent_tags.replace(",\"", ";\"")
+    all_node_agent_tags = parse_tags(node_agent_tags)
+    tags = tags + [tag for tag in all_node_agent_tags if ";" not in tag]
 
 for vcap_var_name in vcap_variables:
     vcap_var = vcap_application.get(vcap_var_name)

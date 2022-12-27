@@ -9,6 +9,7 @@ SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 DD_ENABLE_METADATA_COLLECTION="${DD_ENABLE_METADATA_COLLECTION:-false}"
 LOCKFILE="${DATADOG_DIR}/lock"
 FIRST_RUN="${FIRST_RUN:-true}"
+USER_TAGS="${DD_TAGS}"
 
 source "${DATADOG_DIR}/scripts/utils.sh"
 
@@ -36,7 +37,6 @@ setup_datadog() {
     # add logs configs
     if [ -n "${LOGS_CONFIG}" ]; then
       mkdir -p ${LOGS_CONFIG_DIR}
-      ruby scripts/create_logs_config.rb
     fi
 
     # The yaml file requires the tags to be an array,
@@ -110,6 +110,7 @@ setup_datadog() {
 }
 
 start_datadog() {
+  DD_TAGS="${USER_TAGS}"
   export DD_TAGS=$(LEGACY_TAGS_FORMAT=true python "${DATADOG_DIR}"/scripts/get_tags.py)
 
   pushd "${DATADOG_DIR}"
@@ -144,8 +145,10 @@ start_datadog() {
         export DD_IOT_HOST=false
 
         # update logs configs
+        # TODO: move it to setup datadog and let the update script take care of updating the logs config
         if [ -n "${LOGS_CONFIG}" ]; then
           mkdir -p "${LOGS_CONFIG_DIR}"
+          echo "creating logs config from start_datadog"
           ruby scripts/create_logs_config.rb
         fi
 
@@ -214,7 +217,6 @@ monit_datadog() {
       echo "tags_updated found, stopping datadog agents"
       stop_datadog
       echo "tags_updated found, starting datadog agents"
-      ruby "${DATADOG_DIR}/scripts/update_yaml_config.rb"
       start_datadog
       echo "deleting tags_updated"
       rm -f "${DATADOG_DIR}"/tags_updated # TODO: check for race conditions
