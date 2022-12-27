@@ -73,7 +73,7 @@ main() {
     # See: https://github.com/DataDog/datadog-agent/blob/main/pkg/workloadmeta/collectors/internal/cloudfoundry/cf_container/cloudfoundry_container.go#L24
     # update node_agent_tags.txt
     log_info "Updating node_agent_tags.txt"
-    ruby "${DATADOG_DIR}"/scripts/update_tags.rb"
+    ruby "${DATADOG_DIR}/scripts/update_tags.rb"
     
     # log DD_TAGS and DD_NODE_AGENT_TAGS values
     log_debug "node_agent_tags.txt=$(cat ${DATADOG_DIR}/node_agent_tags.txt)"
