@@ -16,8 +16,11 @@ release_lock() {
 }
 
 main() {
-    if [ -f "${DATADOG_DIR}/.dd_enable_metadata_collection" ]; then
-        log_info "update script aborted. set DD_ENABLE_METADATA_COLLECTION to true to enable metadata tags collection"
+    # source relevant DD tags
+    . "${DATADOG_DIR}/.datadog_env"
+
+    if [ "${DD_ENABLE_CAPI_METADATA_COLLECTION}" != "true" ]; then
+        log_info "update script aborted. set DD_ENABLE_CAPI_METADATA_COLLECTION to true to enable metadata tags collection"
         exit 0
     fi
 
@@ -54,8 +57,7 @@ main() {
 
     log_info "finished check_datadog script"
 
-    # source relevant DD tags
-    . "${DATADOG_DIR}/.datadog_env"
+   
 
     # combine DD_TAGS and DD_NODE_AGENT_TAGS into DD_TAGS
     export DD_TAGS="$(LEGACY_TAGS_FORMAT=true python "${DATADOG_DIR}/scripts/get_tags.py")"
@@ -65,10 +67,10 @@ main() {
     # update logs configs with the new tags
     if [ -n "${LOGS_CONFIG}" ]; then
         mkdir -p "${LOGS_CONFIG_DIR}"
-        log_info "Creating logs config"
+        log_info "Updating logs config"
         ruby "${DATADOG_DIR}/scripts/create_logs_config.rb"
     fi
-    
+
     # the agent cloud_foundry_container workloadmeta collector reads from this file
     # See: https://github.com/DataDog/datadog-agent/blob/main/pkg/workloadmeta/collectors/internal/cloudfoundry/cf_container/cloudfoundry_container.go#L24
     # update node_agent_tags.txt
