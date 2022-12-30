@@ -17,7 +17,8 @@ dd_node_agent_tags = ENV['DD_NODE_AGENTS_TAGS'] || (File.file?(node_agent_tags) 
 def sanitize(tags_env_var)
   tags_list = tags_env_var.gsub(",\"", ";\"").split(",")
   tags_list.keep_if { |element| !element.include?(";") }
-  return tags_list
+  tags_list = tags_list.map { |tag| tag.gsub(" ", "_") }
+  return tags_list.uniq
 end
 
 config = {}
@@ -46,7 +47,7 @@ if !logs_config.nil?
 
   if !tags_list.empty?
     tags_list = tags_list.uniq
-    config["logs"][0]["tags"] = tags_list.join(",")
+    config["logs"][0]["tags"] = tags_list
   end
   
 else
