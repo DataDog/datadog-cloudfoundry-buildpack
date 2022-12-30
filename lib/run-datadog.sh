@@ -11,7 +11,7 @@ LOCKFILE="${DATADOG_DIR}/lock"
 FIRST_RUN="${FIRST_RUN:-true}"
 USER_TAGS="${DD_TAGS}"
 export DD_TAGS=$(LEGACY_TAGS_FORMAT=true python "${DATADOG_DIR}"/scripts/get_tags.py)
-export DD_DOGSTATSD_TAGS="${DD_TAGS}"
+export DD_DOGSTATSD_TAGS=$(python "${DATADOG_DIR}"/scripts/get_tags.py)
 
 source "${DATADOG_DIR}/scripts/utils.sh"
 
@@ -117,7 +117,7 @@ setup_datadog() {
 start_datadog() {
   DD_TAGS="${USER_TAGS}"
   export DD_TAGS=$(LEGACY_TAGS_FORMAT=true python "${DATADOG_DIR}"/scripts/get_tags.py)
-  export DD_DOGSTATSD_TAGS="${DD_TAGS}"
+  export DD_DOGSTATSD_TAGS="$(python "${DATADOG_DIR}"/scripts/get_tags.py)"
 
   pushd "${DATADOG_DIR}"
     export DD_LOG_FILE="${DATADOG_DIR}/dogstatsd.log"

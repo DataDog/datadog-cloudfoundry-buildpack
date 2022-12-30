@@ -57,10 +57,10 @@ main() {
 
     log_info "finished check_datadog script"
 
-   
 
     # combine DD_TAGS and DD_NODE_AGENT_TAGS into DD_TAGS
     export DD_TAGS="$(LEGACY_TAGS_FORMAT=true python "${DATADOG_DIR}/scripts/get_tags.py")"
+    export DD_DOGSTATSD_TAGS="$(python "${DATADOG_DIR}/scripts/get_tags.py")"
     export LOGS_CONFIG_DIR="${DATADOG_DIR}/dist/conf.d/logs.d"
     export LOGS_CONFIG
 
@@ -80,6 +80,7 @@ main() {
     # log DD_TAGS and DD_NODE_AGENT_TAGS values
     log_debug "node_agent_tags.txt=$(cat ${DATADOG_DIR}/node_agent_tags.txt)"
     log_debug "(AFTER)DD_NODE_AGENT_TAGS=${DD_NODE_AGENT_TAGS}"
+    log_debug "DD_DOGSTATSD_TAGS=${DD_DOGSTATSD_TAGS}"
 
     # finishing up
     log_info "exporting .sourced_datadog_env file"

@@ -82,4 +82,4 @@ legacy_tags = os.environ.get('LEGACY_TAGS_FORMAT', False)
 if legacy_tags:
     print(','.join(tags))
 else:
-    print(json.dumps(tags))
+    print(' '.join(tags))
