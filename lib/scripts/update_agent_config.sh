@@ -17,6 +17,11 @@ release_lock() {
 
 main() {
     # source relevant DD tags
+    while ! [ -f "${DATADOG_DIR}/.datadog_env" ]; do
+        log_info ".datadog_env file not found, waiting..."
+        sleep 2
+    done
+
     . "${DATADOG_DIR}/.datadog_env"
 
     if [ "${DD_ENABLE_CAPI_METADATA_COLLECTION}" != "true" ]; then
