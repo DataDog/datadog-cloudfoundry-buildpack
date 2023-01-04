@@ -5,7 +5,7 @@
 # Copyright 2022-Present Datadog, Inc.
 
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
-LOCK="${DATADOG_DIR}/update.lock"
+LOCK="${DATADOG_DIR}/update_agent_config.lock"
 
 # import utils function such as log_message
 
@@ -16,7 +16,7 @@ release_lock() {
 
 main() {
     # source relevant DD tags
-    while ! [ -f "${DATADOG_DIR}/.supply_completed" ]; do
+    while ! [ -f "${DATADOG_DIR}/.setup_completed" ]; do
         echo "Supply script not completed, waiting ..."
         sleep 1
     done

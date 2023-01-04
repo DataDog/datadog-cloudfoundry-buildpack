@@ -67,3 +67,6 @@ python "${DATADOG_DIR}/scripts/parse_env_vars.py" "${DATADOG_DIR}/.raw_datadog_e
 # export DD_TAGS for ddtrace
 export DD_TAGS=$(LEGACY_TAGS_FORMAT=true python "${DATADOG_DIR}"/scripts/get_tags.py)
 export DD_DOGSTATSD_TAGS=$(python "${DATADOG_DIR}"/scripts/get_tags.py)
+
+# mark the script as finished, useful to sync the update_agent_config script
+touch "${DATADOG_DIR}/.setup_completed"
