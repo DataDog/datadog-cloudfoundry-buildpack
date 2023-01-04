@@ -8,7 +8,6 @@
 # https://github.com/DataDog/datadog-agent-boshrelease/blob/4.11.2/src/helpers/lib.sh
 
 export DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
-export DEBUG_FILE="${DATADOG_DIR}/update_agent_script.log"
 export LOGS_CONFIG_DIR="${DATADOG_DIR}/dist/conf.d/logs.d"
 export LOGS_CONFIG
 

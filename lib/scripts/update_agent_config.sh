@@ -8,7 +8,6 @@ DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 LOCK="${DATADOG_DIR}/update.lock"
 
 # import utils function such as log_message
-. "${DATADOG_DIR}/scripts/utils.sh"
 
 release_lock() {
     log_info "releasing lock '${LOCK}'"
@@ -17,11 +16,12 @@ release_lock() {
 
 main() {
     # source relevant DD tags
-    while ! [ -f "${DATADOG_DIR}/.datadog_env" ]; do
-        log_info ".datadog_env file not found, waiting..."
-        sleep 2
+    while ! [ -f "${DATADOG_DIR}/.supply_completed" ]; do
+        echo "Supply script not completed, waiting ..."
+        sleep 1
     done
 
+    . "${DATADOG_DIR}/scripts/utils.sh"
     . "${DATADOG_DIR}/.datadog_env"
 
     if [ "${DD_ENABLE_CAPI_METADATA_COLLECTION}" != "true" ]; then
@@ -99,4 +99,4 @@ main() {
 }
 
 # for debugging purposes
-main "$@" 2>&1 | tee -a "${DEBUG_FILE}"
+main "$@" 2>&1 | tee -a "${DATADOG_DIR}/update_agent_script.log"
