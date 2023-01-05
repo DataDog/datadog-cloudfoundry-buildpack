@@ -20,8 +20,8 @@ timestamp = File.exists?(timestamp_file) ? File.read(timestamp_file).strip.to_i 
 # storing all tags on this variable
 tags = []
 
-def sanitize(tags_env_var)
-    tags_list = tags_env_var.gsub(",\"", ";\"").split(",")
+def sanitize(tags_env_var, separator)
+    tags_list = tags_env_var.gsub(",\"", ";\"").split(separator)
     tags_list.keep_if { |element| !element.include?(";") }
     tags_list.keep_if { |element| !element.include?("app_instance_guid") }
     tags_list = tags_list.map { |tag| tag.gsub(" ", "_") }
@@ -29,11 +29,11 @@ def sanitize(tags_env_var)
 end
 
 if ! DD_NODE_AGENT_TAGS.empty?
-    tags.concat(sanitize(DD_NODE_AGENT_TAGS))
+    tags.concat(sanitize(DD_NODE_AGENT_TAGS, ","))
 end
 
 if ! DD_TAGS.empty?
-    tags.concat(sanitize(DD_TAGS))
+    tags.concat(sanitize(DD_TAGS, " "))
 end
 
 # if the script is executed during the warmup period, merge incoming tags with the existing tags

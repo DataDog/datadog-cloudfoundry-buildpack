@@ -8,7 +8,6 @@ DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 LOCK="${DATADOG_DIR}/update_agent_config.lock"
 
 # import utils function such as log_message
-
 release_lock() {
     log_info "releasing lock '${LOCK}'"
     rmdir "${LOCK}"
@@ -64,8 +63,11 @@ main() {
 
 
     # combine DD_TAGS and DD_NODE_AGENT_TAGS into DD_TAGS
-    export DD_TAGS="$(LEGACY_TAGS_FORMAT=true python "${DATADOG_DIR}/scripts/get_tags.py")"
-    export DD_DOGSTATSD_TAGS="$(python "${DATADOG_DIR}/scripts/get_tags.py")"
+    DD_TAGS=$(python "${DATADOG_DIR}"/scripts/get_tags.py)
+    export DD_TAGS
+    DD_DOGSTATSD_TAGS=$(python "${DATADOG_DIR}"/scripts/get_tags.py)
+    export DD_DOGSTATSD_TAGS
+
     export LOGS_CONFIG_DIR="${DATADOG_DIR}/dist/conf.d/logs.d"
     export LOGS_CONFIG
 

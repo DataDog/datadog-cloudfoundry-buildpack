@@ -14,8 +14,8 @@ logs_config = ENV['LOGS_CONFIG']
 dd_tags = ENV['DD_TAGS']
 dd_node_agent_tags = ENV['DD_NODE_AGENTS_TAGS'] || (File.file?(node_agent_tags) ? File.read(node_agent_tags) : "")
 
-def sanitize(tags_env_var)
-  tags_list = tags_env_var.gsub(",\"", ";\"").split(",")
+def sanitize(tags_env_var, separator)
+  tags_list = tags_env_var.gsub(",\"", ";\"").split(separator)
   tags_list.keep_if { |element| !element.include?(";") }
   tags_list = tags_list.map { |tag| tag.gsub(" ", "_") }
   return tags_list.uniq
@@ -34,13 +34,13 @@ if !logs_config.nil?
   tags_list = []
 
   if !dd_tags.nil?
-    tags_list += sanitize(dd_tags)
+    tags_list += sanitize(dd_tags, " ")
   else
     puts "Could not find DD_TAGS env var"
   end
 
   if !dd_node_agent_tags.nil?
-    tags_list += sanitize(dd_node_agent_tags)
+    tags_list += sanitize(dd_node_agent_tags, ",")
   else
     puts "Could not find DD_NODE_AGENTS_TAGS env var"
   end
