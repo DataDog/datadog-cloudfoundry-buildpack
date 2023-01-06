@@ -16,8 +16,13 @@ if len(sys.argv) > 1:
                 env_var = env_var.strip()
                 if env_var.startswith("#"):
                     continue
-                env_var = env_var.replace(" ", "_")
-                new_env_file.write("export {}\n".format(env_var))
+                env_parts = env_var.split("=", 1)
+                if len(env_parts) != 2:
+                    continue
+                name, value = env_parts
+                if name not in ["DD_TAGS", "TAGS"]:
+                    value = value.replace(" ", "_")
+                new_env_file.write("export {}={}\n".format(name, value))
     else:
         print("Destination file not specified")
 else:
