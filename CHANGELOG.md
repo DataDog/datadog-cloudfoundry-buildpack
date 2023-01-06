@@ -1,5 +1,12 @@
 # Changelog
 
+## 4.35.0 / 2023-01-06
+
+* [Added] Bump embedded Datadog Agent version to 7.41.1. Read more about it [here](https://github.com/DataDog/datadog-agent/blob/main/CHANGELOG.rst#7411--6411).
+* [Fixed] Improve stability of the CAPI metadata tags collection feature. See [#148](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/148).
+* [Fixed] Wait for agent startup before updating CAPI tags. See [#145](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/145).
+* [Fixed] Fix tag parsing in DCA tags injection . See [#144](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/144).
+
 ## 4.34.0 / 2022-11-14
 
 * [Added] Add support for CAPI metadata and DCA tags injection. See [#136](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/136).
