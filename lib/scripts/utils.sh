@@ -20,6 +20,14 @@ export TRACE_AGENT_CMD="./trace-agent --config dist/datadog.yaml --pid run/trace
 export DOGSTATSD_PIDFILE="${DATADOG_DIR}/run/dogstatsd.pid"
 export DOGSTATSD_CMD="./dogstatsd start --cfgpath dist/"
 
+safe_source() {
+  local source_file="$1"
+  
+  while IFS= read -r line; do
+    eval "$line";
+  done < "${source_file}"
+}
+
 log_info() {
   log_message "$0" "$$" "$@" "INFO"
 }

@@ -139,10 +139,10 @@ start_datadog() {
     else
       if [ -f  "${DATADOG_DIR}/.sourced_datadog_env" ]; then
         echo "sourcing .sourced_datadog_env file"
-        source "${DATADOG_DIR}/.sourced_datadog_env"
+        safe_source "${DATADOG_DIR}/.sourced_datadog_env"
       elif [ -f  "${DATADOG_DIR}/.datadog_env" ]; then
         echo "sourcing .datadog_env file"
-        source "${DATADOG_DIR}/.datadog_env"
+        safe_source "${DATADOG_DIR}/.datadog_env"
       fi
     fi
 
