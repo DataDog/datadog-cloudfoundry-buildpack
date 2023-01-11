@@ -20,6 +20,33 @@ export TRACE_AGENT_CMD="./trace-agent --config dist/datadog.yaml --pid run/trace
 export DOGSTATSD_PIDFILE="${DATADOG_DIR}/run/dogstatsd.pid"
 export DOGSTATSD_CMD="./dogstatsd start --cfgpath dist/"
 
+dd_export_env() {
+  local env_file="$1"
+
+  DD_SHARED_ENV_VARS=(
+    "DD_ENABLE_CAPI_METADATA_COLLECTION"
+    "DD_TAGS"
+    "DD_DOGSTATSD_TAGS"
+    "LOGS_CONFIG_DIR"
+    "LOGS_CONFIG"
+    "VCAP_APPLICATION"
+    "CF_INSTANCE_IP"
+    "CF_INSTANCE_GUID" # not available during staging
+    "DD_UPDATE_SCRIPT_WARMUP"
+    "TAGS"
+    "LEGACY_TAGS_FORMAT"
+  )
+
+  rm "${env_file}"
+
+  for shared_var in "${DD_SHARED_ENV_VARS[@]}"; do
+    shared_var_value="$(eval "${shared_var}")"
+    if [ -n "${shared_var_value}" ]; then
+      echo "export ${shared_var}='${shared_var_value}'" >> "${env_file}"   
+    fi
+  done
+}
+
 safe_source() {
   local source_file="$1"
   

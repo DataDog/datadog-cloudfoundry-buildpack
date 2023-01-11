@@ -91,7 +91,7 @@ main() {
 
     # finishing up
     log_info "exporting .sourced_datadog_env file"
-    export > "${DATADOG_DIR}/.sourced_datadog_env"
+    dd_export_env "${DATADOG_DIR}/.sourced_datadog_env"
 
     # mark to the monit_datadog function in run-datadog.sh that the script is finished
     log_info "creating tags_updated file"
