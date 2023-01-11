@@ -23,28 +23,19 @@ export DOGSTATSD_CMD="./dogstatsd start --cfgpath dist/"
 dd_export_env() {
   local env_file="$1"
 
-  DD_SHARED_ENV_VARS=(
-    "DD_ENABLE_CAPI_METADATA_COLLECTION"
-    "DD_TAGS"
-    "DD_DOGSTATSD_TAGS"
-    "LOGS_CONFIG_DIR"
-    "LOGS_CONFIG"
-    "VCAP_APPLICATION"
-    "CF_INSTANCE_IP"
-    "CF_INSTANCE_GUID" # not available during staging
-    "DD_UPDATE_SCRIPT_WARMUP"
-    "TAGS"
-    "LEGACY_TAGS_FORMAT"
-  )
-
-  rm "${env_file}"
-
-  for shared_var in "${DD_SHARED_ENV_VARS[@]}"; do
-    shared_var_value="$(eval "${shared_var}")"
-    if [ -n "${shared_var_value}" ]; then
-      echo "export ${shared_var}='${shared_var_value}'" >> "${env_file}"   
-    fi
-  done
+  echo "export DD_ENABLE_CAPI_METADATA_COLLECTION='${DD_ENABLE_CAPI_METADATA_COLLECTION}'" > "${env_file}"
+  echo "export DD_TAGS='${DD_TAGS}'" >> "${env_file}"
+  echo "export DD_DOGSTATSD_TAGS='${DD_DOGSTATSD_TAGS}'">> "${env_file}"
+  echo "export LOGS_CONFIG_DIR='${LOGS_CONFIG_DIR}'" >> "${env_file}"
+  echo "export LOGS_CONFIG='${LOGS_CONFIG}'" >> "${env_file}"
+  echo "export VCAP_APPLICATION='${VCAP_APPLICATION}'" >> "${env_file}"
+  echo "export CF_INSTANCE_IP='${CF_INSTANCE_IP}'" >> "${env_file}"
+  echo "export DD_UPDATE_SCRIPT_WARMUP='${DD_UPDATE_SCRIPT_WARMUP}'" >> "${env_file}"
+  if [ -n "${CF_INSTANCE_GUID}" ]; then
+    echo "export CF_INSTANCE_GUID='$(CF_INSTANCE_GUID)'" >> "${env_file}"
+  fi
+  echo "export TAGS='${TAGS}'" >> "${env_file}"
+  echo "export LEGACY_TAGS_FORMAT='${LEGACY_TAGS_FORMAT}'" >> "${env_file}"
 }
 
 safe_source() {
