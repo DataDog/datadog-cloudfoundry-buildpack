@@ -35,7 +35,6 @@ dd_export_env() {
     echo "export CF_INSTANCE_GUID='$(CF_INSTANCE_GUID)'" >> "${env_file}"
   fi
   echo "export TAGS='${TAGS}'" >> "${env_file}"
-  echo "export LEGACY_TAGS_FORMAT='${LEGACY_TAGS_FORMAT}'" >> "${env_file}"
 }
 
 safe_source() {
