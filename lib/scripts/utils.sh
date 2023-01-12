@@ -20,6 +20,9 @@ export TRACE_AGENT_CMD="./trace-agent --config dist/datadog.yaml --pid run/trace
 export DOGSTATSD_PIDFILE="${DATADOG_DIR}/run/dogstatsd.pid"
 export DOGSTATSD_CMD="./dogstatsd start --cfgpath dist/"
 
+# the logging level of the update_agent_script.log file
+export DD_UPDATE_SCRIPT_LOG_LEVEL="${DD_UPDATE_SCRIPT_LOG_LEVEL:-"INFO"}"
+
 dd_export_env() {
   local env_file="$1"
 
@@ -30,11 +33,12 @@ dd_export_env() {
   echo "export LOGS_CONFIG='${LOGS_CONFIG}'" >> "${env_file}"
   echo "export VCAP_APPLICATION='${VCAP_APPLICATION}'" >> "${env_file}"
   echo "export CF_INSTANCE_IP='${CF_INSTANCE_IP}'" >> "${env_file}"
-  echo "export DD_UPDATE_SCRIPT_WARMUP='${DD_UPDATE_SCRIPT_WARMUP}'" >> "${env_file}"
-  if [ -n "${CF_INSTANCE_GUID}" ]; then
-    echo "export CF_INSTANCE_GUID='$(CF_INSTANCE_GUID)'" >> "${env_file}"
+  if [ -n "${CF_INSTANCE_GUID:-}" ]; then
+    echo "export CF_INSTANCE_GUID='${CF_INSTANCE_GUID}'" >> "${env_file}"
   fi
   echo "export TAGS='${TAGS}'" >> "${env_file}"
+  echo "export DD_UPDATE_SCRIPT_WARMUP='${DD_UPDATE_SCRIPT_WARMUP}'" >> "${env_file}"
+  echo "export DD_UPDATE_SCRIPT_LOG_LEVEL='${DD_UPDATE_SCRIPT_LOG_LEVEL}'" >> "${env_file}"
 }
 
 safe_source() {
@@ -45,17 +49,23 @@ safe_source() {
   done < "${source_file}"
 }
 
-log_info() {
-  log_message "$0" "$$" "$@" "INFO"
-}
-
-log_debug() {
-  log_message "$0" "$$" "$@" "DEBUG"
-}
-
 log_error() {
   log_message "$0" "$$" "$@" "ERROR" 1>&2
 }
+
+log_info() {
+  if [ "${DD_UPDATE_SCRIPT_LOG_LEVEL}" = "DEBUG" ] || [ "${DD_UPDATE_SCRIPT_LOG_LEVEL}" = "INFO" ]; then 
+    log_message "$0" "$$" "$@" "INFO"
+  fi
+}
+
+log_debug() {
+  if [ "${DD_UPDATE_SCRIPT_LOG_LEVEL}" = "DEBUG" ]; then
+    log_message "$0" "$$" "$@" "DEBUG"
+  fi
+}
+
+
 
 log_message() {
   local component="${1#/home/vcap/app/}"
