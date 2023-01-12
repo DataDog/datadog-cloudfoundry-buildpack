@@ -26,44 +26,44 @@ export DD_UPDATE_SCRIPT_LOG_LEVEL="${DD_UPDATE_SCRIPT_LOG_LEVEL:-"INFO"}"
 dd_export_env() {
   local env_file="$1"
 
-  if [ -n "${DD_ENABLE_CAPI_METADATA_COLLECTION:-}" ]; then
+  if [ -n "${DD_ENABLE_CAPI_METADATA_COLLECTION}" ]; then
     echo "export DD_ENABLE_CAPI_METADATA_COLLECTION='${DD_ENABLE_CAPI_METADATA_COLLECTION}'" > "${env_file}"
   fi
-  if [ -n "${DD_TAGS:-}" ]; then
+  if [ -n "${DD_TAGS}" ]; then
     echo "export DD_TAGS='${DD_TAGS}'" >> "${env_file}"
   fi
-  if [ -n "${DD_DOGSTATSD_TAGS:-}" ]; then
+  if [ -n "${DD_DOGSTATSD_TAGS}" ]; then
     echo "export DD_DOGSTATSD_TAGS='${DD_DOGSTATSD_TAGS}'">> "${env_file}"
   fi
-  if [ -n "${LOGS_CONFIG_DIR:-}" ]; then
+  if [ -n "${LOGS_CONFIG_DIR}" ]; then
     echo "export LOGS_CONFIG_DIR='${LOGS_CONFIG_DIR}'" >> "${env_file}"
   fi
-  if [ -n "${LOGS_CONFIG:-}" ]; then
+  if [ -n "${LOGS_CONFIG}" ]; then
     echo "export LOGS_CONFIG='${LOGS_CONFIG}'" >> "${env_file}"
   fi
-  if [ -n "${VCAP_APPLICATION:-}" ]; then
+  if [ -n "${VCAP_APPLICATION}" ]; then
   echo "export VCAP_APPLICATION='${VCAP_APPLICATION}'" >> "${env_file}"
   fi
-  if [ -n "${CF_INSTANCE_IP:-}" ]; then
+  if [ -n "${CF_INSTANCE_IP}" ]; then
     echo "export CF_INSTANCE_IP='${CF_INSTANCE_IP}'" >> "${env_file}"
   fi
-  if [ -n "${CF_INSTANCE_GUID:-}" ]; then
+  if [ -n "${CF_INSTANCE_GUID}" ]; then
     echo "export CF_INSTANCE_GUID='${CF_INSTANCE_GUID}'" >> "${env_file}"
   fi
-  if [ -n "${TAGS:-}" ]; then
+  if [ -n "${TAGS}" ]; then
     echo "export TAGS='${TAGS}'" >> "${env_file}"
   fi
-  if [ -n "${DD_UPDATE_SCRIPT_WARMUP:-}" ]; then
+  if [ -n "${DD_UPDATE_SCRIPT_WARMUP}" ]; then
     echo "export DD_UPDATE_SCRIPT_WARMUP='${DD_UPDATE_SCRIPT_WARMUP}'" >> "${env_file}"
   fi
-  if [ -n "${DD_UPDATE_SCRIPT_LOG_LEVEL:-}" ]; then
+  if [ -n "${DD_UPDATE_SCRIPT_LOG_LEVEL}" ]; then
     echo "export DD_UPDATE_SCRIPT_LOG_LEVEL='${DD_UPDATE_SCRIPT_LOG_LEVEL}'" >> "${env_file}"
   fi
 }
 
 safe_source() {
   local source_file="$1"
-  
+
   while IFS= read -r line; do
     eval "$line";
   done < "${source_file}"
@@ -74,7 +74,7 @@ log_error() {
 }
 
 log_info() {
-  if [ "${DD_UPDATE_SCRIPT_LOG_LEVEL}" = "DEBUG" ] || [ "${DD_UPDATE_SCRIPT_LOG_LEVEL}" = "INFO" ]; then 
+  if [ "${DD_UPDATE_SCRIPT_LOG_LEVEL}" = "DEBUG" ] || [ "${DD_UPDATE_SCRIPT_LOG_LEVEL}" = "INFO" ]; then
     log_message "$0" "$$" "$@" "INFO"
   fi
 }
@@ -98,7 +98,7 @@ log_message() {
 check_if_running() {
   local pidfile="$1"
   local command="${2:-none}"
-  
+
   if [ -f "${pidfile}" ]; then
     kill -0 "$(cat "${pidfile}")" > /dev/null
   else
