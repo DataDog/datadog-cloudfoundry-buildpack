@@ -59,7 +59,7 @@ chmod +x "${BUILD_DIR}/.profile.d/01-run-datadog.sh"
 
 # export DD environment variables
 . "${DATADOG_DIR}/scripts/utils.sh"
-dd_export_env "${DATADOG_DIR}/.datadog_env"
+dd_export_env "${DATADOG_DIR}/.raw_datadog_env"
 
 # sanitize env vars and export a new a env file
 python "${DATADOG_DIR}/scripts/parse_env_vars.py" "${DATADOG_DIR}/.raw_datadog_env" "${DATADOG_DIR}/.datadog_env"
