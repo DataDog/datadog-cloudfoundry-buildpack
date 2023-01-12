@@ -22,7 +22,12 @@ if len(sys.argv) > 1:
                 name, value = env_parts
                 if name not in ["DD_TAGS", "TAGS"]:
                     value = value.replace(" ", "_")
-                new_env_file.write("export {}={}\n".format(name, value))
+
+                # skip empty env vars
+                if value == "''":
+                    continue
+
+                new_env_file.write("{}={}\n".format(name, value))
     else:
         print("Destination file not specified")
 else:
