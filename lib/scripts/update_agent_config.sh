@@ -21,7 +21,7 @@ main() {
     done
 
     . "${DATADOG_DIR}/scripts/utils.sh"
-    . "${DATADOG_DIR}/.datadog_env"
+    safe_source "${DATADOG_DIR}/.datadog_env"
 
     if [ "${DD_ENABLE_CAPI_METADATA_COLLECTION}" != "true" ]; then
         log_info "update script aborted. set DD_ENABLE_CAPI_METADATA_COLLECTION to true to enable metadata tags collection"
@@ -91,7 +91,7 @@ main() {
 
     # finishing up
     log_info "exporting .sourced_datadog_env file"
-    export > "${DATADOG_DIR}/.sourced_datadog_env"
+    dd_export_env "${DATADOG_DIR}/.sourced_datadog_env"
 
     # mark to the monit_datadog function in run-datadog.sh that the script is finished
     log_info "creating tags_updated file"

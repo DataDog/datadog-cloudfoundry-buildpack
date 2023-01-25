@@ -57,9 +57,9 @@ chmod +x "${BUILD_DIR}/.profile.d/00-test-endpoint.sh"
 chmod +x "${BUILD_DIR}/.profile.d/02-redirect-logs.sh"
 chmod +x "${BUILD_DIR}/.profile.d/01-run-datadog.sh"
 
-# Export all environment variables to a file that scripts can use later
-# We need to handle quotes and comments; sed command found in https://gist.github.com/mihow/9c7f559807069a03e302605691f85572
-printenv | sed -e '/^#/d;/^\s*$/d' -e "s/'/'\\\''/g" -e "s/=\(.*\)/='\1'/g" > "${BUILD_DIR}/.datadog/.raw_datadog_env"
+# export DD environment variables
+. "${DATADOG_DIR}/scripts/utils.sh"
+dd_export_env "${DATADOG_DIR}/.raw_datadog_env"
 
 # sanitize env vars and export a new a env file
 python "${DATADOG_DIR}/scripts/parse_env_vars.py" "${DATADOG_DIR}/.raw_datadog_env" "${DATADOG_DIR}/.datadog_env"
