@@ -20,7 +20,7 @@ if len(sys.argv) > 1:
                 if len(env_parts) != 2:
                     continue
                 name, value = env_parts
-                if name not in ["DD_TAGS", "TAGS"]:
+                if name not in ["export DD_TAGS", "export TAGS"]:
                     value = value.replace(" ", "_")
 
                 # skip empty env vars
