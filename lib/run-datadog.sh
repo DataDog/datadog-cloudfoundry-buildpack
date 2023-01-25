@@ -135,7 +135,6 @@ start_datadog() {
       date +%s > "${DATADOG_DIR}/startup_time"
       echo "setting up datadog"
       setup_datadog
-      FIRST_RUN=false
     else
       if [ -f  "${DATADOG_DIR}/.sourced_datadog_env" ]; then
         echo "sourcing .sourced_datadog_env file"
@@ -170,11 +169,14 @@ start_datadog() {
       fi
       echo $! > run/dogstatsd.pid
     fi
-    echo "Starting trace agent"
-    if [ "${SUPPRESS_DD_AGENT_OUTPUT}" = "true" ]; then
-      ./trace-agent --config dist/datadog.yaml --pid run/trace-agent.pid > /dev/null 2>&1 &
-    else
-      ./trace-agent --config dist/datadog.yaml --pid run/trace-agent.pid &
+    if [ "${FIRST_RUN}" = "true" ]; then
+      echo "Starting trace agent"
+      if [ "${SUPPRESS_DD_AGENT_OUTPUT}" = "true" ]; then
+        ./trace-agent --config dist/datadog.yaml --pid run/trace-agent.pid > /dev/null 2>&1 &
+      else
+        ./trace-agent --config dist/datadog.yaml --pid run/trace-agent.pid &
+      fi
+      FIRST_RUN=false
     fi
   popd
 }
@@ -195,13 +197,6 @@ stop_datadog() {
       kill_and_wait "${DOGSTATSD_PIDFILE}" 5 1
       find_pid_kill_and_wait "${DOGSTATSD_CMD}" "${DOGSTATSD_PIDFILE}" 5 1
       rm -f "${DOGSTATSD_PIDFILE}"
-    fi
-
-     if check_if_running "${TRACE_AGENT_PIDFILE}" "${TRACE_AGENT_CMD}"; then
-      echo "Stopping trace agent process, pid: $(cat "${TRACE_AGENT_PIDFILE}")"
-      kill_and_wait "${TRACE_AGENT_PIDFILE}" 5 1
-      find_pid_kill_and_wait "${TRACE_AGENT_CMD}" "${TRACE_AGENT_PIDFILE}" 5 1
-      rm -f "${TRACE_AGENT_PIDFILE}"
     fi
   popd
 }
