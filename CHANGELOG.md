@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.35.1 / 2023-01-26
+
+* [Fixed] Fix environment variables sharing. See [#151](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/151).
+
 ## 4.35.0 / 2023-01-06
 
 * [Added] Bump embedded Datadog Agent version to 7.41.1. Read more about it [here](https://github.com/DataDog/datadog-agent/blob/main/CHANGELOG.rst#7411--6411).
