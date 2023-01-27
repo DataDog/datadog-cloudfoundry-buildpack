@@ -34,7 +34,7 @@ if !logs_config.nil?
   tags_list = []
 
   if !dd_tags.nil?
-    tags_list += sanitize(dd_tags, " ")
+    tags_list += sanitize(dd_tags, ",")
   else
     puts "Could not find DD_TAGS env var"
   end

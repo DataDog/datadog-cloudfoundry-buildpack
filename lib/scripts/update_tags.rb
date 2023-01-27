@@ -33,7 +33,7 @@ if ! DD_NODE_AGENT_TAGS.empty?
 end
 
 if ! DD_TAGS.empty?
-    tags.concat(sanitize(DD_TAGS, " "))
+    tags.concat(sanitize(DD_TAGS, ","))
 end
 
 # if the script is executed during the warmup period, merge incoming tags with the existing tags
