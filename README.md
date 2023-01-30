@@ -25,6 +25,38 @@ Once it is available in your Cloud Foundry environment, configure your applicati
 
 ### Configuration
 
+#### Unified Service Tagging
+
+> This feature requires the Datadog Cluster Agent to be installed. 
+See [Datadog Cluster Agent BOSH Release](https://github.com/DataDog/datadog-cluster-agent-boshrelease).
+
+Unified service tagging ties Datadog telemetry together through using three reserved tags: `env`, `service`, and `version`. In Cloud Foundry, they are set through the application labels/annotations.
+
+```yaml
+ env:
+    DD_ENV: <ENV_NAME>
+    DD_SERVICE: <SERVICE_NAME>
+    DD_VERSION: <VERSION>
+  metadata:
+    labels:
+      tags.datadoghq.com/env: <ENV_NAME>
+      tags.datadoghq.com/service: <SERVICE_NAME>
+      tags.datadoghq.com/version: <VERSION>
+```
+
+The `tags.datadoghq.com` prefix is part of the Agent Autodiscovery notation as described in [Basic Agent Autodiscovery Documentation](https://docs.datadoghq.com/getting_started/containers/autodiscovery).
+
+You can find more information in the [Unified Service Tagging Documentation](https://docs.datadoghq.com/getting_started/tagging/unified_service_tagging).
+
+#### Application Metadata collection
+
+> This feature requires both the Datadog Agent and the Datadog Cluster Agent to be installed. 
+See [Datadog Agent BOSH Release](https://github.com/DataDog/datadog-cluster-agent-boshrelease) and [Datadog Cluster Agent BOSH Release](https://github.com/DataDog/datadog-cluster-agent-boshrelease).
+
+You can enable the collection of your application metadata (labels and annotations) as tags in your application logs, traces and metrics by setting the environment variable `DD_ENABLE_CAPI_METADATA_COLLECTION` to `true`.
+
+__Note__: Enabling this feature might trigger a restart of the Datadog Agent when the application metadata are updated, depending on the `cloud_foundry_api.poll_interval` on the Datadog Cluster Agent. On average, it takes around 20 seconds to restart the agent.
+
 #### Metric collection
 
 Set an API Key in your environment to enable the Datadog Agents in the buildpack. The following code samples specify the `env` section of the application manifest.
@@ -56,8 +88,12 @@ env:
 
 The following environment variables are used to configure log collection.
 
-- `STD_LOG_COLLECTION_PORT`: Must be used when collecting logs from `stdout`/`stderr`. It redirects the `stdout`/`stderr` stream to the corresponding local port value.
-- `LOGS_CONFIG`: Use this option to configure the Agent to listen to a local TCP port and set the value for the `service` and `source` parameters. The port specified in the configuration must be the same as specified in the environment variable `STD_LOG_COLLECTION_PORT`.
+| Variable | Description|
+| -- | -- |
+| `STD_LOG_COLLECTION_PORT` |  Must be used when collecting logs from `stdout`/`stderr`. It redirects the `stdout`/`stderr` stream to the corresponding local port value. |
+| `LOGS_CONFIG` |  Use this option to configure the Agent to listen to a local TCP port and set the value for the `service` and `source` parameters. The port specified in the configuration must be the same as specified in the environment variable `STD_LOG_COLLECTION_PORT`. |
+| `SUPPRESS_DD_AGENT_OUTPUT` | Use this option to see the Datadog agent, Trace agent and DogStatsD logs in the `cf logs`  output |
+
 
 **Example**
 
