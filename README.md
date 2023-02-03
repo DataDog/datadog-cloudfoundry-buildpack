@@ -30,7 +30,7 @@ Once it is available in your Cloud Foundry environment, configure your applicati
 > This feature requires the Datadog Cluster Agent to be installed. 
 See [Datadog Cluster Agent BOSH Release](https://github.com/DataDog/datadog-cluster-agent-boshrelease).
 
-Unified service tagging ties Datadog telemetry together through using three reserved tags: `env`, `service`, and `version`. In Cloud Foundry, they are set through the application labels/annotations.
+Unified service tagging ties Datadog telemetry together through using three reserved tags: `env`, `service`, and `version`. In Cloud Foundry, they are set through the application labels/annotations and `DD_ENV`, `DD_SERVICE` and `DD_VERSION` environment variables, as shown in the example below:
 
 ```yaml
  env:
