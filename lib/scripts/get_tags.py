@@ -80,6 +80,6 @@ tags = list(dict.fromkeys(tags))
 
 legacy_tags = os.environ.get('LEGACY_TAGS_FORMAT', False)
 if legacy_tags:
-    print(','.join(tags))
+    print(', '.join(tags))
 else:
     print(' '.join(tags))

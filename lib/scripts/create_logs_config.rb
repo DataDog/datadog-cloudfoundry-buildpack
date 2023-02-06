@@ -9,6 +9,7 @@ require 'json'
 dd_env_file = "/home/vcap/app/.datadog/.sourced_env_datadog"
 node_agent_tags = "/home/vcap/app/.datadog/node_agent_tags.txt"
 
+legacy_tag_format = ENV.fetch('LEGACY_TAGS_FORMAT', false)
 logs_config_dir = ENV['LOGS_CONFIG_DIR']
 logs_config = ENV['LOGS_CONFIG']
 dd_tags = ENV['DD_TAGS']
@@ -34,7 +35,11 @@ if !logs_config.nil?
   tags_list = []
 
   if !dd_tags.nil?
-    tags_list += sanitize(dd_tags, ",")
+    if legacy_tag_format
+      tags_list += sanitize(dd_tags, ", ")
+    else
+      tags_list += sanitize(dd_tags, " ")
+    end
   else
     puts "Could not find DD_TAGS env var"
   end

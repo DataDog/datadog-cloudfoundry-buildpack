@@ -5,6 +5,7 @@
 #!/usr/bin/env ruby
 
 # env vars
+LEGACY_TAGS_FORMAT = ENV.fetch('LEGACY_TAGS_FORMAT', false)
 DATADOG_DIR = ENV.fetch("DATADOG_DIR", "/home/vcap/app/.datadog")
 DD_TAGS = ENV.fetch("DD_TAGS", "")
 DD_NODE_AGENT_TAGS = ENV.fetch("DD_NODE_AGENT_TAGS", "")
@@ -33,7 +34,11 @@ if ! DD_NODE_AGENT_TAGS.empty?
 end
 
 if ! DD_TAGS.empty?
-    tags.concat(sanitize(DD_TAGS, ","))
+    if LEGACY_TAGS_FORMAT
+        tags.concat(sanitize(DD_TAGS, ", "))
+    else
+        tags.concat(sanitize(DD_TAGS, " "))
+    end
 end
 
 # if the script is executed during the warmup period, merge incoming tags with the existing tags

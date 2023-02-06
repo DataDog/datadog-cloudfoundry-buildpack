@@ -7,6 +7,7 @@
 # These utils are taken from
 # https://github.com/DataDog/datadog-agent-boshrelease/blob/4.11.2/src/helpers/lib.sh
 
+export HOME_DIR="/home/vcap"
 export DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 export LOGS_CONFIG_DIR="${DATADOG_DIR}/dist/conf.d/logs.d"
 export LOGS_CONFIG
@@ -221,4 +222,18 @@ redirect() {
       }" "${DD_API_SITE}v1/events?api_key=${DD_API_KEY}"
     fi
   done
+}
+
+detect_buildpack() {
+  DD_DETECTED_BUILDPACK=""
+  if [ -f "${HOME_DIR}"/staging_info.yml ]; then
+    DD_DETECTED_BUILDPACK=$(cat "${HOME_DIR}"/staging_info.yml | jq '.detected_buildpack')
+  fi
+  if echo "${DD_DETECTED_BUILDPACK}" | grep -q "node" ; then
+    LEGACY_TAGS_FORMAT=true
+  else
+    LEGACY_TAGS_FORMAT=false
+  fi
+  log_info "Detected buildpack: ${DD_DETECTED_BUILDPACK}, legacy_tags_format: ${LEGACY_TAGS_FORMAT}"
+  export LEGACY_TAGS_FORMAT
 }

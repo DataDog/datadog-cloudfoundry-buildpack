@@ -10,6 +10,10 @@ DD_ENABLE_CAPI_METADATA_COLLECTION="${DD_ENABLE_CAPI_METADATA_COLLECTION:-false}
 LOCKFILE="${DATADOG_DIR}/lock"
 FIRST_RUN="${FIRST_RUN:-true}"
 USER_TAGS="${DD_TAGS}"
+
+#source "${DATADOG_DIR}/scripts/utils.sh"
+
+#detect_buildpack
 DD_TAGS=$(LEGACY_TAGS_FORMAT=true python "${DATADOG_DIR}"/scripts/get_tags.py)
 export DD_TAGS
 DD_DOGSTATSD_TAGS=$(LEGACY_TAGS_FORMAT=true python "${DATADOG_DIR}"/scripts/get_tags.py)
@@ -117,6 +121,7 @@ setup_datadog() {
 }
 
 start_datadog() {
+  detect_buildpack
   DD_TAGS="${USER_TAGS}"
   DD_TAGS=$(LEGACY_TAGS_FORMAT=true python "${DATADOG_DIR}"/scripts/get_tags.py)
   export DD_TAGS
