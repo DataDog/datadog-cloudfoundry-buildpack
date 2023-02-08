@@ -4,12 +4,16 @@
 # This product includes software developed at Datadog (https://www.datadoghq.com/).
 # Copyright 2017-Present Datadog, Inc.
 
+BUILD_DIR="${BUILD_DIR:-/tmp/app}"
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 DD_ENABLE_CAPI_METADATA_COLLECTION="${DD_ENABLE_CAPI_METADATA_COLLECTION:-false}"
 LOCKFILE="${DATADOG_DIR}/lock"
 FIRST_RUN="${FIRST_RUN:-true}"
 USER_TAGS="${DD_TAGS}"
+
+# detect what language buildpack is running
+. "${DATADOG_DIR}/scripts/detect_buildpack.sh" "${BUILD_DIR}"
 
 DD_TAGS=$(python "${DATADOG_DIR}"/scripts/get_tags.py)
 export DD_TAGS
