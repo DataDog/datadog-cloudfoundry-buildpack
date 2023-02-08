@@ -61,7 +61,7 @@ chmod +x "${BUILD_DIR}/.profile.d/02-redirect-logs.sh"
 chmod +x "${BUILD_DIR}/.profile.d/01-run-datadog.sh"
 
 # detect what language buildpack is running
-. "${DATADOG_DIR}/scripts/detect_buildpack.sh" "${BUILD_DIR}"
+. "${DATADOG_DIR}/scripts/detect_buildpack.sh"
 
 # export DD environment variables
 . "${DATADOG_DIR}/scripts/utils.sh"
