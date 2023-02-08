@@ -235,3 +235,8 @@ main() {
   fi
 }
 main "$@"
+
+while ! nc -z localhost 8126; do   
+  echo "Waiting for the trace agent to start on 8126..."
+  sleep 1
+done
