@@ -15,6 +15,8 @@ def parse_tags(tags):
     delimiter = ','
     if tags.count(' ') > tags.count(','):
         delimiter = ' '
+    elif tags.count(' ') == tags.count(',') and len(tags) != 0:
+        delimiter = ', '
     try:
         return tags.split(delimiter)
     except Exception as e:
@@ -79,6 +81,7 @@ tags = [ tag.replace(" ", "_") for tag in tags ]
 tags = list(dict.fromkeys(tags))
 
 legacy_tags = os.environ.get('LEGACY_TAGS_FORMAT', False)
+
 if legacy_tags:
     print(', '.join(tags))
 else:

@@ -11,17 +11,16 @@ LOCKFILE="${DATADOG_DIR}/lock"
 FIRST_RUN="${FIRST_RUN:-true}"
 USER_TAGS="${DD_TAGS}"
 
-#source "${DATADOG_DIR}/scripts/utils.sh"
-
-#detect_buildpack
-DD_TAGS=$(LEGACY_TAGS_FORMAT=true python "${DATADOG_DIR}"/scripts/get_tags.py)
+DD_TAGS=$(python "${DATADOG_DIR}"/scripts/get_tags.py)
 export DD_TAGS
-DD_DOGSTATSD_TAGS=$(LEGACY_TAGS_FORMAT=true python "${DATADOG_DIR}"/scripts/get_tags.py)
+DD_DOGSTATSD_TAGS=$(python "${DATADOG_DIR}"/scripts/get_tags.py)
 export DD_DOGSTATSD_TAGS
 
 source "${DATADOG_DIR}/scripts/utils.sh"
 
 setup_datadog() {
+  log_info "Detected buildpack: ${DD_DETECTED_BUILDPACK}, legacy_tags_format: ${LEGACY_TAGS_FORMAT}"
+
   pushd "${DATADOG_DIR}"
 
     export DD_LOG_FILE="${DATADOG_DIR}/dogstatsd.log"
@@ -121,11 +120,10 @@ setup_datadog() {
 }
 
 start_datadog() {
-  detect_buildpack
   DD_TAGS="${USER_TAGS}"
-  DD_TAGS=$(LEGACY_TAGS_FORMAT=true python "${DATADOG_DIR}"/scripts/get_tags.py)
+  DD_TAGS=$(python "${DATADOG_DIR}"/scripts/get_tags.py)
   export DD_TAGS
-  DD_DOGSTATSD_TAGS=$(LEGACY_TAGS_FORMAT=true python "${DATADOG_DIR}"/scripts/get_tags.py)
+  DD_DOGSTATSD_TAGS=$(python "${DATADOG_DIR}"/scripts/get_tags.py)
   export DD_DOGSTATSD_TAGS
   pushd "${DATADOG_DIR}"
     export DD_LOG_FILE="${DATADOG_DIR}/dogstatsd.log"

@@ -7,7 +7,6 @@
 # These utils are taken from
 # https://github.com/DataDog/datadog-agent-boshrelease/blob/4.11.2/src/helpers/lib.sh
 
-export HOME_DIR="/home/vcap"
 export DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 export LOGS_CONFIG_DIR="${DATADOG_DIR}/dist/conf.d/logs.d"
 export LOGS_CONFIG
@@ -23,6 +22,8 @@ export DOGSTATSD_CMD="./dogstatsd start --cfgpath dist/"
 
 # the logging level of the update_agent_script.log file
 export DD_UPDATE_SCRIPT_LOG_LEVEL="${DD_UPDATE_SCRIPT_LOG_LEVEL:-"INFO"}"
+export LEGACY_TAGS_FORMAT="${LEGACY_TAGS_FORMAT:-false}"
+export DD_DETECTED_BUILDPACK="${DD_DETECTED_BUILDPACK:-""}"
 
 dd_export_env() {
   local env_file="$1"
@@ -59,6 +60,12 @@ dd_export_env() {
   fi
   if [ -n "${DD_UPDATE_SCRIPT_LOG_LEVEL}" ]; then
     echo "export DD_UPDATE_SCRIPT_LOG_LEVEL='${DD_UPDATE_SCRIPT_LOG_LEVEL}'" >> "${env_file}"
+  fi
+  if [ -n "${LEGACY_TAGS_FORMAT}" ]; then
+    echo "export LEGACY_TAGS_FORMAT='${LEGACY_TAGS_FORMAT}'" >> "${env_file}"
+  fi
+  if [ -n "${DD_DETECTED_BUILDPACK}" ]; then
+    echo "export DD_DETECTED_BUILDPACK='${DD_DETECTED_BUILDPACK}'" >> "${env_file}"
   fi
 }
 
@@ -222,18 +229,4 @@ redirect() {
       }" "${DD_API_SITE}v1/events?api_key=${DD_API_KEY}"
     fi
   done
-}
-
-detect_buildpack() {
-  DD_DETECTED_BUILDPACK=""
-  if [ -f "${HOME_DIR}"/staging_info.yml ]; then
-    DD_DETECTED_BUILDPACK=$(cat "${HOME_DIR}"/staging_info.yml | jq '.detected_buildpack')
-  fi
-  if echo "${DD_DETECTED_BUILDPACK}" | grep -q "node" ; then
-    LEGACY_TAGS_FORMAT=true
-  else
-    LEGACY_TAGS_FORMAT=false
-  fi
-  log_info "Detected buildpack: ${DD_DETECTED_BUILDPACK}, legacy_tags_format: ${LEGACY_TAGS_FORMAT}"
-  export LEGACY_TAGS_FORMAT
 }

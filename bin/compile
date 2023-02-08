@@ -31,8 +31,10 @@ fi
 cp "${ROOT_DIR}/lib/trace-agent" "${DATADOG_DIR}/trace-agent"
 
 cp "${ROOT_DIR}/lib/scripts/create_logs_config.rb" "${DATADOG_DIR}/scripts/create_logs_config.rb"
-cp "${ROOT_DIR}/lib/scripts/parse_env_vars.py" "${DATADOG_DIR}/scripts/parse_env_vars.py"
 cp "${ROOT_DIR}/lib/scripts/update_tags.rb" "${DATADOG_DIR}/scripts/update_tags.rb"
+
+cp "${ROOT_DIR}/lib/scripts/parse_env_vars.py" "${DATADOG_DIR}/scripts/parse_env_vars.py"
+cp "${ROOT_DIR}/lib/scripts/detect_buildpack.sh" "${DATADOG_DIR}/scripts/detect_buildpack.sh"
 
 cp "${ROOT_DIR}/lib/scripts/nc.py" "${DATADOG_DIR}/scripts/nc.py"
 cp "${ROOT_DIR}/lib/scripts/utils.sh" "${DATADOG_DIR}/scripts/utils.sh"
@@ -50,12 +52,16 @@ if [ -f "${DATADOG_DIR}/dogstatsd" ]; then
 fi
 
 chmod +x "${DATADOG_DIR}/scripts/utils.sh"
+chmod +x "${DATADOG_DIR}/scripts/detect_buildpack.sh"
 chmod +x "${DATADOG_DIR}/scripts/check_datadog.sh"
 
 chmod +x "${DATADOG_DIR}/trace-agent"
 chmod +x "${BUILD_DIR}/.profile.d/00-test-endpoint.sh"
 chmod +x "${BUILD_DIR}/.profile.d/02-redirect-logs.sh"
 chmod +x "${BUILD_DIR}/.profile.d/01-run-datadog.sh"
+
+# detect what language buildpack is running
+. "${DATADOG_DIR}/scripts/detect_buildpack.sh" "${BUILD_DIR}"
 
 # export DD environment variables
 . "${DATADOG_DIR}/scripts/utils.sh"
@@ -65,9 +71,9 @@ dd_export_env "${DATADOG_DIR}/.raw_datadog_env"
 python "${DATADOG_DIR}/scripts/parse_env_vars.py" "${DATADOG_DIR}/.raw_datadog_env" "${DATADOG_DIR}/.datadog_env"
 
 # export DD_TAGS for ddtrace
-DD_TAGS=$(LEGACY_TAGS_FORMAT=true python "${DATADOG_DIR}"/scripts/get_tags.py)
+DD_TAGS=$(python "${DATADOG_DIR}"/scripts/get_tags.py)
 export DD_TAGS
-DD_DOGSTATSD_TAGS=$(LEGACY_TAGS_FORMAT=true python "${DATADOG_DIR}"/scripts/get_tags.py)
+DD_DOGSTATSD_TAGS=$(python "${DATADOG_DIR}"/scripts/get_tags.py)
 export DD_DOGSTATSD_TAGS
 
 # mark the script as finished, useful to sync the update_agent_config script
