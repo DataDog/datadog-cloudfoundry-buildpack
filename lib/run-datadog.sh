@@ -236,9 +236,16 @@ main() {
 }
 main "$@"
 
+timeout=120
 if [ "${WAIT_DD_TRACE_AGENT}" = "true" ]; then
-  while ! nc -z localhost 8126; do   
+  while ! nc -z localhost 8126 && [ $timeout -ge 0 ]; do
     echo "Waiting for the trace agent to start on 8126..."
     sleep 1
+    timeout=$((timeout - 1))
   done
+  if [ $timeout -ge 0 ]; then
+      echo "Trace agent is listening for traces"
+  else
+      echo "Timed out waiting for the trace agent"
+  fi
 fi
