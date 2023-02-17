@@ -45,7 +45,7 @@ write_tags_to_file() {
 
 main() {
     # source relevant DD tags
-    while ! [ -f "${DATADOG_DIR}/.setup_completed" ]; do
+    while  [ ! -f "${DATADOG_DIR}/.setup_completed" ] || [ ! -f "${DATADOG_DIR}/.datadog_env" ]; do
         echo "run-datadog.sh script not completed, waiting ..."
         sleep 1
     done

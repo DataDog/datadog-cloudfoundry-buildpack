@@ -27,10 +27,8 @@ echo $DD_TAGS > "${DATADOG_DIR}"/heytest
 
 DD_DOGSTATSD_TAGS=$(python "${DATADOG_DIR}"/scripts/get_tags.py)
 export DD_DOGSTATSD_TAGS
-#. "${DATADOG_DIR}/scripts/utils.sh"
 
 log_info "DD_TAGS separator: ${DD_TAGS_SEPARATOR}"
-touch "${DATADOG_DIR}/.setup_completed"
 
 setup_datadog() {
 
