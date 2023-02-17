@@ -60,21 +60,5 @@ chmod +x "${BUILD_DIR}/.profile.d/00-test-endpoint.sh"
 chmod +x "${BUILD_DIR}/.profile.d/02-redirect-logs.sh"
 chmod +x "${BUILD_DIR}/.profile.d/01-run-datadog.sh"
 
-# detect what language buildpack is running
-. "${DATADOG_DIR}/scripts/detect_buildpack.sh"
-
-# export DD environment variables
-. "${DATADOG_DIR}/scripts/utils.sh"
-dd_export_env "${DATADOG_DIR}/.raw_datadog_env"
-
-# sanitize env vars and export a new a env file
-python "${DATADOG_DIR}/scripts/parse_env_vars.py" "${DATADOG_DIR}/.raw_datadog_env" "${DATADOG_DIR}/.datadog_env"
-
-# export DD_TAGS for ddtrace
-DD_TAGS=$(python "${DATADOG_DIR}"/scripts/get_tags.py)
-export DD_TAGS
-DD_DOGSTATSD_TAGS=$(python "${DATADOG_DIR}"/scripts/get_tags.py)
-export DD_DOGSTATSD_TAGS
-
 # mark the script as finished, useful to sync the update_agent_config script
 touch "${DATADOG_DIR}/.setup_completed"

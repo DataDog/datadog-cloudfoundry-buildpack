@@ -36,12 +36,17 @@ write_tags_to_file() {
     log_debug "node_agent_tags.txt=$(cat "${DATADOG_DIR}"/node_agent_tags.txt)"
     log_debug "(AFTER)DD_NODE_AGENT_TAGS=${DD_NODE_AGENT_TAGS}"
     log_debug "DD_DOGSTATSD_TAGS=${DD_DOGSTATSD_TAGS}"
+
+    # finishing up
+    log_info "exporting .sourced_datadog_env file"
+    dd_export_env "${DATADOG_DIR}/.sourced_datadog_env"
+
 }
 
 main() {
     # source relevant DD tags
     while ! [ -f "${DATADOG_DIR}/.setup_completed" ]; do
-        echo "Supply script not completed, waiting ..."
+        echo "run-datadog.sh script not completed, waiting ..."
         sleep 1
     done
 
@@ -91,10 +96,6 @@ main() {
     # See: https://github.com/DataDog/datadog-agent/blob/main/pkg/workloadmeta/collectors/internal/cloudfoundry/cf_container/cloudfoundry_container.go#L24
     # update node_agent_tags.txt
     write_tags_to_file
-
-    # finishing up
-    log_info "exporting .sourced_datadog_env file"
-    dd_export_env "${DATADOG_DIR}/.sourced_datadog_env"
 
     # mark to the monit_datadog function in run-datadog.sh that the script is finished
     log_info "creating tags_updated file"

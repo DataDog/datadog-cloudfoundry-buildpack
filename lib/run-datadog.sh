@@ -14,15 +14,25 @@ USER_TAGS="${DD_TAGS}"
 # detect what language buildpack is running
 . "${DATADOG_DIR}/scripts/detect_buildpack.sh"
 
+# export DD environment variables
+. "${DATADOG_DIR}/scripts/utils.sh"
+dd_export_env "${DATADOG_DIR}/.raw_datadog_env"
+
+# sanitize env vars and export a new a env file
+python "${DATADOG_DIR}/scripts/parse_env_vars.py" "${DATADOG_DIR}/.raw_datadog_env" "${DATADOG_DIR}/.datadog_env"
+# export DD_TAGS for ddtrace
 DD_TAGS=$(python "${DATADOG_DIR}"/scripts/get_tags.py)
 export DD_TAGS
+echo $DD_TAGS > "${DATADOG_DIR}"/heytest
+
 DD_DOGSTATSD_TAGS=$(python "${DATADOG_DIR}"/scripts/get_tags.py)
 export DD_DOGSTATSD_TAGS
+#. "${DATADOG_DIR}/scripts/utils.sh"
 
-source "${DATADOG_DIR}/scripts/utils.sh"
+log_info "DD_TAGS separator: ${DD_TAGS_SEPARATOR}"
+touch "${DATADOG_DIR}/.setup_completed"
 
 setup_datadog() {
-  log_info "Detected buildpack: ${DD_DETECTED_BUILDPACK}, legacy_tags_format: ${LEGACY_TAGS_FORMAT}"
 
   pushd "${DATADOG_DIR}"
 
@@ -123,11 +133,16 @@ setup_datadog() {
 }
 
 start_datadog() {
-  DD_TAGS="${USER_TAGS}"
-  DD_TAGS=$(python "${DATADOG_DIR}"/scripts/get_tags.py)
-  export DD_TAGS
-  DD_DOGSTATSD_TAGS=$(python "${DATADOG_DIR}"/scripts/get_tags.py)
-  export DD_DOGSTATSD_TAGS
+  if [ "${FIRST_RUN}" != "true" ]; then
+    echo $DD_TAGS > "${DATADOG_DIR}"/heytest
+
+    DD_TAGS="${USER_TAGS}"
+    DD_TAGS=$(python "${DATADOG_DIR}"/scripts/get_tags.py)
+    export DD_TAGS
+    echo $DD_TAGS > "${DATADOG_DIR}"/heytest1
+    DD_DOGSTATSD_TAGS=$(python "${DATADOG_DIR}"/scripts/get_tags.py)
+    export DD_DOGSTATSD_TAGS
+  fi
   pushd "${DATADOG_DIR}"
     export DD_LOG_FILE="${DATADOG_DIR}/dogstatsd.log"
     export DD_API_KEY

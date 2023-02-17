@@ -22,8 +22,7 @@ export DOGSTATSD_CMD="./dogstatsd start --cfgpath dist/"
 
 # the logging level of the update_agent_script.log file
 export DD_UPDATE_SCRIPT_LOG_LEVEL="${DD_UPDATE_SCRIPT_LOG_LEVEL:-"INFO"}"
-export LEGACY_TAGS_FORMAT="${LEGACY_TAGS_FORMAT:-false}"
-export DD_DETECTED_BUILDPACK="${DD_DETECTED_BUILDPACK:-""}"
+export DD_TAGS_SEPARATOR="${DD_TAGS_SEPARATOR:-" "}"
 
 dd_export_env() {
   local env_file="$1"
@@ -61,11 +60,8 @@ dd_export_env() {
   if [ -n "${DD_UPDATE_SCRIPT_LOG_LEVEL}" ]; then
     echo "export DD_UPDATE_SCRIPT_LOG_LEVEL='${DD_UPDATE_SCRIPT_LOG_LEVEL}'" >> "${env_file}"
   fi
-  if [ -n "${LEGACY_TAGS_FORMAT}" ]; then
-    echo "export LEGACY_TAGS_FORMAT='${LEGACY_TAGS_FORMAT}'" >> "${env_file}"
-  fi
-  if [ -n "${DD_DETECTED_BUILDPACK}" ]; then
-    echo "export DD_DETECTED_BUILDPACK='${DD_DETECTED_BUILDPACK}'" >> "${env_file}"
+  if [ -n "${DD_TAGS_SEPARATOR}" ]; then
+    echo "export DD_TAGS_SEPARATOR='${DD_TAGS_SEPARATOR}'" >> "${env_file}"
   fi
 }
 
