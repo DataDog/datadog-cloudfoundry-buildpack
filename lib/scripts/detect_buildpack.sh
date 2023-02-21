@@ -7,6 +7,8 @@ HOME_DIR="${HOME_DIR:-/home/vcap/}"
 DD_DETECTED_BUILDPACK=""
 if [ -f "${HOME_DIR}"/staging_info.yml ]; then
     DD_DETECTED_BUILDPACK=$(cat "${HOME_DIR}"/staging_info.yml | jq '.detected_buildpack')
+elif [ -f "${BUILD_DIR}"/package.json ]; then
+    DD_DETECTED_BUILDPACK="node"
 fi
 if echo "${DD_DETECTED_BUILDPACK}" | grep -q "node" ; then
     DD_TAGS_SEPARATOR=", "
