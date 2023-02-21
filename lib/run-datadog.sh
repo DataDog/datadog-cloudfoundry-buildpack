@@ -23,7 +23,6 @@ python "${DATADOG_DIR}/scripts/parse_env_vars.py" "${DATADOG_DIR}/.raw_datadog_e
 # export DD_TAGS for ddtrace
 DD_TAGS=$(python "${DATADOG_DIR}"/scripts/get_tags.py)
 export DD_TAGS
-echo $DD_TAGS > "${DATADOG_DIR}"/heytest
 
 DD_DOGSTATSD_TAGS=$(python "${DATADOG_DIR}"/scripts/get_tags.py)
 export DD_DOGSTATSD_TAGS
@@ -132,12 +131,9 @@ setup_datadog() {
 
 start_datadog() {
   if [ "${FIRST_RUN}" != "true" ]; then
-    echo $DD_TAGS > "${DATADOG_DIR}"/heytest
-
     DD_TAGS="${USER_TAGS}"
     DD_TAGS=$(python "${DATADOG_DIR}"/scripts/get_tags.py)
     export DD_TAGS
-    echo $DD_TAGS > "${DATADOG_DIR}"/heytest1
     DD_DOGSTATSD_TAGS=$(python "${DATADOG_DIR}"/scripts/get_tags.py)
     export DD_DOGSTATSD_TAGS
   fi
