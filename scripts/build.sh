@@ -5,13 +5,14 @@ set -euxo pipefail
 SRCDIR=$(pwd)
 
 NAME="datadog-cloudfoundry-buildpack"
-ZIPFILE="${NAME}.zip"
+VERSION=$(cat VERSION)
+ZIPFILE="${NAME}-${VERSION}.zip"
 
 main() {
-      rm -f ${ZIPFILE}
+  rm -f ${ZIPFILE}
 
   pushd ${SRCDIR}
-    zip -r "${ZIPFILE}" lib bin
+    zip -r "${ZIPFILE}" lib bin VERSION
   popd
 }
 
