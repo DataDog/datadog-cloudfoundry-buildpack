@@ -48,12 +48,6 @@ main() {
     . "${DATADOG_DIR}/scripts/utils.sh"
     safe_source "${DATADOG_DIR}/.datadog_env"
 
-    if [ "${DD_ENABLE_CAPI_METADATA_COLLECTION}" != "true" ]; then
-        write_tags_to_file
-        log_info "update script aborted. set DD_ENABLE_CAPI_METADATA_COLLECTION to true to enable metadata tags collection"
-        exit 0
-    fi
-
     log_info "starting update_agent_config script"
     log_debug "(BEFORE)DD_NODE_AGENT_TAGS=${DD_NODE_AGENT_TAGS}"
 
@@ -95,6 +89,11 @@ main() {
     # finishing up
     log_info "exporting .sourced_datadog_env file"
     dd_export_env "${DATADOG_DIR}/.sourced_datadog_env"
+
+    if [ "${DD_ENABLE_CAPI_METADATA_COLLECTION}" != "true" ]; then
+        log_info "update script aborted. set DD_ENABLE_CAPI_METADATA_COLLECTION to true to enable metadata tags collection"
+        exit 0
+    fi
 
     # mark to the monit_datadog function in run-datadog.sh that the script is finished
     log_info "creating tags_updated file"
