@@ -26,7 +26,7 @@ Once it is available in your Cloud Foundry environment, configure your applicati
 ## Configuration
 
 ### General configuration of the Datadog Agent
-All the options supported by the Agent in the main `datadog.yaml` configuration file can also be set through environment variables as described in the [documentation of the Agent][5].
+All options supported by the Agent in the main `datadog.yaml` configuration file can also be set through environment variables as described in the [Agent documentation][5].
 
 #### Setup the Datadog API Key
 
@@ -38,6 +38,7 @@ env:
 ```
 
 ### Instrument your application
+
 Instrument your application to send custom metrics and APM traces through DogStatsD and the Datadog Trace Agent.
 Download and import the [relevant libraries][6] to send data. To learn more, check out the [DogSatsD documentation][7] and [APM documentation][8].
 
@@ -89,7 +90,7 @@ env:
 > This feature requires the Datadog Cluster Agent to be installed. 
 See [Datadog Cluster Agent BOSH Release](https://github.com/DataDog/datadog-cluster-agent-boshrelease).
 
-Unified service tagging ties Datadog telemetry together through using three reserved tags: `env`, `service`, and `version`. In Cloud Foundry, they are set through the application labels/annotations and `DD_ENV`, `DD_SERVICE` and `DD_VERSION` environment variables, as shown in the example below:
+Unified service tagging ties Datadog telemetry together using three reserved tags: `env`, `service`, and `version`. In Cloud Foundry, they are set through the application labels/annotations and `DD_ENV`, `DD_SERVICE` and `DD_VERSION` environment variables, as shown in the example below:
 
 ```yaml
  env:
@@ -103,9 +104,9 @@ Unified service tagging ties Datadog telemetry together through using three rese
       tags.datadoghq.com/version: <VERSION>
 ```
 
-The `tags.datadoghq.com` prefix is part of the Agent Autodiscovery notation as described in [Basic Agent Autodiscovery Documentation](https://docs.datadoghq.com/getting_started/containers/autodiscovery).
+The `tags.datadoghq.com` prefix is part of the Agent Autodiscovery notation as described in [Basic Agent Autodiscovery documentation](https://docs.datadoghq.com/getting_started/containers/autodiscovery).
 
-You can find more information in the [Unified Service Tagging Documentation](https://docs.datadoghq.com/getting_started/tagging/unified_service_tagging).
+You can find more information in the [Unified Service Tagging documentation](https://docs.datadoghq.com/getting_started/tagging/unified_service_tagging).
 
 ### Application Metadata collection
 
