@@ -23,41 +23,12 @@ Once it is available in your Cloud Foundry environment, configure your applicati
 
 **Note**: Since this is a supply buildpack, it has to be specified before any final buildpack in the list. See [Cloud Foundry documentation][4] for details about pushing an application with multiple buildpacks.
 
-### Configuration
+## Configuration
 
-#### Unified Service Tagging
+### General configuration of the Datadog Agent
+All options supported by the Agent in the main `datadog.yaml` configuration file can also be set through environment variables as described in the [Agent documentation][5].
 
-> This feature requires the Datadog Cluster Agent to be installed. 
-See [Datadog Cluster Agent BOSH Release](https://github.com/DataDog/datadog-cluster-agent-boshrelease).
-
-Unified service tagging ties Datadog telemetry together through using three reserved tags: `env`, `service`, and `version`. In Cloud Foundry, they are set through the application labels/annotations and `DD_ENV`, `DD_SERVICE` and `DD_VERSION` environment variables, as shown in the example below:
-
-```yaml
- env:
-    DD_ENV: <ENV_NAME>
-    DD_SERVICE: <SERVICE_NAME>
-    DD_VERSION: <VERSION>
-  metadata:
-    labels:
-      tags.datadoghq.com/env: <ENV_NAME>
-      tags.datadoghq.com/service: <SERVICE_NAME>
-      tags.datadoghq.com/version: <VERSION>
-```
-
-The `tags.datadoghq.com` prefix is part of the Agent Autodiscovery notation as described in [Basic Agent Autodiscovery Documentation](https://docs.datadoghq.com/getting_started/containers/autodiscovery).
-
-You can find more information in the [Unified Service Tagging Documentation](https://docs.datadoghq.com/getting_started/tagging/unified_service_tagging).
-
-#### Application Metadata collection
-
-> This feature requires both the Datadog Agent and the Datadog Cluster Agent to be installed. 
-See [Datadog Agent BOSH Release](https://github.com/DataDog/datadog-cluster-agent-boshrelease) and [Datadog Cluster Agent BOSH Release](https://github.com/DataDog/datadog-cluster-agent-boshrelease).
-
-You can enable the collection of your application metadata (labels and annotations) as tags in your application logs, traces and metrics by setting the environment variable `DD_ENABLE_CAPI_METADATA_COLLECTION` to `true`.
-
-__Note__: Enabling this feature might trigger a restart of the Datadog Agent when the application metadata are updated, depending on the `cloud_foundry_api.poll_interval` on the Datadog Cluster Agent. On average, it takes around 20 seconds to restart the agent.
-
-#### Metric collection
+#### Setup the Datadog API Key
 
 Set an API Key in your environment to enable the Datadog Agents in the buildpack. The following code samples specify the `env` section of the application manifest.
 
@@ -66,7 +37,13 @@ env:
   DD_API_KEY: <DATADOG_API_KEY>
 ```
 
-#### Log collection
+### Instrument your application
+
+Instrument your application to send custom metrics and APM traces through DogStatsD and the Datadog Trace Agent.
+Download and import the [relevant libraries][6] to send data. To learn more, check out the [DogSatsD documentation][7] and [APM documentation][8].
+
+
+### Log collection
 
 **Enable log collection**
 
@@ -108,12 +85,38 @@ env:
   LOGS_CONFIG: '[{"type":"tcp","port":"10514","source":"java","service":"app01"}]'
 ```
 
-#### General configuration of the Datadog Agent
-All the options supported by the Agent in the main `datadog.yaml` configuration file can also be set through environment variables as described in the [documentation of the Agent][5].
+### Unified Service Tagging
 
-### Instrument your application
-Instrument your application to send custom metrics and APM traces through DogStatsD and the Datadog Trace Agent.
-Download and import the [relevant libraries][6] to send data. To learn more, check out the [DogSatsD documentation][7] and [APM documentation][8].
+> This feature requires the Datadog Cluster Agent to be installed. 
+See [Datadog Cluster Agent BOSH Release](https://github.com/DataDog/datadog-cluster-agent-boshrelease).
+
+Unified service tagging ties Datadog telemetry together using three reserved tags: `env`, `service`, and `version`. In Cloud Foundry, they are set through the application labels/annotations and `DD_ENV`, `DD_SERVICE` and `DD_VERSION` environment variables, as shown in the example below:
+
+```yaml
+ env:
+    DD_ENV: <ENV_NAME>
+    DD_SERVICE: <SERVICE_NAME>
+    DD_VERSION: <VERSION>
+  metadata:
+    labels:
+      tags.datadoghq.com/env: <ENV_NAME>
+      tags.datadoghq.com/service: <SERVICE_NAME>
+      tags.datadoghq.com/version: <VERSION>
+```
+
+The `tags.datadoghq.com` prefix is part of the Agent Autodiscovery notation as described in [Basic Agent Autodiscovery documentation](https://docs.datadoghq.com/getting_started/containers/autodiscovery).
+
+You can find more information in the [Unified Service Tagging documentation](https://docs.datadoghq.com/getting_started/tagging/unified_service_tagging).
+
+### Application Metadata collection
+
+> This feature requires both the Datadog Agent and the Datadog Cluster Agent to be installed. 
+See [Datadog Agent BOSH Release](https://github.com/DataDog/datadog-cluster-agent-boshrelease) and [Datadog Cluster Agent BOSH Release](https://github.com/DataDog/datadog-cluster-agent-boshrelease).
+
+You can enable the collection of your application metadata (labels and annotations) as tags in your application logs, traces and metrics by setting the environment variable `DD_ENABLE_CAPI_METADATA_COLLECTION` to `true`.
+
+__Note__: Enabling this feature might trigger a restart of the Datadog Agent when the application metadata are updated, depending on the `cloud_foundry_api.poll_interval` on the Datadog Cluster Agent. On average, it takes around 20 seconds to restart the agent.
+
 
 ## Docker
 
