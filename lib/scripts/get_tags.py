@@ -12,9 +12,7 @@ import sys
 # else continue as usual
 
 def parse_tags(tags):
-    delimiter = ','
-    if tags.count(' ') > tags.count(','):
-        delimiter = ' '
+    delimiter = os.environ.get("DD_TAGS_SEP", ',')
     try:
         return tags.split(delimiter)
     except Exception as e:
@@ -38,7 +36,7 @@ node_agent_tags = os.environ.get('DD_NODE_AGENT_TAGS', None)
 if node_agent_tags:
     # These are always comma separated
     # See https://github.com/DataDog/datadog-agent/blob/main/pkg/cloudfoundry/containertagger/container_tagger.go#L133
-    
+
     # we do this to separate commas inside json values from tags separator commas
     node_agent_tags = node_agent_tags.replace(",\"", ";\"")
     all_node_agent_tags = parse_tags(node_agent_tags)
@@ -82,4 +80,4 @@ legacy_tags = os.environ.get('LEGACY_TAGS_FORMAT', False)
 if legacy_tags:
     print(','.join(tags))
 else:
-    print(' '.join(tags))
+    print(','.join(tags))
