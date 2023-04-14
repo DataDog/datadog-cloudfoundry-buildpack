@@ -9,11 +9,8 @@ SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 DD_ENABLE_CAPI_METADATA_COLLECTION="${DD_ENABLE_CAPI_METADATA_COLLECTION:-false}"
 LOCKFILE="${DATADOG_DIR}/lock"
 FIRST_RUN="${FIRST_RUN:-true}"
-USER_TAGS="${DD_TAGS}"
-DD_TAGS=$(python "${DATADOG_DIR}"/scripts/get_tags.py)
-export DD_TAGS
-DD_DOGSTATSD_TAGS=$(python "${DATADOG_DIR}"/scripts/get_tags.py)
-export DD_DOGSTATSD_TAGS
+export DD_TAGS=$(python "${DATADOG_DIR}/scripts/get_tags.py")
+echo "${DD_TAGS}" > "${DATADOG_DIR}/.dd_tags.txt"
 
 source "${DATADOG_DIR}/scripts/utils.sh"
 
@@ -97,10 +94,6 @@ setup_datadog() {
     # Create folder for storing PID files
     mkdir run
 
-
-    # DSD requires its own config file
-    cp dist/datadog.yaml dist/dogstatsd.yaml
-
     if [ -a ./agent ] && { [ "${DD_LOGS_ENABLED}" = "true" ] || [ "${DD_ENABLE_CHECKS}" = "true" ]; }; then
       if [ "${DD_LOGS_ENABLED}" = "true" -a "${DD_LOGS_VALID_ENDPOINT}" = "false" ]; then
         echo "Log endpoint not valid, not starting agent"
@@ -114,14 +107,13 @@ setup_datadog() {
       sed -i "s~log_file: AGENT_LOG_FILE~log_file: ${DD_LOG_FILE}~" dist/datadog.yaml
     fi
   popd >/dev/null
+
+  # update datadog config
+  ruby "${DATADOG_DIR}/scripts/update_datadog_config.rb"
 }
 
 start_datadog() {
-  DD_TAGS="${USER_TAGS}"
-  DD_TAGS=$(python "${DATADOG_DIR}"/scripts/get_tags.py)
-  export DD_TAGS
-  DD_DOGSTATSD_TAGS=$(python "${DATADOG_DIR}"/scripts/get_tags.py)
-  export DD_DOGSTATSD_TAGS
+  export DD_TAGS=$(python "${DATADOG_DIR}/scripts/get_tags.py")
   pushd "${DATADOG_DIR}" >/dev/null
     export DD_LOG_FILE="${DATADOG_DIR}/dogstatsd.log"
     export DD_API_KEY
@@ -154,27 +146,27 @@ start_datadog() {
 
         echo "Starting datadog agent"
         if [ "${SUPPRESS_DD_AGENT_OUTPUT}" = "true" ]; then
-          ./agent run --cfgpath dist/ --pidfile run/agent.pid > /dev/null 2>&1 &
+          env -u DD_TAGS ./agent run --cfgpath dist/ --pidfile run/agent.pid > /dev/null 2>&1 &
         else
-          ./agent run --cfgpath dist/ --pidfile run/agent.pid &
+          env -u DD_TAGS ./agent run --cfgpath dist/ --pidfile run/agent.pid &
         fi
       fi
     else
       echo "Starting dogstatsd agent"
       export DD_LOG_FILE=dogstatsd.log
       if [ "${SUPPRESS_DD_AGENT_OUTPUT}" = "true" ]; then
-        ./dogstatsd start --cfgpath dist/ > /dev/null 2>&1 &
+        env -u DD_TAGS ./dogstatsd start --cfgpath dist/ > /dev/null 2>&1 &
       else
-        ./dogstatsd start --cfgpath dist/ &
+        env -u DD_TAGS ./dogstatsd start --cfgpath dist/ &
       fi
       echo $! > run/dogstatsd.pid
     fi
     if [ "${FIRST_RUN}" = "true" ]; then
       echo "Starting trace agent"
       if [ "${SUPPRESS_DD_AGENT_OUTPUT}" = "true" ]; then
-        ./trace-agent --config dist/datadog.yaml --pid run/trace-agent.pid > /dev/null 2>&1 &
+        env -u DD_TAGS ./trace-agent --config dist/datadog.yaml --pid run/trace-agent.pid > /dev/null 2>&1 &
       else
-        ./trace-agent --config dist/datadog.yaml --pid run/trace-agent.pid &
+        env -u DD_TAGS ./trace-agent --config dist/datadog.yaml --pid run/trace-agent.pid &
       fi
       FIRST_RUN=false
     fi
