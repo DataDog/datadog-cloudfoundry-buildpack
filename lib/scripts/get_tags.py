@@ -8,9 +8,6 @@ import os
 import json
 import sys
 
-# if DD_TAGS[0] is comma or space, then set is as delimiter
-# else continue as usual
-
 def parse_tags(tags):
     delimiter = os.environ.get("DD_TAGS_SEP", ',')
     try:
