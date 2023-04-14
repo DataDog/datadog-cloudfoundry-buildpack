@@ -37,6 +37,19 @@ env:
   DD_API_KEY: <DATADOG_API_KEY>
 ```
 
+#### Assigning Tags
+
+Custom tags can be configured via the environmnet variable `DD_TAGS` in the application manifest.
+
+The tags must be a comma separated list. To use a different separator, set the `DD_TAGS_SEP` variable to the desired separator.
+
+```yaml
+env:
+  DD_TAGS: "key1:value1,key2:value2,key3:value3"
+  DD_TAGS_SEP: "," 
+```
+
+
 ### Instrument your application
 
 Instrument your application to send custom metrics and APM traces through DogStatsD and the Datadog Trace Agent.
