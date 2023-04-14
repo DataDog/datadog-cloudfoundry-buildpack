@@ -6,13 +6,12 @@
 
 require 'json'
 
-dd_env_file = "/home/vcap/app/.datadog/.sourced_env_datadog"
 node_agent_tags = "/home/vcap/app/.datadog/node_agent_tags.txt"
 
 logs_config_dir = ENV['LOGS_CONFIG_DIR']
 logs_config = ENV['LOGS_CONFIG']
 dd_tags = ENV['DD_TAGS']
-dd_node_agent_tags = ENV['DD_NODE_AGENTS_TAGS'] || (File.file?(node_agent_tags) ? File.read(node_agent_tags) : "")
+dd_node_agent_tags = ENV['DD_NODE_AGENT_TAGS'] || (File.file?(node_agent_tags) ? File.read(node_agent_tags) : "")
 
 def sanitize(tags_env_var, separator)
   tags_list = tags_env_var.gsub(",\"", ";\"").split(separator)
@@ -42,7 +41,7 @@ if !logs_config.nil?
   if !dd_node_agent_tags.nil?
     tags_list += sanitize(dd_node_agent_tags, ",")
   else
-    puts "Could not find DD_NODE_AGENTS_TAGS env var"
+    puts "Could not find DD_NODE_AGENT_TAGS env var"
   end
 
   if !tags_list.empty?

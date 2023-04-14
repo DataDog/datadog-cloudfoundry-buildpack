@@ -15,18 +15,22 @@ release_lock() {
 
 write_tags_to_file() {
     # combine DD_TAGS and DD_NODE_AGENT_TAGS into DD_TAGS
-    DD_TAGS=$(LEGACY_TAGS_FORMAT=true python "${DATADOG_DIR}"/scripts/get_tags.py)
-    export DD_TAGS
-    DD_DOGSTATSD_TAGS=$(LEGACY_TAGS_FORMAT=true python "${DATADOG_DIR}"/scripts/get_tags.py)
-    export DD_DOGSTATSD_TAGS
+    export DD_TAGS=$(python "${DATADOG_DIR}"/scripts/get_tags.py)
+   
     export LOGS_CONFIG_DIR="${DATADOG_DIR}/dist/conf.d/logs.d"
     export LOGS_CONFIG
 
-    # update logs configs with the new tags
-    if [ -n "${LOGS_CONFIG}" ] && [ "${DD_ENABLE_CAPI_METADATA_COLLECTION}" = "true" ]; then
-        mkdir -p "${LOGS_CONFIG_DIR}"
-        log_info "Updating logs config"
-        ruby "${DATADOG_DIR}/scripts/create_logs_config.rb"
+    if [ "${DD_ENABLE_CAPI_METADATA_COLLECTION}" = "true" ]; then
+        # update logs configs
+        if [ -n "${LOGS_CONFIG}" ]; then
+            mkdir -p "${LOGS_CONFIG_DIR}"
+            log_info "Updating logs config"
+            ruby "${DATADOG_DIR}/scripts/create_logs_config.rb"
+            ruby "${DATADOG_DIR}/scripts/update_datadog_config.rb"
+        fi
+
+        # update datadog config
+        ruby "${DATADOG_DIR}/scripts/update_datadog_config.rb"
     fi
 
     log_info "Updating node_agent_tags.txt"
