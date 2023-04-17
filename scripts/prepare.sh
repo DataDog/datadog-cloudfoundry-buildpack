@@ -51,7 +51,7 @@ function download_dogstatsd() {
 }
 
 function cleanup() {
-  rm -rf ${TMPDIR}/*
+  rm -rf ${TMPDIR}
 }
 
 function main() {
