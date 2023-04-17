@@ -8,7 +8,7 @@ NAME="datadog-cloudfoundry-buildpack"
 ZIPFILE="${NAME}.zip"
 
 main() {
-      rm -f ${ZIPFILE}
+  rm -f ${ZIPFILE}
 
   pushd ${SRCDIR}
     zip -r "${ZIPFILE}" lib bin
