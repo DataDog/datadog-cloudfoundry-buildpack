@@ -2,7 +2,6 @@
 
 echo "-----> DatadogBuildpack/compile"
 
-
 BIN_DIR=$(cd $(dirname $0); pwd)
 ROOT_DIR=$(dirname ${BIN_DIR})
 BUILD_DIR=$1
@@ -67,6 +66,8 @@ dd_export_env "${DATADOG_DIR}/.raw_datadog_env"
 
 # sanitize env vars and export a new a env file
 python "${DATADOG_DIR}/scripts/parse_env_vars.py" "${DATADOG_DIR}/.raw_datadog_env" "${DATADOG_DIR}/.datadog_env"
+
+export DD_TAGS=$(python "${DATADOG_DIR}/scripts/get_tags.py")
 
 # mark the script as finished, useful to sync the update_agent_config script
 touch "${DATADOG_DIR}/.setup_completed"
