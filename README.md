@@ -39,9 +39,9 @@ env:
 
 #### Assigning Tags
 
-Custom tags can be configured via the environmnet variable `DD_TAGS` in the application manifest.
+Custom tags can be configured with the environment variable `DD_TAGS` in the application manifest.
 
-The tags must be a comma separated list. To use a different separator, set the `DD_TAGS_SEP` variable to the desired separator.
+The tags must be a comma separated list. To use a different separator, set `DD_TAGS_SEP` to the desired separator.
 
 ```yaml
 env:
