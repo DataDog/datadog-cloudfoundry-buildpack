@@ -49,6 +49,7 @@ env:
   DD_TAGS_SEP: "," 
 ```
 
+Custom tags will be added to the application logs, metrics, and traces as Span tags.
 
 ### Instrument your application
 
