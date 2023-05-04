@@ -2,16 +2,22 @@
 
 set -euxo pipefail
 
-SRCDIR=$(pwd)
-
-NAME="datadog-cloudfoundry-buildpack"
-ZIPFILE="${NAME}.zip"
-
 main() {
-  rm -f ${ZIPFILE}
+  if [ -z "${VERSION}" ]; then
+    echo "VERSION is required to build the buildpack"
+    exit 0
+  fi
 
-  pushd ${SRCDIR}
-    zip -r "${ZIPFILE}" lib bin
+  srcDir=$(pwd)
+  name="datadog-cloudfoundry-buildpack"
+  zip="${name}-${VERSION}.zip"
+
+  echo "${VERSION}" > VERSION
+
+  rm -f ${zip}
+
+  pushd ${srcDir}
+    zip -r "${zip}" lib bin VERSION
   popd
 }
 
