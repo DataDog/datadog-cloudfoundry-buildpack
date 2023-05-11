@@ -18,7 +18,7 @@ export DD_DOGSTATSD_TAGS
 source "${DATADOG_DIR}/scripts/utils.sh"
 
 setup_datadog() {
-  pushd "${DATADOG_DIR}"
+  pushd "${DATADOG_DIR}" >/dev/null
 
     export DD_LOG_FILE="${DATADOG_DIR}/dogstatsd.log"
     export DD_API_KEY
@@ -113,7 +113,7 @@ setup_datadog() {
       export DD_LOG_FILE=${DATADOG_DIR}/dogstatsd.log
       sed -i "s~log_file: AGENT_LOG_FILE~log_file: ${DD_LOG_FILE}~" dist/datadog.yaml
     fi
-  popd
+  popd >/dev/null
 }
 
 start_datadog() {
@@ -122,7 +122,7 @@ start_datadog() {
   export DD_TAGS
   DD_DOGSTATSD_TAGS=$(python "${DATADOG_DIR}"/scripts/get_tags.py)
   export DD_DOGSTATSD_TAGS
-  pushd "${DATADOG_DIR}"
+  pushd "${DATADOG_DIR}" >/dev/null
     export DD_LOG_FILE="${DATADOG_DIR}/dogstatsd.log"
     export DD_API_KEY
     export DD_DD_URL
@@ -152,7 +152,7 @@ start_datadog() {
         export DD_LOG_FILE=agent.log
         export DD_IOT_HOST=false
 
-        echo "Starting Datadog agent"
+        echo "Starting datadog agent"
         if [ "${SUPPRESS_DD_AGENT_OUTPUT}" = "true" ]; then
           ./agent run --cfgpath dist/ --pidfile run/agent.pid > /dev/null 2>&1 &
         else
@@ -178,13 +178,13 @@ start_datadog() {
       fi
       FIRST_RUN=false
     fi
-  popd
+  popd >/dev/null
 }
 
 stop_datadog() {
-  pushd "${DATADOG_DIR}"
+  pushd "${DATADOG_DIR}" >/dev/null
     if check_if_running "${AGENT_PIDFILE}" "${AGENT_CMD}"; then
-      echo "Stopping agent process, pid: $(cat "${AGENT_PIDFILE}")"
+      echo "Stopping datadog agent process, pid: $(cat "${AGENT_PIDFILE}")"
       # first try to stop the agent so we don't lose data and then force it
       (./agent stop --cfgpath dist/) || true
       find_pid_kill_and_wait "${AGENT_CMD}" "${AGENT_PIDFILE}" 5 1 || true
@@ -198,7 +198,7 @@ stop_datadog() {
       find_pid_kill_and_wait "${DOGSTATSD_CMD}" "${DOGSTATSD_PIDFILE}" 5 1
       rm -f "${DOGSTATSD_PIDFILE}"
     fi
-  popd
+  popd >/dev/null
 }
 
 monit_datadog() {
@@ -249,6 +249,6 @@ main() {
     fi
   fi
 }
-main "$@"
 
+main "$@" 2>&1 | tee -a "${DATADOG_DIR}/run-datadog.log"
 
