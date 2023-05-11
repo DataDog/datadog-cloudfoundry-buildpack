@@ -33,4 +33,4 @@ main() {
     check_datadog
 }
 
-main "$@"
+main "$@" 2>&1 | tee -a "${DATADOG_DIR}/check_datadog.log"
