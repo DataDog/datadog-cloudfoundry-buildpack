@@ -7,8 +7,11 @@ BIN_DIR=$(cd $(dirname $0); pwd)
 ROOT_DIR=$(dirname ${BIN_DIR})
 BUILD_DIR=$1
 CACHE_DIR=$2
-ENV_DIR=$3
+DEPS_DIR=$3
+DEPS_IDX=$4
 DATADOG_DIR="${BUILD_DIR}/.datadog"
+
+
 
 mkdir -p "${DATADOG_DIR}/scripts"
 cp "${ROOT_DIR}/lib/scripts/update_agent_config.sh" "${DATADOG_DIR}/scripts/update_agent_config.sh"
@@ -18,7 +21,7 @@ cp "${ROOT_DIR}/lib/scripts/get_tags.py" "${DATADOG_DIR}/scripts/get_tags.py"
 
 echo "Installing Datadog IOT Agent, Dogstatsd and Trace Agent"
 
-mkdir -p "${BUILD_DIR}/.profile.d"
+# mkdir -p "${BUILD_DIR}/.profile.d"
 
 cp -r "${ROOT_DIR}/lib/dist" "${DATADOG_DIR}"
 cp -r "${ROOT_DIR}/lib/conf.d" "${DATADOG_DIR}"
@@ -38,9 +41,10 @@ cp "${ROOT_DIR}/lib/scripts/nc.py" "${DATADOG_DIR}/scripts/nc.py"
 cp "${ROOT_DIR}/lib/scripts/utils.sh" "${DATADOG_DIR}/scripts/utils.sh"
 cp "${ROOT_DIR}/lib/scripts/check_datadog.sh" "${DATADOG_DIR}/scripts/check_datadog.sh"
 
-cp -r "${ROOT_DIR}/lib/test-endpoint.sh" "${BUILD_DIR}/.profile.d/00-test-endpoint.sh" # Make sure this is sourced first
-cp "${ROOT_DIR}/lib/run-datadog.sh" "${BUILD_DIR}/.profile.d/01-run-datadog.sh"
-cp "${ROOT_DIR}/lib/redirect-logs.sh" "${BUILD_DIR}/.profile.d/02-redirect-logs.sh"
+cp "${ROOT_DIR}/lib/entrypoint.sh" "${DATADOG_DIR}/entrypoint.sh"
+cp "${ROOT_DIR}/lib/test-endpoint.sh" "${DATADOG_DIR}/00-test-endpoint.sh" # Make sure this is sourced first
+cp "${ROOT_DIR}/lib/run-datadog.sh" "${DATADOG_DIR}/01-run-datadog.sh"
+cp "${ROOT_DIR}/lib/redirect-logs.sh" "${DATADOG_DIR}/02-redirect-logs.sh"
 
 if [ -f "${DATADOG_DIR}/agent" ]; then
   chmod +x "${DATADOG_DIR}/agent"
@@ -52,10 +56,12 @@ fi
 chmod +x "${DATADOG_DIR}/scripts/utils.sh"
 chmod +x "${DATADOG_DIR}/scripts/check_datadog.sh"
 
+chmod +x "${DATADOG_DIR}/entrypoint.sh"
+
 chmod +x "${DATADOG_DIR}/trace-agent"
-chmod +x "${BUILD_DIR}/.profile.d/00-test-endpoint.sh"
-chmod +x "${BUILD_DIR}/.profile.d/02-redirect-logs.sh"
-chmod +x "${BUILD_DIR}/.profile.d/01-run-datadog.sh"
+chmod +x "${DATADOG_DIR}/00-test-endpoint.sh"
+chmod +x "${DATADOG_DIR}/02-redirect-logs.sh"
+chmod +x "${DATADOG_DIR}/01-run-datadog.sh"
 
 # export DD environment variables
 . "${DATADOG_DIR}/scripts/utils.sh"
@@ -72,3 +78,17 @@ export DD_DOGSTATSD_TAGS
 
 # mark the script as finished, useful to sync the update_agent_config script
 touch "${DATADOG_DIR}/.setup_completed"
+
+
+echo "Running sidecar buildpack"
+
+echo '---
+processes:
+- type: "sidecar_process"
+  command: "/home/vcap/app/.datadog/entrypoint.sh"
+  limits:
+    memory: 164
+  platforms:
+    cloudfoundry:
+      sidecar_for: [ "web", "worker", "task" ]
+' > "$DEPS_DIR"/"$DEPS_IDX"/launch.yml
