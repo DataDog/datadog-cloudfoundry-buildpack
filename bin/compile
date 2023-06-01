@@ -42,6 +42,8 @@ cp -r "${ROOT_DIR}/lib/test-endpoint.sh" "${BUILD_DIR}/.profile.d/00-test-endpoi
 cp "${ROOT_DIR}/lib/run-datadog.sh" "${BUILD_DIR}/.profile.d/01-run-datadog.sh"
 cp "${ROOT_DIR}/lib/redirect-logs.sh" "${BUILD_DIR}/.profile.d/02-redirect-logs.sh"
 
+cp "${ROOT_DIR}/VERSION" "${DATADOG_DIR}/VERSION"
+
 if [ -f "${DATADOG_DIR}/agent" ]; then
   chmod +x "${DATADOG_DIR}/agent"
 fi
