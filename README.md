@@ -42,6 +42,9 @@ env:
 Instrument your application to send custom metrics and APM traces through DogStatsD and the Datadog Trace Agent.
 Download and import the [relevant libraries][6] to send data. To learn more, check out the [DogSatsD documentation][7] and [APM documentation][8].
 
+| Variable | Description|
+| -- | -- |
+| `DD_WAIT_TRACE_AGENT` | Use this option to delay the startup of the application until the Trace Agent is ready. This option is especially useful for Golang apps. |
 
 ### Log collection
 
@@ -69,8 +72,8 @@ The following environment variables are used to configure log collection.
 | -- | -- |
 | `STD_LOG_COLLECTION_PORT` |  Must be used when collecting logs from `stdout`/`stderr`. It redirects the `stdout`/`stderr` stream to the corresponding local port value. |
 | `LOGS_CONFIG` |  Use this option to configure the Agent to listen to a local TCP port and set the value for the `service` and `source` parameters. The port specified in the configuration must be the same as specified in the environment variable `STD_LOG_COLLECTION_PORT`. |
-| `SUPPRESS_DD_AGENT_OUTPUT` | Use this option to see the Datadog agent, Trace agent and DogStatsD logs in the `cf logs`  output |
-| `DD_SPARSE_APP_LOGS` | Use this option to avoid losing log lines when app sparsely writes to STDOUT |
+| `SUPPRESS_DD_AGENT_OUTPUT` | Use this option to see the Datadog agent, Trace agent and DogStatsD logs in the `cf logs`  output. |
+| `DD_SPARSE_APP_LOGS` | Use this option to avoid losing log lines when app sparsely writes to STDOUT. |
 
 
 **Example**
