@@ -75,6 +75,12 @@ if user_tags:
     except Exception as e:
         print("there was an issue parsing the tags in DD_TAGS: {}".format(e))
 
+version_file = "/home/vcap/app/.datadog/VERSION"
+if os.path.exists(version_file):
+        with open(version_file, 'r') as file:
+            buildpack_version = file.read().rstrip()
+            tags.append("buildpack_version:{}".format(buildpack_version))
+
 tags = [ tag.replace(" ", "_") for tag in tags ]
 tags = list(dict.fromkeys(tags))
 
