@@ -235,7 +235,7 @@ main() {
   fi
   
   # wait for the trace agent startup
-  if [ "${WAIT_DD_TRACE_AGENT}" = "true" ]; then
+  if [ "${DD_WAIT_TRACE_AGENT}" = "true" ]; then
     timeout=120
     while ! nc -z localhost 8126 && [ $timeout -ge 0 ]; do
       echo "Waiting for the trace agent to start on 8126..."
