@@ -15,9 +15,9 @@ release_lock() {
 
 write_tags_to_file() {
     # combine DD_TAGS and DD_NODE_AGENT_TAGS into DD_TAGS
-    DD_TAGS=$(LEGACY_TAGS_FORMAT=true python "${DATADOG_DIR}"/scripts/get_tags.py)
+    DD_TAGS=$(LEGACY_TAGS_FORMAT=true ruby "${DATADOG_DIR}"/scripts/get_tags.rb)
     export DD_TAGS
-    DD_DOGSTATSD_TAGS=$(LEGACY_TAGS_FORMAT=true python "${DATADOG_DIR}"/scripts/get_tags.py)
+    DD_DOGSTATSD_TAGS=$(LEGACY_TAGS_FORMAT=true ruby "${DATADOG_DIR}"/scripts/get_tags.rb)
     export DD_DOGSTATSD_TAGS
     export LOGS_CONFIG_DIR="${DATADOG_DIR}/dist/conf.d/logs.d"
     export LOGS_CONFIG

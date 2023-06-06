@@ -204,7 +204,7 @@ find_pid_kill_and_wait() {
 redirect() {
   while kill -0 $$; do
     if [ "${DD_SPARSE_APP_LOGS}" = "true" ]; then
-        python "${DATADOG_DIR}/scripts/nc.py" "${STD_LOG_COLLECTION_PORT}" || sleep 0.5
+        ruby "${DATADOG_DIR}/scripts/nc.rb" "${STD_LOG_COLLECTION_PORT}" || sleep 0.5
     else
         nc localhost "${STD_LOG_COLLECTION_PORT}" || sleep 0.5
     fi

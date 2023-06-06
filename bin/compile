@@ -13,7 +13,7 @@ DATADOG_DIR="${BUILD_DIR}/.datadog"
 mkdir -p "${DATADOG_DIR}/scripts"
 cp "${ROOT_DIR}/lib/scripts/update_agent_config.sh" "${DATADOG_DIR}/scripts/update_agent_config.sh"
 chmod +x "${DATADOG_DIR}/scripts/update_agent_config.sh"
-cp "${ROOT_DIR}/lib/scripts/get_tags.py" "${DATADOG_DIR}/scripts/get_tags.py"
+cp "${ROOT_DIR}/lib/scripts/get_tags.rb" "${DATADOG_DIR}/scripts/get_tags.rb"
 
 
 echo "Installing Datadog IOT Agent, Dogstatsd and Trace Agent"
@@ -31,10 +31,10 @@ fi
 cp "${ROOT_DIR}/lib/trace-agent" "${DATADOG_DIR}/trace-agent"
 
 cp "${ROOT_DIR}/lib/scripts/create_logs_config.rb" "${DATADOG_DIR}/scripts/create_logs_config.rb"
-cp "${ROOT_DIR}/lib/scripts/parse_env_vars.py" "${DATADOG_DIR}/scripts/parse_env_vars.py"
+cp "${ROOT_DIR}/lib/scripts/parse_env_vars.rb" "${DATADOG_DIR}/scripts/parse_env_vars.rb"
 cp "${ROOT_DIR}/lib/scripts/update_tags.rb" "${DATADOG_DIR}/scripts/update_tags.rb"
 
-cp "${ROOT_DIR}/lib/scripts/nc.py" "${DATADOG_DIR}/scripts/nc.py"
+cp "${ROOT_DIR}/lib/scripts/nc.rb" "${DATADOG_DIR}/scripts/nc.rb"
 cp "${ROOT_DIR}/lib/scripts/utils.sh" "${DATADOG_DIR}/scripts/utils.sh"
 cp "${ROOT_DIR}/lib/scripts/check_datadog.sh" "${DATADOG_DIR}/scripts/check_datadog.sh"
 
@@ -64,12 +64,12 @@ chmod +x "${BUILD_DIR}/.profile.d/01-run-datadog.sh"
 dd_export_env "${DATADOG_DIR}/.raw_datadog_env"
 
 # sanitize env vars and export a new a env file
-python "${DATADOG_DIR}/scripts/parse_env_vars.py" "${DATADOG_DIR}/.raw_datadog_env" "${DATADOG_DIR}/.datadog_env"
+ruby "${DATADOG_DIR}/scripts/parse_env_vars.rb" "${DATADOG_DIR}/.raw_datadog_env" "${DATADOG_DIR}/.datadog_env"
 
 # export DD_TAGS for ddtrace
-DD_TAGS=$(python "${DATADOG_DIR}"/scripts/get_tags.py)
+DD_TAGS=$(ruby "${DATADOG_DIR}"/scripts/get_tags.rb)
 export DD_TAGS
-DD_DOGSTATSD_TAGS=$(python "${DATADOG_DIR}"/scripts/get_tags.py)
+DD_DOGSTATSD_TAGS=$(ruby "${DATADOG_DIR}"/scripts/get_tags.rb)
 export DD_DOGSTATSD_TAGS
 
 # mark the script as finished, useful to sync the update_agent_config script
