@@ -72,7 +72,7 @@ api_key:
 # By default, uses the conf.d folder located in the agent configuration folder.
 # confd_path:
 
-# Additional path where to search for Python checks
+# Additional path where to search for ruby checks
 # By default, uses the checks.d folder located in the agent configuration folder.
 # additional_checksd:
 
