@@ -11,6 +11,7 @@ DD_NODE_AGENT_TAGS = ENV.fetch("DD_NODE_AGENT_TAGS", "")
 DD_UPDATE_SCRIPT_WARMUP = ENV.fetch("DD_UPDATE_SCRIPT_WARMUP", "180")
 
 # file paths
+version_file = File.join(DATADOG_DIR, "VERSION")
 timestamp_file = File.join(DATADOG_DIR, "startup_time")
 node_agent_tags_file = File.join(DATADOG_DIR, "node_agent_tags.txt")
 
@@ -34,6 +35,10 @@ end
 
 if ! DD_TAGS.empty?
     tags.concat(sanitize(DD_TAGS, " "))
+end
+
+if File.exists?(version_file)
+    tags.concat("buildpack_version:" + File.read(version_file).strip)
 end
 
 # if the script is executed during the warmup period, merge incoming tags with the existing tags
