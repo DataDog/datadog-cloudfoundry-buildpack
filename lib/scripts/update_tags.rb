@@ -38,7 +38,7 @@ if ! DD_TAGS.empty?
 end
 
 if File.exists?(version_file)
-    tags.concat("buildpack_version:" + File.read(version_file).strip)
+    tags.push("buildpack_version:" + File.read(version_file).strip)
 end
 
 # if the script is executed during the warmup period, merge incoming tags with the existing tags
