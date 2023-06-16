@@ -210,12 +210,16 @@ monit_datadog() {
       done
       exit
     elif [ -f "${DATADOG_DIR}"/tags_updated ]; then
-      echo "tags_updated found, stopping datadog agents"
-      stop_datadog
-      echo "tags_updated found, starting datadog agents"
-      start_datadog
-      echo "deleting tags_updated"
-      rm -f "${DATADOG_DIR}"/tags_updated # TODO: check for race conditions
+      exec 8> "${LOCKFILE}"
+       if flock -x -n 8; then
+        echo "tags_updated found, stopping datadog agents"
+        stop_datadog
+        echo "tags_updated found, starting datadog agents"
+        start_datadog
+        echo "deleting tags_updated"
+        rm -f "${DATADOG_DIR}"/tags_updated # TODO: check for race conditions
+        exec 8>&-
+      fi
     fi
     sleep 1
   done
@@ -224,13 +228,13 @@ monit_datadog() {
 main() {
   if [ -z "${DD_API_KEY}" ]; then
     echo "Datadog API Key not set, not starting Datadog"
+    exit 0
   else
     exec 9> "${LOCKFILE}" || exit 1
     if flock -x -n 9; then
       echo "starting datadog"
       start_datadog
       monit_datadog &
-      exec 9>&-
     fi
   fi
   
