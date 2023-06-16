@@ -5,7 +5,7 @@
 * [Added] Add `buildpack_version` tag to logs, traces and metrics. See [#166](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/166). A `VERSION` file is also added to the root of the `DATADOG_DIR` folder.
 * [Added] Improve debugging logs. See [#163](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/163).
 * [Added] Add ability to wait for the trace agent startup before application start. See [#158](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/158).
-* [Fixed] Fix Container tags detection in Traces when CAPI Metadata Collection is disabled . See [#156](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/156).
+* [Fixed] Fix Container tags detection in Traces when CAPI Metadata Collection is disabled. See [#156](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/156).
 
 ## 4.35.1 / 2023-01-26
 
