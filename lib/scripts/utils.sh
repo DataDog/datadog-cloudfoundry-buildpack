@@ -216,7 +216,7 @@ redirect() {
             \"title\": \"Resetting buildpack log redirection\",
             \"text\": \"TCP socket on port ${STD_LOG_COLLECTION_PORT} for log redirection closed. Restarting it.\",
             \"priority\": \"normal\",
-            \"tags\": $(LEGACY_TAGS_FORMAT=true python ${DATADOG_DIR}/scripts/get_tags.py),
+            \"tags\": $(LEGACY_TAGS_FORMAT=true ruby ${DATADOG_DIR}/scripts/get_tags.rb),
             \"alert_type\": \"info\"
       }" "${DD_API_SITE}v1/events?api_key=${DD_API_KEY}"
     fi
