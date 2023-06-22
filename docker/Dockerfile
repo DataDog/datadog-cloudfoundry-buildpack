@@ -5,7 +5,7 @@ FROM debian:9
 ENV DATADOG_DIR /datadog
 
 # This is a setting for a simple flask app
-ENV FLASK_APP /app/app.rb
+ENV FLASK_APP /app/app.py
 ENV DATADOG_ENV cloudfoundry_docker_example
 
 # install python and pip, then clean up what's left over
@@ -27,11 +27,11 @@ COPY ./docker/app/requirements.txt /app/requirements.txt
 RUN pip install -r /app/requirements.txt
 
 # Add the flask app itself
-COPY ./docker/app/app.rb /app/app.rb
+COPY ./docker/app/app.py /app/app.py
 
 # Copy the entrypoint and the flask app
 COPY ./docker/entrypoint.sh entrypoint.sh
 
 ENTRYPOINT ["bash", "/entrypoint.sh"]
 
-CMD ["ddtrace-run", "python", "/app/app.rb"]
+CMD ["ddtrace-run", "python", "/app/app.py"]
