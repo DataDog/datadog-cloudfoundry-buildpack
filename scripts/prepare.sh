@@ -10,7 +10,7 @@ IOT_AGENT_DOWNLOAD_URL=${DOWNLOAD_BASE_URL}"iot-agent_"
 DOGSTATSD_DOWNLOAD_URL=${DOWNLOAD_BASE_URL}"dogstatsd_"
 DOWNLOAD_URL_TAIL="-1_amd64.deb"
 
-AGENT_DEFAULT_VERSION="7.41.1"
+AGENT_DEFAULT_VERSION="7.45.0"
 VERSION=${VERSION:-${AGENT_DEFAULT_VERSION}}
 
 TMPDIR=$(mktemp -d)
@@ -55,7 +55,7 @@ function cleanup() {
 }
 
 function main() {
-  trap cleanup EXIT 
+  trap cleanup EXIT
 
   if [ ! -f ${SRCDIR}/lib/dogstatsd ] || [ ! -f ${SRCDIR}/lib/trace-agent ]; then
     DOWNLOAD="true"
