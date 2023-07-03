@@ -7,6 +7,14 @@
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 LOCK="${DATADOG_DIR}/update_agent_config.lock"
 
+if [ -f  "${DATADOG_DIR}/.sourced_datadog_env" ]; then
+    echo "sourcing .sourced_datadog_env file"
+    safe_source "${DATADOG_DIR}/.sourced_datadog_env"
+elif [ -f  "${DATADOG_DIR}/.datadog_env" ]; then
+    echo "sourcing .datadog_env file"
+    safe_source "${DATADOG_DIR}/.datadog_env"
+fi
+
 # import utils function such as log_message
 release_lock() {
     log_info "releasing lock '${LOCK}'"

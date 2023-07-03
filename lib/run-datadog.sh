@@ -10,6 +10,15 @@ DD_ENABLE_CAPI_METADATA_COLLECTION="${DD_ENABLE_CAPI_METADATA_COLLECTION:-false}
 LOCKFILE="${DATADOG_DIR}/lock"
 FIRST_RUN="${FIRST_RUN:-true}"
 USER_TAGS="${DD_TAGS}"
+
+if [ -f  "${DATADOG_DIR}/.sourced_datadog_env" ]; then
+  echo "sourcing .sourced_datadog_env file"
+  safe_source "${DATADOG_DIR}/.sourced_datadog_env"
+elif [ -f  "${DATADOG_DIR}/.datadog_env" ]; then
+  echo "sourcing .datadog_env file"
+  safe_source "${DATADOG_DIR}/.datadog_env"
+fi
+
 DD_TAGS=$(ruby "${DATADOG_DIR}"/scripts/get_tags.rb)
 export DD_TAGS
 DD_DOGSTATSD_TAGS=$(ruby "${DATADOG_DIR}"/scripts/get_tags.rb)
