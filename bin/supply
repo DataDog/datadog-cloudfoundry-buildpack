@@ -9,12 +9,27 @@ BUILD_DIR=$1
 CACHE_DIR=$2
 ENV_DIR=$3
 DATADOG_DIR="${BUILD_DIR}/.datadog"
+RUBY_DIR="$DATADOG_DIR/tmp/ruby"
+RUBY_TAR="ruby_3.0.5_linux_x64_cflinuxfs3_098393c3.tgz"
 
 mkdir -p "${DATADOG_DIR}/scripts"
 cp "${ROOT_DIR}/lib/scripts/update_agent_config.sh" "${DATADOG_DIR}/scripts/update_agent_config.sh"
 chmod +x "${DATADOG_DIR}/scripts/update_agent_config.sh"
 cp "${ROOT_DIR}/lib/scripts/get_tags.rb" "${DATADOG_DIR}/scripts/get_tags.rb"
 
+cp $BIN_DIR/install-ruby $DATADOG_DIR/install-ruby
+chmod +x "$DATADOG_DIR/install-ruby"
+
+
+if ! which ruby > /dev/null; then
+  echo "Preparing to install Ruby"
+  mkdir -p "${RUBY_DIR}"
+
+  echo "Installing Ruby"
+  tar -xzf $RUBY_TAR -C "$RUBY_DIR"
+
+  export PATH="$RUBY_DIR/bin:${PATH:-}" 
+fi
 
 echo "Installing Datadog IOT Agent, Dogstatsd and Trace Agent"
 
