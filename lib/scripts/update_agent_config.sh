@@ -7,7 +7,11 @@
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 LOCK="${DATADOG_DIR}/update_agent_config.lock"
 
-RUBY_BIN="/home/vcap/app/.datadog/tmp/ruby/bin/ruby"
+if ! which ruby > /dev/null; then
+  RUBY_BIN="/home/vcap/app/.datadog/tmp/ruby/bin/ruby"
+else
+  RUBY_BIN=$(which ruby)
+fi
 
 if [ -f  "${DATADOG_DIR}/.sourced_datadog_env" ]; then
     echo "sourcing .sourced_datadog_env file"

@@ -4,7 +4,11 @@
 # This product includes software developed at Datadog (https://www.datadoghq.com/).
 # Copyright 2017-Present Datadog, Inc.
 
-RUBY_BIN="/home/vcap/app/.datadog/tmp/ruby/bin/ruby"
+if ! which ruby > /dev/null; then
+  RUBY_BIN="/home/vcap/app/.datadog/tmp/ruby/bin/ruby"
+else
+  RUBY_BIN=$(which ruby)
+fi
 
 unset DD_LOGS_VALID_ENDPOINT
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"

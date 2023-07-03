@@ -11,7 +11,11 @@ LOCKFILE="${DATADOG_DIR}/lock"
 FIRST_RUN="${FIRST_RUN:-true}"
 USER_TAGS="${DD_TAGS}"
 
-RUBY_BIN="/home/vcap/app/.datadog/tmp/ruby/bin/ruby"
+if ! which ruby > /dev/null; then
+  RUBY_BIN="/home/vcap/app/.datadog/tmp/ruby/bin/ruby"
+else
+  RUBY_BIN=$(which ruby)
+fi
 
 if [ -f  "${DATADOG_DIR}/.sourced_datadog_env" ]; then
   echo "sourcing .sourced_datadog_env file"
