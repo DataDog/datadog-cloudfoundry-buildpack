@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-
-set -e
-
-RUBY_DIR=/tmp/ruby
-mkdir -p $RUBY_DIR
-curl -LSs "https://buildpacks.cloudfoundry.org/dependencies/ruby/ruby_3.0.5_linux_x64_cflinuxfs3_098393c3.tgz" | tar xz -C "$RUBY_DIR"
-export PATH="$RUBY_DIR/bin:${PATH:-}"
