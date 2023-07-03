@@ -9,7 +9,9 @@ BUILD_DIR=$1
 CACHE_DIR=$2
 ENV_DIR=$3
 DATADOG_DIR="${BUILD_DIR}/.datadog"
+
 RUBY_DIR="$DATADOG_DIR/tmp/ruby"
+RUBY_BIN="$RUBY_DIR/bin/ruby"
 RUBY_TAR="$BIN_DIR/ruby_3.0.5_linux_x64_cflinuxfs3_098393c3.tgz"
 
 mkdir -p "${DATADOG_DIR}/scripts"
@@ -22,7 +24,7 @@ if ! which ruby > /dev/null; then
   mkdir -p "${RUBY_DIR}"
 
   echo "Installing Ruby"
-  cp "${RUBY_TAR}" /home/vcap/app/.datadog
+  cp "${RUBY_TAR}" /home/vcap/app/.datadog/ruby.tgz
   tar -xzf "${RUBY_TAR}" -C "${RUBY_DIR}"
 
   export PATH="$RUBY_DIR/bin:${PATH:-}" 
@@ -76,12 +78,12 @@ chmod +x "${BUILD_DIR}/.profile.d/01-run-datadog.sh"
 dd_export_env "${DATADOG_DIR}/.raw_datadog_env"
 
 # sanitize env vars and export a new a env file
-ruby "${DATADOG_DIR}/scripts/parse_env_vars.rb" "${DATADOG_DIR}/.raw_datadog_env" "${DATADOG_DIR}/.datadog_env"
+$RUBY_BIN "${DATADOG_DIR}/scripts/parse_env_vars.rb" "${DATADOG_DIR}/.raw_datadog_env" "${DATADOG_DIR}/.datadog_env"
 
 # export DD_TAGS for ddtrace
-DD_TAGS=$(ruby "${DATADOG_DIR}"/scripts/get_tags.rb)
+DD_TAGS=$($RUBY_BIN "${DATADOG_DIR}"/scripts/get_tags.rb)
 export DD_TAGS
-DD_DOGSTATSD_TAGS=$(ruby "${DATADOG_DIR}"/scripts/get_tags.rb)
+DD_DOGSTATSD_TAGS=$($RUBY_BIN "${DATADOG_DIR}"/scripts/get_tags.rb)
 export DD_DOGSTATSD_TAGS
 
 # mark the script as finished, useful to sync the update_agent_config script

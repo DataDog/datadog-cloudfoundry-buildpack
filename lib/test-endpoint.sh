@@ -4,6 +4,8 @@
 # This product includes software developed at Datadog (https://www.datadoghq.com/).
 # Copyright 2017-Present Datadog, Inc.
 
+RUBY_BIN="/home/vcap/app/.datadog/tmp/ruby/bin/ruby"
+
 unset DD_LOGS_VALID_ENDPOINT
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 DD_EU_API_SITE="https://api.datadoghq.eu/api/"
@@ -81,7 +83,7 @@ if [ "${DD_LOGS_ENABLED}" = "true" ] && [ -n "${DD_LOGS_CONFIG_LOGS_DD_URL}" ] &
             \"title\": \"Log endpoint cannot be reached - Log collection not started\",
             \"text\": \"Could not establish a connection to ${DD_LOGS_CONFIG_LOGS_DD_URL} after 5 seconds. Log collection has not been started.\",
             \"priority\": \"normal\",
-            \"tags\": $(ruby "${DATADOG_DIR}"/scripts/get_tags.rb),
+            \"tags\": $($RUBY_BIN"${DATADOG_DIR}"/scripts/get_tags.rb),
             \"alert_type\": \"error\"
       }" "${DD_API_SITE}v1/events?api_key=${DD_API_KEY}"
   else
