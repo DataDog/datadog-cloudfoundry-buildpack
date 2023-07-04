@@ -17,14 +17,6 @@ else
   RUBY_BIN=$(which ruby)
 fi
 
-if [ -f  "${DATADOG_DIR}/.sourced_datadog_env" ]; then
-  echo "sourcing .sourced_datadog_env file"
-  safe_source "${DATADOG_DIR}/.sourced_datadog_env"
-elif [ -f  "${DATADOG_DIR}/.datadog_env" ]; then
-  echo "sourcing .datadog_env file"
-  safe_source "${DATADOG_DIR}/.datadog_env"
-fi
-
 DD_TAGS=$($RUBY_BIN"${DATADOG_DIR}"/scripts/get_tags.rb)
 export DD_TAGS
 DD_DOGSTATSD_TAGS=$($RUBY_BIN"${DATADOG_DIR}"/scripts/get_tags.rb)
@@ -248,7 +240,7 @@ main() {
       exec 9>&-
     fi
   fi
-  
+
   # wait for the trace agent startup
   if [ "${DD_WAIT_TRACE_AGENT}" = "true" ]; then
     timeout=120

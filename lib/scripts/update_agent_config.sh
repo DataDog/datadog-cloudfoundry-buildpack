@@ -13,14 +13,6 @@ else
   RUBY_BIN=$(which ruby)
 fi
 
-if [ -f  "${DATADOG_DIR}/.sourced_datadog_env" ]; then
-    echo "sourcing .sourced_datadog_env file"
-    safe_source "${DATADOG_DIR}/.sourced_datadog_env"
-elif [ -f  "${DATADOG_DIR}/.datadog_env" ]; then
-    echo "sourcing .datadog_env file"
-    safe_source "${DATADOG_DIR}/.datadog_env"
-fi
-
 # import utils function such as log_message
 release_lock() {
     log_info "releasing lock '${LOCK}'"
@@ -72,7 +64,7 @@ main() {
     done
 
     log_info "acquired lock '${LOCK}'"
-   
+
     # ensures the lock is released on exit
     trap release_lock INT TERM EXIT
 
@@ -84,10 +76,10 @@ main() {
         sleep 2
     done
 
-    timeout 300s "${DATADOG_DIR}/scripts/check_datadog.sh" 
+    timeout 300s "${DATADOG_DIR}/scripts/check_datadog.sh"
     exit_code=$?
-    
-    # verify that check_datadog exited successfully 
+
+    # verify that check_datadog exited successfully
     if [ ${exit_code} -ne  0 ]; then
         log_error "could not find agent, aborting update script!"
         exit ${exit_code}
