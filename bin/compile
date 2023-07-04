@@ -27,7 +27,9 @@ if ! which ruby > /dev/null; then
   cp "${RUBY_TAR}" /home/vcap/app/.datadog/ruby.tgz
   tar -xzf "${RUBY_TAR}" -C "${RUBY_DIR}"
 
-  export PATH="$RUBY_DIR/bin:${PATH:-}" 
+  export PATH="$RUBY_DIR/bin:${PATH:-}"
+else
+  RUBY_BIN=$(which ruby)
 fi
 
 echo "Installing Datadog IOT Agent, Dogstatsd and Trace Agent"
