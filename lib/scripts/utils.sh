@@ -65,9 +65,6 @@ dd_export_env() {
   if [ -n "${DD_UPDATE_SCRIPT_LOG_LEVEL}" ]; then
     echo "export DD_UPDATE_SCRIPT_LOG_LEVEL='${DD_UPDATE_SCRIPT_LOG_LEVEL}'" >> "${env_file}"
   fi
-  if [ -n "${PATH}" ]; then
-    echo "export PATH='${PATH}'" >> "${env_file}"
-  fi
 }
 
 safe_source() {
