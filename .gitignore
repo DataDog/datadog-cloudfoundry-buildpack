@@ -4,6 +4,7 @@
 lib/dogstatsd
 lib/agent
 lib/trace-agent
+lib/ruby_3.0.5.tgz
 venv
 tmp
 .DS_Store
