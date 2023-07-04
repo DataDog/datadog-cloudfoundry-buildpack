@@ -47,9 +47,9 @@ if !logs_config.nil?
 
   if !tags_list.empty?
     tags_list = tags_list.uniq
-    config["logs"][0]["tags"] = tags_list
+    config["logs"].each { |conf| conf["tags"] = tags_list }
   end
-  
+
 else
   puts "ERROR: `LOGS_CONFIG` must be set in order to collect logs. For more info, see: https://github.com/DataDog/datadog-cloudfoundry-buildpack#log-collection"
   exit(1)
