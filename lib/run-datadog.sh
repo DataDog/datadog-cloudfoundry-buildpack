@@ -12,10 +12,12 @@ FIRST_RUN="${FIRST_RUN:-true}"
 USER_TAGS="${DD_TAGS}"
 
 if ! which ruby > /dev/null; then
-  RUBY_BIN="/home/vcap/app/.datadog/tmp/ruby/bin/ruby"
+  RUBY_BIN="/home/vcap/app/.datadog/ruby"
 else
   RUBY_BIN=$(which ruby)
 fi
+
+RUBY_BIN=ruby
 
 DD_TAGS=$($RUBY_BIN"${DATADOG_DIR}"/scripts/get_tags.rb)
 export DD_TAGS

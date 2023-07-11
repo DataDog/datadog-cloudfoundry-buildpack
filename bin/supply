@@ -7,11 +7,12 @@ BIN_DIR=$(cd $(dirname $0); pwd)
 ROOT_DIR=$(dirname ${BIN_DIR})
 BUILD_DIR=$1
 CACHE_DIR=$2
-ENV_DIR=$3
+DEPS_DIR=$3
+INDEX=$4
 DATADOG_DIR="${BUILD_DIR}/.datadog"
 
-RUBY_DIR="$DATADOG_DIR/tmp/ruby"
-RUBY_BIN="$RUBY_DIR/bin/ruby"
+RUBY_DIR="$DEPS_DIR/$INDEX"
+RUBY_BIN="ruby"
 
 mkdir -p "${DATADOG_DIR}/scripts"
 cp "${ROOT_DIR}/lib/scripts/update_agent_config.sh" "${DATADOG_DIR}/scripts/update_agent_config.sh"
@@ -23,13 +24,14 @@ if [ -f "${ROOT_DIR}/lib/ruby_3.0.5.tgz" ]; then
 fi
 
 if ! which ruby > /dev/null; then
-  echo "Preparing to install Ruby"
+  echo "Preparing to install Ruby in $RUBY_DIR"
   mkdir -p "${RUBY_DIR}"
 
   echo "Installing Ruby"
-  tar -xzf "${DATADOG_DIR}/ruby_3.0.5.tgz" -C "${RUBY_DIR}"
+  tar -xzf "${DATADOG_DIR}/ruby_3.0.5.tgz" -C "${RUBY_DIR}" && echo "Ruby Install finished"
+  export PATH="$RUBY_DIR/bin:$PATH"
 else
-  RUBY_BIN=$(which ruby)
+  RUBY_BIN=ruby
 fi
 
 echo "Installing Datadog IOT Agent, Dogstatsd and Trace Agent"
@@ -78,6 +80,9 @@ chmod +x "${BUILD_DIR}/.profile.d/01-run-datadog.sh"
 # export DD environment variables
 . "${DATADOG_DIR}/scripts/utils.sh"
 dd_export_env "${DATADOG_DIR}/.raw_datadog_env"
+
+
+echo ">>>> RUBY_BIN=$RUBY_BIN"
 
 # sanitize env vars and export a new a env file
 $RUBY_BIN "${DATADOG_DIR}/scripts/parse_env_vars.rb" "${DATADOG_DIR}/.raw_datadog_env" "${DATADOG_DIR}/.datadog_env"

@@ -23,11 +23,17 @@ export DOGSTATSD_CMD="./dogstatsd start --cfgpath dist/"
 # the logging level of the update_agent_script.log file
 export DD_UPDATE_SCRIPT_LOG_LEVEL="${DD_UPDATE_SCRIPT_LOG_LEVEL:-"INFO"}"
 
-if ! which ruby > /dev/null; then
-  export RUBY_BIN="/home/vcap/app/.datadog/tmp/ruby/bin/ruby"
-else
-  export RUBY_BIN=$(which ruby)
-fi
+
+setup_ruby() {
+  if ! which ruby > /dev/null; then
+    export RUBY_BIN="/home/vcap/app/.datadog/ruby"
+  else
+    export RUBY_BIN=$(which ruby)
+  fi
+
+  RUBY_BIN=ruby
+}
+
 
 dd_export_env() {
   local env_file="$1"

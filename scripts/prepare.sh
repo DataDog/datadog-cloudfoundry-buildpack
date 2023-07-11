@@ -51,7 +51,7 @@ function download_dogstatsd() {
 }
 
 function download_ruby() {
-  curl -LS "https://buildpacks.cloudfoundry.org/dependencies/ruby/ruby_3.0.5_linux_x64_cflinuxfs3_098393c3.tgz" -o  ${SRCDIR}/lib/ruby_3.0.5.tgz
+  curl -LS "https://buildpacks.cloudfoundry.org/dependencies/ruby/ruby_3.0.5_linux_x64_cflinuxfs4_098393c3.tgz" -o  ${SRCDIR}/lib/ruby_3.0.5.tgz
 }
 
 function cleanup() {

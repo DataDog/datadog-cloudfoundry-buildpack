@@ -8,10 +8,12 @@ DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 LOCK="${DATADOG_DIR}/update_agent_config.lock"
 
 if ! which ruby > /dev/null; then
-  RUBY_BIN="/home/vcap/app/.datadog/tmp/ruby/bin/ruby"
+  RUBY_BIN="/home/vcap/app/.datadog/ruby"
 else
   RUBY_BIN=$(which ruby)
 fi
+
+RUBY_BIN=ruby
 
 # import utils function such as log_message
 release_lock() {

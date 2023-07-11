@@ -5,10 +5,12 @@
 # Copyright 2017-Present Datadog, Inc.
 
 if ! which ruby > /dev/null; then
-  RUBY_BIN="/home/vcap/app/.datadog/tmp/ruby/bin/ruby"
+  RUBY_BIN="/home/vcap/app/.datadog/ruby"
 else
   RUBY_BIN=$(which ruby)
 fi
+
+RUBY_BIN=ruby
 
 unset DD_LOGS_VALID_ENDPOINT
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
