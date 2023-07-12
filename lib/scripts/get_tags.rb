@@ -4,19 +4,18 @@
 
 require 'json'
 
-# if DD_TAGS[0] is comma or space, then set is as delimiter
-# else continue as usual
-
 def parse_tags(tags)
   delimiter = ','
   delimiter = ' ' if tags.count(' ') > tags.count(',')
-  if len(os.environ.get("DD_TAGS_SEP")) > 0:
-    delimiter = os.environ.get("DD_TAGS_SEP")
-  begin
-    return tags.split(delimiter)
+
+  if ENV["DD_TAGS_SEP"].is_set?
+    delimiter = ENV["DD_TAGS_SEP"]
+  end
+
+  return tags.split(delimiter)
+
   rescue Exception => e
     puts "there was an issue parsing the tags in #{tags.__name__}: #{e}"
-  end
 end
 
 vcap_app_string = ENV['VCAP_APPLICATION'] || '{}'
