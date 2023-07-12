@@ -2,6 +2,7 @@
 
 echo "-----> DatadogBuildpack/compile"
 
+
 BIN_DIR=$(cd $(dirname $0); pwd)
 ROOT_DIR=$(dirname ${BIN_DIR})
 BUILD_DIR=$1
@@ -30,9 +31,11 @@ fi
 cp "${ROOT_DIR}/lib/trace-agent" "${DATADOG_DIR}/trace-agent"
 
 cp "${ROOT_DIR}/lib/scripts/create_logs_config.rb" "${DATADOG_DIR}/scripts/create_logs_config.rb"
-cp "${ROOT_DIR}/lib/scripts/parse_env_vars.rb" "${DATADOG_DIR}/scripts/parse_env_vars.rb"
+cp "${ROOT_DIR}/lib/scripts/update_datadog_config.rb" "${DATADOG_DIR}/scripts/update_datadog_config.rb"
+
 cp "${ROOT_DIR}/lib/scripts/update_tags.rb" "${DATADOG_DIR}/scripts/update_tags.rb"
 
+cp "${ROOT_DIR}/lib/scripts/parse_env_vars.rb" "${DATADOG_DIR}/scripts/parse_env_vars.rb"
 cp "${ROOT_DIR}/lib/scripts/nc.rb" "${DATADOG_DIR}/scripts/nc.rb"
 cp "${ROOT_DIR}/lib/scripts/utils.sh" "${DATADOG_DIR}/scripts/utils.sh"
 cp "${ROOT_DIR}/lib/scripts/check_datadog.sh" "${DATADOG_DIR}/scripts/check_datadog.sh"
@@ -68,10 +71,7 @@ dd_export_env "${DATADOG_DIR}/.raw_datadog_env"
 ruby "${DATADOG_DIR}/scripts/parse_env_vars.rb" "${DATADOG_DIR}/.raw_datadog_env" "${DATADOG_DIR}/.datadog_env"
 
 # export DD_TAGS for ddtrace
-DD_TAGS=$(ruby "${DATADOG_DIR}"/scripts/get_tags.rb)
-export DD_TAGS
-DD_DOGSTATSD_TAGS=$(ruby "${DATADOG_DIR}"/scripts/get_tags.rb)
-export DD_DOGSTATSD_TAGS
+export DD_TAGS=$(ruby "${DATADOG_DIR}"/scripts/get_tags.rb)
 
 # mark the script as finished, useful to sync the update_agent_config script
 touch "${DATADOG_DIR}/.setup_completed"

@@ -10,6 +10,8 @@ require 'json'
 def parse_tags(tags)
   delimiter = ','
   delimiter = ' ' if tags.count(' ') > tags.count(',')
+  if len(os.environ.get("DD_TAGS_SEP")) > 0:
+    delimiter = os.environ.get("DD_TAGS_SEP")
   begin
     return tags.split(delimiter)
   rescue Exception => e
@@ -85,9 +87,4 @@ end
 
 tags = tags.map { |tag| tag.gsub(' ', '_') }.uniq
 
-legacy_tags = ENV['LEGACY_TAGS_FORMAT'] || false
-if legacy_tags
-  puts tags.join(',')
-else
-  puts tags.join(' ')
-end
+puts tags.join(',')

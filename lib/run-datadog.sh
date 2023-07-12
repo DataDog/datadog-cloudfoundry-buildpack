@@ -9,11 +9,9 @@ SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 DD_ENABLE_CAPI_METADATA_COLLECTION="${DD_ENABLE_CAPI_METADATA_COLLECTION:-false}"
 LOCKFILE="${DATADOG_DIR}/lock"
 FIRST_RUN="${FIRST_RUN:-true}"
-USER_TAGS="${DD_TAGS}"
-DD_TAGS=$(ruby "${DATADOG_DIR}"/scripts/get_tags.rb)
-export DD_TAGS
-DD_DOGSTATSD_TAGS=$(ruby "${DATADOG_DIR}"/scripts/get_tags.rb)
-export DD_DOGSTATSD_TAGS
+
+export DD_TAGS=$(ruby "${DATADOG_DIR}/scripts/get_tags.rb")
+echo "${DD_TAGS}" > "${DATADOG_DIR}/.dd_tags.txt"
 
 source "${DATADOG_DIR}/scripts/utils.sh"
 
@@ -110,14 +108,14 @@ setup_datadog() {
       sed -i "s~log_file: AGENT_LOG_FILE~log_file: ${DD_LOG_FILE}~" dist/datadog.yaml
     fi
   popd
+
+  # update datadog config
+  ruby "${DATADOG_DIR}/scripts/update_datadog_config.rb"
 }
 
 start_datadog() {
-  DD_TAGS="${USER_TAGS}"
-  DD_TAGS=$(ruby "${DATADOG_DIR}"/scripts/get_tags.rb)
-  export DD_TAGS
-  DD_DOGSTATSD_TAGS=$(ruby "${DATADOG_DIR}"/scripts/get_tags.rb)
-  export DD_DOGSTATSD_TAGS
+  export DD_TAGS=$(ruby "${DATADOG_DIR}/scripts/get_tags.rb")
+  
   pushd "${DATADOG_DIR}"
     export DD_LOG_FILE="${DATADOG_DIR}/dogstatsd.log"
     export DD_API_KEY

@@ -14,11 +14,8 @@ release_lock() {
 }
 
 write_tags_to_file() {
-    # combine DD_TAGS and DD_NODE_AGENT_TAGS into DD_TAGS
-    DD_TAGS=$(LEGACY_TAGS_FORMAT=true ruby "${DATADOG_DIR}"/scripts/get_tags.rb)
-    export DD_TAGS
-    DD_DOGSTATSD_TAGS=$(LEGACY_TAGS_FORMAT=true ruby "${DATADOG_DIR}"/scripts/get_tags.rb)
-    export DD_DOGSTATSD_TAGS
+    export DD_TAGS=$(ruby "${DATADOG_DIR}"/scripts/get_tags.rb)
+    
     export LOGS_CONFIG_DIR="${DATADOG_DIR}/dist/conf.d/logs.d"
     export LOGS_CONFIG
 
@@ -39,7 +36,7 @@ write_tags_to_file() {
     # log DD_TAGS and DD_NODE_AGENT_TAGS values
     log_debug "node_agent_tags.txt=$(cat "${DATADOG_DIR}"/node_agent_tags.txt)"
     log_debug "(AFTER)DD_NODE_AGENT_TAGS=${DD_NODE_AGENT_TAGS}"
-    log_debug "DD_DOGSTATSD_TAGS=${DD_DOGSTATSD_TAGS}"
+    log_debug "DD_TAGS=${DD_TAGS}"
 }
 
 main() {
