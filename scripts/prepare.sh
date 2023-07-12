@@ -61,11 +61,11 @@ function main() {
     DOWNLOAD="true"
   elif [ ! -f ${SRCDIR}/lib/agent ]; then
     DOWNLOAD="true"
-  elif [ -n "${REFRESH_ASSETS}" ]; then
+  elif [ -n "${REFRESH_ASSETS:-}" ]; then
     DOWNLOAD="true"
   fi
 
-  if [ -n "${DOWNLOAD}" ]; then
+  if [ -n "${DOWNLOAD:-}" ]; then
     # Delete the old ones
     rm -f ${SRCDIR}/lib/agent
     rm -f ${SRCDIR}/lib/dogstatsd
