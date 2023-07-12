@@ -40,7 +40,7 @@ if node_agent_tags
   node_agent_tags = node_agent_tags.gsub(",\"", ";\"")
   all_node_agent_tags = parse_tags(node_agent_tags)
   if !all_node_agent_tags.empty?
-    tags += all_node_agent_tags.select { |tag| !tag.include?(';') }
+    tags += all_node_agent_tags.keep_if { |tag| !tag.include?(';') }
   end
 end
 
@@ -82,7 +82,7 @@ end
 
 version_file = '/home/vcap/app/.datadog/VERSION'
 if File.exist?(version_file)
-  buildpack_version = File.open(version_file, 'r') { |file| file.read.chomp }
+  buildpack_version = File.open(version_file, 'r') { |file| file.read.chomp.trim }
   tags << "buildpack_version:#{buildpack_version}"
 end
 

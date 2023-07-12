@@ -27,7 +27,7 @@ end
 
 def get_tags()
   dd_tags = File.file?(DD_TAGS_FILE) ? File.read(DD_TAGS_FILE) : nil
-  dd_node_agent_tags = ENV['DD_NODE_AGENT_TAGS'] || (File.file?(NODE_AGENT_TAGS_FILE) ? File.read(NODE_AGENT_TAGS_FILE) : nil)
+  dd_node_agent_tags = ENV['DD_NODE_AGENT_TAGS'] || (File.file?(NODE_AGENT_TAGS_FILE) ? File.read(NODE_AGENT_TAGS_FILE).chomp.trim : nil)
 
   tags = []
 
@@ -50,8 +50,8 @@ def main
 
     data = read_yaml_file(file_path)
 
-    data['tags'] = tags
-    data['dogstatsd_tags'] = tags
+    data['tags'] = tags.to_yaml
+    data['dogstatsd_tags'] = tags.to_yaml
 
     write_yaml_file(file_path, data)
   end
