@@ -28,9 +28,7 @@ write_tags_to_file() {
             mkdir -p "${LOGS_CONFIG_DIR}"
             log_info "Updating logs config"
             ruby "${DATADOG_DIR}/scripts/create_logs_config.rb"
-            ruby "${DATADOG_DIR}/scripts/update_datadog_config.rb"
         fi
-
         # update datadog config
         ruby "${DATADOG_DIR}/scripts/update_datadog_config.rb"
     fi
