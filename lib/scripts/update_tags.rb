@@ -13,7 +13,7 @@ def sanitize(tags_env_var, separator)
     tags_list = tags_env_var.gsub(",\"", ";\"").split(separator)
     tags_list.keep_if { |element| !element.include?(";") }
     tags_list.keep_if { |element| !element.include?("app_instance_guid") }
-    tags_list = tags_list.map { |tag| tag.gsub(" ", "_") }
+    tags_list = tags_list.map { |tag| tag.gsub(" ", "_").strip }
     return tags_list.uniq
 end
 

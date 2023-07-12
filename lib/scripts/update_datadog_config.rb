@@ -18,7 +18,7 @@ end
 
 def read_yaml_file(file_path)
   yaml_file = File.read(file_path)
-  YAML.load(yaml_file)
+  return YAML.load(yaml_file)
 end
 
 def write_yaml_file(file_path, data)
@@ -26,8 +26,8 @@ def write_yaml_file(file_path, data)
 end
 
 def get_tags()
-  dd_tags = File.file?(DD_TAGS_FILE) ? File.read(DD_TAGS_FILE) : nil
-  dd_node_agent_tags = ENV['DD_NODE_AGENT_TAGS'] || (File.file?(NODE_AGENT_TAGS_FILE) ? File.read(NODE_AGENT_TAGS_FILE).chomp.strip : nil)
+  dd_tags = File.file?(DD_TAGS_FILE) ? File.read(DD_TAGS_FILE).strip : nil
+  dd_node_agent_tags = ENV['DD_NODE_AGENT_TAGS'] || (File.file?(NODE_AGENT_TAGS_FILE) ? File.read(NODE_AGENT_TAGS_FILE).strip : nil)
 
   tags = []
 
@@ -47,6 +47,8 @@ def main
 
   if !tags.empty?
     file_path = '/home/vcap/app/.datadog/dist/datadog.yaml'
+
+    puts "updating datadog.yaml with the tags: '#{tags}'"
 
     data = read_yaml_file(file_path)
 

@@ -82,10 +82,11 @@ end
 
 version_file = '/home/vcap/app/.datadog/VERSION'
 if File.exist?(version_file)
-  buildpack_version = File.open(version_file, 'r') { |file| file.read.chomp.strip }
-  tags << "buildpack_version:#{buildpack_version}"
+  buildpack_version = File.open(version_file, 'r') { |file| file.read.strip }
+  tags << "buildpack_version:#{buildpack_version.strip}"
 end
 
-tags = tags.map { |tag| tag.gsub(' ', '_') }.uniq
+tags = tags.map { |tag| tag.gsub(' ', '_') }
+tags = tags.uniq
 
 puts tags.join(',')
