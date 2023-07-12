@@ -27,7 +27,7 @@ end
 
 def get_tags()
   dd_tags = File.file?(DD_TAGS_FILE) ? File.read(DD_TAGS_FILE) : nil
-  dd_node_agent_tags = ENV['DD_NODE_AGENT_TAGS'] || (File.file?(NODE_AGENT_TAGS_FILE) ? File.read(NODE_AGENT_TAGS_FILE).chomp.trim : nil)
+  dd_node_agent_tags = ENV['DD_NODE_AGENT_TAGS'] || (File.file?(NODE_AGENT_TAGS_FILE) ? File.read(NODE_AGENT_TAGS_FILE).chomp.strip : nil)
 
   tags = []
 
