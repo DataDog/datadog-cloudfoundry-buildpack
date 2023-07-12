@@ -50,8 +50,8 @@ def main
 
     data = read_yaml_file(file_path)
 
-    data['tags'] = tags.to_yaml
-    data['dogstatsd_tags'] = tags.to_yaml
+    data['tags'] = tags
+    data['dogstatsd_tags'] = tags
 
     write_yaml_file(file_path, data)
   end
