@@ -9,13 +9,16 @@ SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 DD_ENABLE_CAPI_METADATA_COLLECTION="${DD_ENABLE_CAPI_METADATA_COLLECTION:-false}"
 LOCKFILE="${DATADOG_DIR}/lock"
 FIRST_RUN="${FIRST_RUN:-true}"
-export DD_TAGS=$(python "${DATADOG_DIR}/scripts/get_tags.py")
-echo "${DD_TAGS}" > "${DATADOG_DIR}/.dd_tags.txt"
+USER_TAGS="${DD_TAGS}"
+DD_TAGS=$(ruby "${DATADOG_DIR}"/scripts/get_tags.rb)
+export DD_TAGS
+DD_DOGSTATSD_TAGS=$(ruby "${DATADOG_DIR}"/scripts/get_tags.rb)
+export DD_DOGSTATSD_TAGS
 
 source "${DATADOG_DIR}/scripts/utils.sh"
 
 setup_datadog() {
-  pushd "${DATADOG_DIR}" >/dev/null
+  pushd "${DATADOG_DIR}"
 
     export DD_LOG_FILE="${DATADOG_DIR}/dogstatsd.log"
     export DD_API_KEY
@@ -106,15 +109,16 @@ setup_datadog() {
       export DD_LOG_FILE=${DATADOG_DIR}/dogstatsd.log
       sed -i "s~log_file: AGENT_LOG_FILE~log_file: ${DD_LOG_FILE}~" dist/datadog.yaml
     fi
-  popd >/dev/null
-
-  # update datadog config
-  ruby "${DATADOG_DIR}/scripts/update_datadog_config.rb"
+  popd
 }
 
 start_datadog() {
-  export DD_TAGS=$(python "${DATADOG_DIR}/scripts/get_tags.py")
-  pushd "${DATADOG_DIR}" >/dev/null
+  DD_TAGS="${USER_TAGS}"
+  DD_TAGS=$(ruby "${DATADOG_DIR}"/scripts/get_tags.rb)
+  export DD_TAGS
+  DD_DOGSTATSD_TAGS=$(ruby "${DATADOG_DIR}"/scripts/get_tags.rb)
+  export DD_DOGSTATSD_TAGS
+  pushd "${DATADOG_DIR}"
     export DD_LOG_FILE="${DATADOG_DIR}/dogstatsd.log"
     export DD_API_KEY
     export DD_DD_URL
@@ -144,7 +148,7 @@ start_datadog() {
         export DD_LOG_FILE=agent.log
         export DD_IOT_HOST=false
 
-        echo "Starting datadog agent"
+        echo "Starting Datadog agent"
         if [ "${SUPPRESS_DD_AGENT_OUTPUT}" = "true" ]; then
           env -u DD_TAGS ./agent run --cfgpath dist/ --pidfile run/agent.pid > /dev/null 2>&1 &
         else
@@ -170,13 +174,13 @@ start_datadog() {
       fi
       FIRST_RUN=false
     fi
-  popd >/dev/null
+  popd
 }
 
 stop_datadog() {
-  pushd "${DATADOG_DIR}" >/dev/null
+  pushd "${DATADOG_DIR}"
     if check_if_running "${AGENT_PIDFILE}" "${AGENT_CMD}"; then
-      echo "Stopping datadog agent process, pid: $(cat "${AGENT_PIDFILE}")"
+      echo "Stopping agent process, pid: $(cat "${AGENT_PIDFILE}")"
       # first try to stop the agent so we don't lose data and then force it
       (./agent stop --cfgpath dist/) || true
       find_pid_kill_and_wait "${AGENT_CMD}" "${AGENT_PIDFILE}" 5 1 || true
@@ -190,7 +194,7 @@ stop_datadog() {
       find_pid_kill_and_wait "${DOGSTATSD_CMD}" "${DOGSTATSD_PIDFILE}" 5 1
       rm -f "${DOGSTATSD_PIDFILE}"
     fi
-  popd >/dev/null
+  popd
 }
 
 monit_datadog() {
@@ -227,7 +231,7 @@ main() {
   fi
   
   # wait for the trace agent startup
-  if [ "${WAIT_DD_TRACE_AGENT}" = "true" ]; then
+  if [ "${DD_WAIT_TRACE_AGENT}" = "true" ]; then
     timeout=120
     while ! nc -z localhost 8126 && [ $timeout -ge 0 ]; do
       echo "Waiting for the trace agent to start on 8126..."
@@ -241,6 +245,6 @@ main() {
     fi
   fi
 }
+main "$@"
 
-main "$@" 2>&1 | tee -a "${DATADOG_DIR}/run-datadog.log"
 

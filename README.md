@@ -56,6 +56,9 @@ Custom tags are added to the application logs, metrics, and traces as span tags.
 Instrument your application to send custom metrics and APM traces through DogStatsD and the Datadog Trace Agent.
 Download and import the [relevant libraries][6] to send data. To learn more, check out the [DogSatsD documentation][7] and [APM documentation][8].
 
+| Variable | Description|
+| -- | -- |
+| `DD_WAIT_TRACE_AGENT` | Use this option to delay the startup of the application until the Trace Agent is ready. This option is especially useful for Golang apps. |
 
 ### Log collection
 
@@ -83,7 +86,8 @@ The following environment variables are used to configure log collection.
 | -- | -- |
 | `STD_LOG_COLLECTION_PORT` |  Must be used when collecting logs from `stdout`/`stderr`. It redirects the `stdout`/`stderr` stream to the corresponding local port value. |
 | `LOGS_CONFIG` |  Use this option to configure the Agent to listen to a local TCP port and set the value for the `service` and `source` parameters. The port specified in the configuration must be the same as specified in the environment variable `STD_LOG_COLLECTION_PORT`. |
-| `SUPPRESS_DD_AGENT_OUTPUT` | Use this option to see the Datadog agent, Trace agent and DogStatsD logs in the `cf logs`  output |
+| `SUPPRESS_DD_AGENT_OUTPUT` | Use this option to see the Datadog agent, Trace agent and DogStatsD logs in the `cf logs`  output. |
+| `DD_SPARSE_APP_LOGS` | Use this option to avoid losing log lines when app sparsely writes to STDOUT. |
 
 
 **Example**
@@ -101,7 +105,7 @@ env:
 
 ### Unified Service Tagging
 
-> This feature requires the Datadog Cluster Agent to be installed. 
+> This feature requires the Datadog Cluster Agent to be installed.
 See [Datadog Cluster Agent BOSH Release](https://github.com/DataDog/datadog-cluster-agent-boshrelease).
 
 Unified service tagging ties Datadog telemetry together using three reserved tags: `env`, `service`, and `version`. In Cloud Foundry, they are set through the application labels/annotations and `DD_ENV`, `DD_SERVICE` and `DD_VERSION` environment variables, as shown in the example below:
@@ -124,7 +128,7 @@ You can find more information in the [Unified Service Tagging documentation](htt
 
 ### Application Metadata collection
 
-> This feature requires both the Datadog Agent and the Datadog Cluster Agent to be installed. 
+> This feature requires both the Datadog Agent and the Datadog Cluster Agent to be installed.
 See [Datadog Agent BOSH Release](https://github.com/DataDog/datadog-cluster-agent-boshrelease) and [Datadog Cluster Agent BOSH Release](https://github.com/DataDog/datadog-cluster-agent-boshrelease).
 
 You can enable the collection of your application metadata (labels and annotations) as tags in your application logs, traces and metrics by setting the environment variable `DD_ENABLE_CAPI_METADATA_COLLECTION` to `true`.
