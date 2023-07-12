@@ -26,8 +26,8 @@ def write_yaml_file(file_path, data)
 end
 
 def get_tags()
-  dd_tags = File.file?(DD_TAGS_FILE) ? File.read(DD_TAGS_FILE).strip : nil
-  dd_node_agent_tags = ENV['DD_NODE_AGENT_TAGS'] || (File.file?(NODE_AGENT_TAGS_FILE) ? File.read(NODE_AGENT_TAGS_FILE).strip : nil)
+  dd_tags = ENV['DD_TAGS'] || File.file?(DD_TAGS_FILE) ? File.read(DD_TAGS_FILE).strip : nil
+  dd_node_agent_tags = File.file?(NODE_AGENT_TAGS_FILE) ? File.read(NODE_AGENT_TAGS_FILE).strip : nil
 
   tags = []
 

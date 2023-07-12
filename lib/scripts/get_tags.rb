@@ -4,6 +4,8 @@
 
 require 'json'
 
+NODE_AGENT_TAGS_FILE = "/home/vcap/app/.datadog/node_agent_tags.txt"
+
 def parse_tags(tags)
   begin
     delimiter = ','
@@ -41,6 +43,14 @@ if node_agent_tags
   all_node_agent_tags = parse_tags(node_agent_tags)
   if !all_node_agent_tags.empty?
     tags += all_node_agent_tags.keep_if { |tag| !tag.include?(';') }
+  end
+end
+
+node_agent_tags_file = File.file?(NODE_AGENT_TAGS_FILE) ? File.read(NODE_AGENT_TAGS_FILE).strip : nil
+if node_agent_tags_file
+  node_agent_tags = parse_tags(node_agent_tags_file)
+  if !node_agent_tags.empty?
+    tags += node_agent_tags
   end
 end
 

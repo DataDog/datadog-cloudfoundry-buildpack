@@ -111,6 +111,10 @@ setup_datadog() {
 
   # update datadog config
   ruby "${DATADOG_DIR}/scripts/update_datadog_config.rb"
+
+  # mark the script as finished, useful to sync the update_agent_config script
+  touch "${DATADOG_DIR}/.setup_completed"
+
 }
 
 start_datadog() {

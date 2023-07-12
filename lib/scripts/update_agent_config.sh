@@ -19,6 +19,12 @@ write_tags_to_file() {
     export LOGS_CONFIG_DIR="${DATADOG_DIR}/dist/conf.d/logs.d"
     export LOGS_CONFIG
 
+    log_info "Updating node_agent_tags.txt"
+    ruby "${DATADOG_DIR}/scripts/update_tags.rb"
+
+    # update datadog config
+    ruby "${DATADOG_DIR}/scripts/update_datadog_config.rb"
+
     if [ "${DD_ENABLE_CAPI_METADATA_COLLECTION}" = "true" ]; then
         # update logs configs
         if [ -n "${LOGS_CONFIG}" ]; then
@@ -26,12 +32,7 @@ write_tags_to_file() {
             log_info "Updating logs config"
             ruby "${DATADOG_DIR}/scripts/create_logs_config.rb"
         fi
-        # update datadog config
-        ruby "${DATADOG_DIR}/scripts/update_datadog_config.rb"
     fi
-
-    log_info "Updating node_agent_tags.txt"
-    ruby "${DATADOG_DIR}/scripts/update_tags.rb"
 
     # log DD_TAGS and DD_NODE_AGENT_TAGS values
     log_debug "node_agent_tags.txt=$(cat "${DATADOG_DIR}"/node_agent_tags.txt)"
@@ -42,7 +43,7 @@ write_tags_to_file() {
 main() {
     # source relevant DD tags
     while ! [ -f "${DATADOG_DIR}/.setup_completed" ]; do
-        echo "Supply script not completed, waiting ..."
+        echo "Datadog setup is not completed, waiting ..."
         sleep 1
     done
 
