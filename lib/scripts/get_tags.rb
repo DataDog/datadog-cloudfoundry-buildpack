@@ -5,17 +5,17 @@
 require 'json'
 
 def parse_tags(tags)
-  delimiter = ','
-  delimiter = ' ' if tags.count(' ') > tags.count(',')
-
-  if ENV["DD_TAGS_SEP"].is_set?
-    delimiter = ENV["DD_TAGS_SEP"]
-  end
-
-  return tags.split(delimiter)
-
+  begin
+    delimiter = ','
+    delimiter = ' ' if tags.count(' ') > tags.count(',')
+    if !ENV["DD_TAGS_SEP"].nil?
+      delimiter = ENV["DD_TAGS_SEP"]
+    end
+    return tags.split(delimiter)
   rescue Exception => e
-    puts "there was an issue parsing the tags in #{tags.__name__}: #{e}"
+    puts "there was an issue parsing the tags in '#{tags}': #{e.message}"
+    return []
+  end
 end
 
 vcap_app_string = ENV['VCAP_APPLICATION'] || '{}'
@@ -39,7 +39,9 @@ if node_agent_tags
   # we do this to separate commas inside json values from tags separator commas
   node_agent_tags = node_agent_tags.gsub(",\"", ";\"")
   all_node_agent_tags = parse_tags(node_agent_tags)
-  tags += all_node_agent_tags.reject { |tag| tag.include?(';') }
+  if !all_node_agent_tags.empty?
+    tags += all_node_agent_tags.select { |tag| !tag.include?(';') }
+  end
 end
 
 vcap_variables.each do |vcap_var_name|
@@ -64,7 +66,7 @@ if user_tags
     user_tags = parse_tags(user_tags)
     tags += user_tags
   rescue Exception => e
-    puts "there was an issue parsing the tags in TAGS: #{e}"
+    puts "there was an issue parsing the tags in TAGS: #{e.message}"
   end
 end
 
@@ -74,7 +76,7 @@ if user_tags
     user_tags = parse_tags(user_tags)
     tags += user_tags
   rescue Exception => e
-    puts "there was an issue parsing the tags in DD_TAGS: #{e}"
+    puts "there was an issue parsing the tags in DD_TAGS: #{e.message}"
   end
 end
 
