@@ -39,7 +39,7 @@ env:
 
 #### Assigning Tags
 
-For an overview about tags, read the  [Getting Started with Tags](https://docs.datadoghq.com/getting_started/tagging/).
+For an overview about tags, read [Getting Started with Tags](https://docs.datadoghq.com/getting_started/tagging/).
 
 Custom tags can be configured with the environment variable `DD_TAGS`. These tags will be attached to the application logs, metrics, and traces as span tags.
 
