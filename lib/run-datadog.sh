@@ -11,20 +11,13 @@ LOCKFILE="${DATADOG_DIR}/lock"
 FIRST_RUN="${FIRST_RUN:-true}"
 USER_TAGS="${DD_TAGS}"
 
-if ! which ruby > /dev/null; then
-  RUBY_BIN="/home/vcap/app/.datadog/ruby"
-else
-  RUBY_BIN=$(which ruby)
-fi
-
-RUBY_BIN=ruby
+source "${DATADOG_DIR}/scripts/utils.sh"
+find_ruby
 
 DD_TAGS=$($RUBY_BIN"${DATADOG_DIR}"/scripts/get_tags.rb)
 export DD_TAGS
 DD_DOGSTATSD_TAGS=$($RUBY_BIN"${DATADOG_DIR}"/scripts/get_tags.rb)
 export DD_DOGSTATSD_TAGS
-
-source "${DATADOG_DIR}/scripts/utils.sh"
 
 setup_datadog() {
   pushd "${DATADOG_DIR}"

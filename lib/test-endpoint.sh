@@ -4,13 +4,8 @@
 # This product includes software developed at Datadog (https://www.datadoghq.com/).
 # Copyright 2017-Present Datadog, Inc.
 
-if ! which ruby > /dev/null; then
-  RUBY_BIN="/home/vcap/app/.datadog/ruby"
-else
-  RUBY_BIN=$(which ruby)
-fi
-
-RUBY_BIN=ruby
+source "${DATADOG_DIR}/scripts/utils.sh"
+find_ruby
 
 unset DD_LOGS_VALID_ENDPOINT
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"

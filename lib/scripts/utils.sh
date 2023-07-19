@@ -24,16 +24,20 @@ export DOGSTATSD_CMD="./dogstatsd start --cfgpath dist/"
 export DD_UPDATE_SCRIPT_LOG_LEVEL="${DD_UPDATE_SCRIPT_LOG_LEVEL:-"INFO"}"
 
 
-setup_ruby() {
-  if ! which ruby > /dev/null; then
-    export RUBY_BIN="/home/vcap/app/.datadog/ruby"
+find_ruby() {
+  if which ruby > /dev/null; then
+    export RUBY_BIN=ruby
   else
-    export RUBY_BIN=$(which ruby)
+    DEPS_DIR=/home/vcap/deps
+    for deps in $(ls $DEPS_DIR); do
+      if ls $DEPS_DIR/$deps/bin/ruby >/dev/null; then
+        export RUBY_BIN="$DEPS_DIR/$deps/bin/ruby"
+        export PATH=$RUBY_BIN:$PATH
+        break
+      fi
+    done
   fi
-
-  RUBY_BIN=ruby
 }
-
 
 dd_export_env() {
   local env_file="$1"

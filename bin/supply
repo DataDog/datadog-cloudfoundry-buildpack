@@ -8,11 +8,9 @@ ROOT_DIR=$(dirname ${BIN_DIR})
 BUILD_DIR=$1
 CACHE_DIR=$2
 DEPS_DIR=$3
-INDEX=$4
+DEPS_IDX=$4
 DATADOG_DIR="${BUILD_DIR}/.datadog"
-
-RUBY_DIR="$DEPS_DIR/$INDEX"
-RUBY_BIN="ruby"
+RUBY_DIR="$DEPS_DIR/$DEPS_IDX"
 
 mkdir -p "${DATADOG_DIR}/scripts"
 cp "${ROOT_DIR}/lib/scripts/update_agent_config.sh" "${DATADOG_DIR}/scripts/update_agent_config.sh"
@@ -29,7 +27,7 @@ if ! which ruby > /dev/null; then
 
   echo "Installing Ruby"
   tar -xzf "${DATADOG_DIR}/ruby_3.0.5.tgz" -C "${RUBY_DIR}" && echo "Ruby Install finished"
-  export PATH="$RUBY_DIR/bin:$PATH"
+  RUBY_BIN=$RUBY_DIR/bin/ruby
 else
   RUBY_BIN=ruby
 fi
@@ -53,6 +51,13 @@ cp "${ROOT_DIR}/lib/scripts/update_tags.rb" "${DATADOG_DIR}/scripts/update_tags.
 
 cp "${ROOT_DIR}/lib/scripts/parse_env_vars.rb" "${DATADOG_DIR}/scripts/parse_env_vars.rb"
 cp "${ROOT_DIR}/lib/scripts/nc.rb" "${DATADOG_DIR}/scripts/nc.rb"
+
+chmod +x "${DATADOG_DIR}/scripts/get_tags.rb"
+chmod +x "${DATADOG_DIR}/scripts/create_logs_config.rb"
+chmod +x "${DATADOG_DIR}/scripts/update_tags.rb"
+chmod +x "${DATADOG_DIR}/scripts/parse_env_vars.rb"
+chmod +x "${DATADOG_DIR}/scripts/nc.rb"
+
 cp "${ROOT_DIR}/lib/scripts/utils.sh" "${DATADOG_DIR}/scripts/utils.sh"
 cp "${ROOT_DIR}/lib/scripts/check_datadog.sh" "${DATADOG_DIR}/scripts/check_datadog.sh"
 
