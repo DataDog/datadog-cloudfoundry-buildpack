@@ -31,12 +31,12 @@ find_ruby() {
     DEPS_DIR=/home/vcap/deps
     for deps in $(ls $DEPS_DIR); do
       if ls $DEPS_DIR/$deps/bin/ruby >/dev/null; then
-        export RUBY_BIN="$DEPS_DIR/$deps/bin/ruby"
-        export RUBY_DIR="$DEPS_DIR/$deps"
-        export PATH="${RUBY_DIR}/bin:${PATH:-}"
-        export LIBRARY_PATH="${RUBY_DIR}/lib:${LIBRARY_PATH:-}"
-        export LD_LIBRARY_PATH="${RUBY_DIR}/lib:${LIBRARY_PATH:-}"
-        export CPATH="${RUBY_DIR}/include:${CPATH:-}"
+        # export RUBY_BIN="$DEPS_DIR/$deps/bin/ruby"
+        # export RUBY_DIR="$DEPS_DIR/$deps"
+        # export PATH="${RUBY_DIR}/bin:${PATH:-}"
+        # export LIBRARY_PATH="${RUBY_DIR}/lib:${LIBRARY_PATH:-}"
+        # export LD_LIBRARY_PATH="${RUBY_DIR}/lib:${LIBRARY_PATH:-}"
+        # export CPATH="${RUBY_DIR}/include:${CPATH:-}"
         break
       fi
     done
@@ -72,6 +72,9 @@ dd_export_env() {
   fi
   if [ -n "${TAGS}" ]; then
     echo "export TAGS='${TAGS}'" >> "${env_file}"
+  fi
+  if [ -n "${PATH}" ]; then
+    echo "export PATH='${PATH}'" >> "${env_file}"
   fi
   if [ -n "${DD_UPDATE_SCRIPT_WARMUP}" ]; then
     echo "export DD_UPDATE_SCRIPT_WARMUP='${DD_UPDATE_SCRIPT_WARMUP}'" >> "${env_file}"

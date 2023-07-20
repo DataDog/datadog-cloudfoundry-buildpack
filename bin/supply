@@ -32,6 +32,11 @@ else
   RUBY_BIN=ruby
 fi
 
+# for subsquent buildpacks
+echo "config: {}
+name: datadog
+version: 4.37.0" > $DEPS_DIR/$DEPS_IDX/config.yml 
+
 echo "Installing Datadog IOT Agent, Dogstatsd and Trace Agent"
 
 mkdir -p "${BUILD_DIR}/.profile.d"
@@ -84,10 +89,13 @@ chmod +x "${BUILD_DIR}/.profile.d/01-run-datadog.sh"
 
 # export DD environment variables
 . "${DATADOG_DIR}/scripts/utils.sh"
+
+export PATH=/home/vcap/deps/$DEPS_IDX/bin:$PATH
 dd_export_env "${DATADOG_DIR}/.raw_datadog_env"
 
 
-echo ">>>> RUBY_BIN=$RUBY_BIN"
+echo "ruby version check:"
+$RUBY_BIN -v
 
 # sanitize env vars and export a new a env file
 $RUBY_BIN "${DATADOG_DIR}/scripts/parse_env_vars.rb" "${DATADOG_DIR}/.raw_datadog_env" "${DATADOG_DIR}/.datadog_env"
