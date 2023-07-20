@@ -32,7 +32,11 @@ find_ruby() {
     for deps in $(ls $DEPS_DIR); do
       if ls $DEPS_DIR/$deps/bin/ruby >/dev/null; then
         export RUBY_BIN="$DEPS_DIR/$deps/bin/ruby"
-        export PATH=$RUBY_BIN:$PATH
+        export RUBY_DIR="$DEPS_DIR/$deps"
+        export PATH="${RUBY_DIR}/bin:${PATH:-}"
+        export LIBRARY_PATH="${RUBY_DIR}/lib:${LIBRARY_PATH:-}"
+        export LD_LIBRARY_PATH="${RUBY_DIR}/lib:${LIBRARY_PATH:-}"
+        export CPATH="${RUBY_DIR}/include:${CPATH:-}"
         break
       fi
     done
