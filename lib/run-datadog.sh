@@ -11,12 +11,14 @@ LOCKFILE="${DATADOG_DIR}/lock"
 FIRST_RUN="${FIRST_RUN:-true}"
 USER_TAGS="${DD_TAGS}"
 
-source "${DATADOG_DIR}/scripts/utils.sh"
-find_ruby
+. "${DATADOG_DIR}/scripts/utils.sh"
 
-DD_TAGS=$($RUBY_BIN"${DATADOG_DIR}"/scripts/get_tags.rb)
+# source updated PATH
+. "$DATADOG_DIR/.global_env"
+
+DD_TAGS=$(ruby "${DATADOG_DIR}"/scripts/get_tags.rb)
 export DD_TAGS
-DD_DOGSTATSD_TAGS=$($RUBY_BIN"${DATADOG_DIR}"/scripts/get_tags.rb)
+DD_DOGSTATSD_TAGS=$(ruby "${DATADOG_DIR}"/scripts/get_tags.rb)
 export DD_DOGSTATSD_TAGS
 
 setup_datadog() {
@@ -44,7 +46,7 @@ setup_datadog() {
     if [ -n "${LOGS_CONFIG}" ]; then
       mkdir -p ${LOGS_CONFIG_DIR}
       echo "creating logs config"
-      $RUBY_BIN"${DATADOG_DIR}/scripts/create_logs_config.rb"
+      ruby "${DATADOG_DIR}/scripts/create_logs_config.rb"
     fi
 
     # The yaml file requires the tags to be an array,
@@ -120,9 +122,9 @@ setup_datadog() {
 
 start_datadog() {
   DD_TAGS="${USER_TAGS}"
-  DD_TAGS=$($RUBY_BIN"${DATADOG_DIR}"/scripts/get_tags.rb)
+  DD_TAGS=$(ruby "${DATADOG_DIR}"/scripts/get_tags.rb)
   export DD_TAGS
-  DD_DOGSTATSD_TAGS=$($RUBY_BIN"${DATADOG_DIR}"/scripts/get_tags.rb)
+  DD_DOGSTATSD_TAGS=$(ruby "${DATADOG_DIR}"/scripts/get_tags.rb)
   export DD_DOGSTATSD_TAGS
   pushd "${DATADOG_DIR}"
     export DD_LOG_FILE="${DATADOG_DIR}/dogstatsd.log"
