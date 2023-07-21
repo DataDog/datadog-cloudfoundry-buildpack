@@ -10,7 +10,6 @@ CACHE_DIR=$2
 DEPS_DIR=$3
 DEPS_IDX=$4
 DATADOG_DIR="${BUILD_DIR}/.datadog"
-RUBY_DIR="$DEPS_DIR/$DEPS_IDX"
 
 mkdir -p "${DATADOG_DIR}/scripts"
 cp "${ROOT_DIR}/lib/scripts/update_agent_config.sh" "${DATADOG_DIR}/scripts/update_agent_config.sh"
@@ -20,15 +19,14 @@ cp "${ROOT_DIR}/lib/scripts/get_tags.rb" "${DATADOG_DIR}/scripts/get_tags.rb"
 
 if ! which ruby > /dev/null; then
   echo "Installing Ruby"
-  mkdir -p "${RUBY_DIR}"
-  tar -xzf "${ROOT_DIR}/lib/ruby_3.0.5.tgz" -C "${RUBY_DIR}" && echo "Ruby Install finished"
-  export PATH=$RUBY_DIR/bin/:$PATH
+  tar -xzf "${ROOT_DIR}/lib/ruby_3.0.5.tgz" -C "$DEPS_DIR/$DEPS_IDX" && echo "Ruby Install finished"
+  export PATH="$DEPS_DIR/$DEPS_IDX/bin/:$PATH"
 fi
 
 # for subsquent buildpacks
 echo "config: {}
 name: datadog
-version: 4.37.0" > $DEPS_DIR/$DEPS_IDX/config.yml 
+version: 4.37.0" > "$DEPS_DIR/$DEPS_IDX/config.yml"
 
 echo "Installing Datadog IOT Agent, Dogstatsd and Trace Agent"
 
