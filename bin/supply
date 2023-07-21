@@ -27,9 +27,7 @@ if ! which ruby > /dev/null; then
 
   echo "Installing Ruby"
   tar -xzf "${DATADOG_DIR}/ruby_3.0.5.tgz" -C "${RUBY_DIR}" && echo "Ruby Install finished"
-  RUBY_BIN=$RUBY_DIR/bin/ruby
-else
-  RUBY_BIN=ruby
+  export PATH=$RUBY_DIR/bin/:$PATH
 fi
 
 # for subsquent buildpacks
@@ -95,15 +93,15 @@ dd_export_env "${DATADOG_DIR}/.raw_datadog_env"
 
 
 echo "ruby version check:"
-$RUBY_BIN -v
+ruby -v
 
 # sanitize env vars and export a new a env file
-$RUBY_BIN "${DATADOG_DIR}/scripts/parse_env_vars.rb" "${DATADOG_DIR}/.raw_datadog_env" "${DATADOG_DIR}/.datadog_env"
+ruby "${DATADOG_DIR}/scripts/parse_env_vars.rb" "${DATADOG_DIR}/.raw_datadog_env" "${DATADOG_DIR}/.datadog_env"
 
 # export DD_TAGS for ddtrace
-DD_TAGS=$($RUBY_BIN "${DATADOG_DIR}"/scripts/get_tags.rb)
+DD_TAGS=$(ruby "${DATADOG_DIR}"/scripts/get_tags.rb)
 export DD_TAGS
-DD_DOGSTATSD_TAGS=$($RUBY_BIN "${DATADOG_DIR}"/scripts/get_tags.rb)
+DD_DOGSTATSD_TAGS=$(ruby "${DATADOG_DIR}"/scripts/get_tags.rb)
 export DD_DOGSTATSD_TAGS
 
 # mark the script as finished, useful to sync the update_agent_config script
