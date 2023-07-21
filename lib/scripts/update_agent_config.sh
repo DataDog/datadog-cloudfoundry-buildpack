@@ -7,9 +7,8 @@
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 LOCK="${DATADOG_DIR}/update_agent_config.lock"
 
-source "${DATADOG_DIR}/scripts/utils.sh"
-
-find_ruby
+# source updated PATH
+. "$DATADOG_DIR/.global_env"
 
 # import utils function such as log_message
 release_lock() {
@@ -19,9 +18,9 @@ release_lock() {
 
 write_tags_to_file() {
     # combine DD_TAGS and DD_NODE_AGENT_TAGS into DD_TAGS
-    DD_TAGS=$(LEGACY_TAGS_FORMAT=true $RUBY_BIN "${DATADOG_DIR}"/scripts/get_tags.rb)
+    DD_TAGS=$(ruby "${DATADOG_DIR}"/scripts/get_tags.rb)
     export DD_TAGS
-    DD_DOGSTATSD_TAGS=$(LEGACY_TAGS_FORMAT=true $RUBY_BIN "${DATADOG_DIR}"/scripts/get_tags.rb)
+    DD_DOGSTATSD_TAGS=$(ruby "${DATADOG_DIR}"/scripts/get_tags.rb)
     export DD_DOGSTATSD_TAGS
     export LOGS_CONFIG_DIR="${DATADOG_DIR}/dist/conf.d/logs.d"
     export LOGS_CONFIG
@@ -30,11 +29,11 @@ write_tags_to_file() {
     if [ -n "${LOGS_CONFIG}" ] && [ "${DD_ENABLE_CAPI_METADATA_COLLECTION}" = "true" ]; then
         mkdir -p "${LOGS_CONFIG_DIR}"
         log_info "Updating logs config"
-        $RUBY_BIN "${DATADOG_DIR}/scripts/create_logs_config.rb"
+        ruby "${DATADOG_DIR}/scripts/create_logs_config.rb"
     fi
 
     log_info "Updating node_agent_tags.txt"
-    $RUBY_BIN "${DATADOG_DIR}/scripts/update_tags.rb"
+    ruby "${DATADOG_DIR}/scripts/update_tags.rb"
 
     # log DD_TAGS and DD_NODE_AGENT_TAGS values
     log_debug "node_agent_tags.txt=$(cat "${DATADOG_DIR}"/node_agent_tags.txt)"
