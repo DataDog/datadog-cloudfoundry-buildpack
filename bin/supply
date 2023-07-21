@@ -17,14 +17,11 @@ cp "${ROOT_DIR}/lib/scripts/update_agent_config.sh" "${DATADOG_DIR}/scripts/upda
 chmod +x "${DATADOG_DIR}/scripts/update_agent_config.sh"
 cp "${ROOT_DIR}/lib/scripts/get_tags.rb" "${DATADOG_DIR}/scripts/get_tags.rb"
 
-if [ -f "${ROOT_DIR}/lib/ruby_3.0.5.tgz" ]; then
-  cp "${ROOT_DIR}/lib/ruby_3.0.5.tgz" "${DATADOG_DIR}/ruby_3.0.5.tgz"
-fi
 
 if ! which ruby > /dev/null; then
   echo "Installing Ruby"
   mkdir -p "${RUBY_DIR}"
-  tar -xzf "${DATADOG_DIR}/ruby_3.0.5.tgz" -C "${RUBY_DIR}" && echo "Ruby Install finished"
+  tar -xzf "${ROOT_DIR}/lib/ruby_3.0.5.tgz" -C "${RUBY_DIR}" && echo "Ruby Install finished"
   export PATH=$RUBY_DIR/bin/:$PATH
 fi
 
