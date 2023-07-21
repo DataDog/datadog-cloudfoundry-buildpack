@@ -16,12 +16,14 @@ cp "${ROOT_DIR}/lib/scripts/update_agent_config.sh" "${DATADOG_DIR}/scripts/upda
 chmod +x "${DATADOG_DIR}/scripts/update_agent_config.sh"
 cp "${ROOT_DIR}/lib/scripts/get_tags.rb" "${DATADOG_DIR}/scripts/get_tags.rb"
 
-
 if ! which ruby > /dev/null; then
   echo "Installing Ruby"
   tar -xzf "${ROOT_DIR}/lib/ruby_3.0.5.tgz" -C "$DEPS_DIR/$DEPS_IDX" && echo "Ruby Install finished"
   export PATH="$DEPS_DIR/$DEPS_IDX/bin/:$PATH"
 fi
+
+export PATH=/home/vcap/deps/$DEPS_IDX/bin:$PATH
+echo "export PATH=$PATH" >> "$DATADOG_DIR/.global_env"
 
 # for subsquent buildpacks
 echo "config: {}
@@ -81,7 +83,6 @@ chmod +x "${BUILD_DIR}/.profile.d/01-run-datadog.sh"
 # export DD environment variables
 . "${DATADOG_DIR}/scripts/utils.sh"
 
-export PATH=/home/vcap/deps/$DEPS_IDX/bin:$PATH
 dd_export_env "${DATADOG_DIR}/.raw_datadog_env"
 
 
