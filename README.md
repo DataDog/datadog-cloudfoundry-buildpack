@@ -37,6 +37,27 @@ env:
   DD_API_KEY: <DATADOG_API_KEY>
 ```
 
+#### Assigning Tags
+
+For an overview about tags, read [Getting Started with Tags](https://docs.datadoghq.com/getting_started/tagging/).
+
+Custom tags can be configured with the environment variable `DD_TAGS`. These tags will be attached to the application logs, metrics, and traces as span tags.
+
+By default, `DD_TAGS` is expected to be a comma separated list of tags.
+
+```yaml
+env:
+  DD_TAGS: "key1:value1,key2:value2,key3:value3"
+```
+
+To use a different separator, set `DD_TAGS_SEP` to the desired separator.
+
+```yaml
+env:
+  DD_TAGS: "key1:value1 key2:value2 key3:value3"
+  DD_TAGS_SEP: " "
+```
+
 ### Instrument your application
 
 Instrument your application to send custom metrics and APM traces through DogStatsD and the Datadog Trace Agent.
