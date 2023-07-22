@@ -5,16 +5,19 @@
 
 require 'json'
 
-# if DD_TAGS[0] is comma or space, then set is as delimiter
-# else continue as usual
+NODE_AGENT_TAGS_FILE = "/home/vcap/app/.datadog/node_agent_tags.txt"
 
 def parse_tags(tags)
-  delimiter = ','
-  delimiter = ' ' if tags.count(' ') > tags.count(',')
   begin
+    delimiter = ','
+    delimiter = ' ' if tags.count(' ') > tags.count(',')
+    if !ENV["DD_TAGS_SEP"].nil?
+      delimiter = ENV["DD_TAGS_SEP"]
+    end
     return tags.split(delimiter)
   rescue Exception => e
-    puts "there was an issue parsing the tags in #{tags.__name__}: #{e}"
+    puts "there was an issue parsing the tags in '#{tags}': #{e.message}"
+    return []
   end
 end
 
@@ -39,7 +42,17 @@ if node_agent_tags
   # we do this to separate commas inside json values from tags separator commas
   node_agent_tags = node_agent_tags.gsub(",\"", ";\"")
   all_node_agent_tags = parse_tags(node_agent_tags)
-  tags += all_node_agent_tags.reject { |tag| tag.include?(';') }
+  if !all_node_agent_tags.empty?
+    tags += all_node_agent_tags.keep_if { |tag| !tag.include?(';') }
+  end
+end
+
+node_agent_tags_file = File.file?(NODE_AGENT_TAGS_FILE) ? File.read(NODE_AGENT_TAGS_FILE).strip : nil
+if node_agent_tags_file
+  node_agent_tags = parse_tags(node_agent_tags_file)
+  if !node_agent_tags.empty?
+    tags += node_agent_tags
+  end
 end
 
 vcap_variables.each do |vcap_var_name|
@@ -64,7 +77,7 @@ if user_tags
     user_tags = parse_tags(user_tags)
     tags += user_tags
   rescue Exception => e
-    puts "there was an issue parsing the tags in TAGS: #{e}"
+    puts "there was an issue parsing the tags in TAGS: #{e.message}"
   end
 end
 
@@ -74,21 +87,17 @@ if user_tags
     user_tags = parse_tags(user_tags)
     tags += user_tags
   rescue Exception => e
-    puts "there was an issue parsing the tags in DD_TAGS: #{e}"
+    puts "there was an issue parsing the tags in DD_TAGS: #{e.message}"
   end
 end
 
 version_file = '/home/vcap/app/.datadog/VERSION'
 if File.exist?(version_file)
-  buildpack_version = File.open(version_file, 'r') { |file| file.read.chomp }
-  tags << "buildpack_version:#{buildpack_version}"
+  buildpack_version = File.open(version_file, 'r') { |file| file.read.strip }
+  tags << "buildpack_version:#{buildpack_version.strip}"
 end
 
-tags = tags.map { |tag| tag.gsub(' ', '_') }.uniq
+tags = tags.map { |tag| tag.gsub(' ', '_') }
+tags = tags.uniq
 
-legacy_tags = ENV['LEGACY_TAGS_FORMAT'] || false
-if legacy_tags
-  puts tags.join(',')
-else
-  puts tags.join(' ')
-end
+puts tags.join(',')

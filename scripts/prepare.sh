@@ -10,7 +10,7 @@ IOT_AGENT_DOWNLOAD_URL=${DOWNLOAD_BASE_URL}"iot-agent_"
 DOGSTATSD_DOWNLOAD_URL=${DOWNLOAD_BASE_URL}"dogstatsd_"
 DOWNLOAD_URL_TAIL="-1_amd64.deb"
 
-AGENT_DEFAULT_VERSION="7.41.1"
+AGENT_DEFAULT_VERSION="7.46.0"
 VERSION=${VERSION:-${AGENT_DEFAULT_VERSION}}
 
 TMPDIR=$(mktemp -d)
@@ -65,11 +65,11 @@ function main() {
     DOWNLOAD="true"
   elif [ ! -f ${SRCDIR}/lib/agent ]; then
     DOWNLOAD="true"
-  elif [ -n "${REFRESH_ASSETS}" ]; then
+  elif [ -n "${REFRESH_ASSETS:-}" ]; then
     DOWNLOAD="true"
   fi
 
-  if [ -n "${DOWNLOAD}" ]; then
+  if [ -n "${DOWNLOAD:-}" ]; then
     # Delete the old ones
     rm -f ${SRCDIR}/lib/agent
     rm -f ${SRCDIR}/lib/dogstatsd

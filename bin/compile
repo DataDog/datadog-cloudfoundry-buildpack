@@ -47,6 +47,8 @@ fi
 cp "${ROOT_DIR}/lib/trace-agent" "${DATADOG_DIR}/trace-agent"
 
 cp "${ROOT_DIR}/lib/scripts/create_logs_config.rb" "${DATADOG_DIR}/scripts/create_logs_config.rb"
+cp "${ROOT_DIR}/lib/scripts/update_datadog_config.rb" "${DATADOG_DIR}/scripts/update_datadog_config.rb"
+
 cp "${ROOT_DIR}/lib/scripts/update_tags.rb" "${DATADOG_DIR}/scripts/update_tags.rb"
 
 cp "${ROOT_DIR}/lib/scripts/parse_env_vars.rb" "${DATADOG_DIR}/scripts/parse_env_vars.rb"
@@ -75,18 +77,14 @@ chmod +x "${BUILD_DIR}/.profile.d/00-test-endpoint.sh"
 chmod +x "${BUILD_DIR}/.profile.d/02-redirect-logs.sh"
 chmod +x "${BUILD_DIR}/.profile.d/01-run-datadog.sh"
 
-# export DD environment variables
+# import helper functions
 . "${DATADOG_DIR}/scripts/utils.sh"
+
+# export DD environment variables
 dd_export_env "${DATADOG_DIR}/.raw_datadog_env"
 
 # sanitize env vars and export a new a env file
 $RUBY_BIN "${DATADOG_DIR}/scripts/parse_env_vars.rb" "${DATADOG_DIR}/.raw_datadog_env" "${DATADOG_DIR}/.datadog_env"
 
 # export DD_TAGS for ddtrace
-DD_TAGS=$($RUBY_BIN "${DATADOG_DIR}"/scripts/get_tags.rb)
-export DD_TAGS
-DD_DOGSTATSD_TAGS=$($RUBY_BIN "${DATADOG_DIR}"/scripts/get_tags.rb)
-export DD_DOGSTATSD_TAGS
-
-# mark the script as finished, useful to sync the update_agent_config script
-touch "${DATADOG_DIR}/.setup_completed"
+export DD_TAGS=$(ruby "${DATADOG_DIR}"/scripts/get_tags.rb)
