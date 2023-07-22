@@ -28,7 +28,7 @@ echo "export PATH=$PATH:\$PATH" >> "$DATADOG_DIR/.global_env"
 # for subsquent buildpacks
 echo "config: {}
 name: datadog
-version: 4.37.0" > "$DEPS_DIR/$DEPS_IDX/config.yml"
+version: $(cat $DATADOG_DIR/VERSION)" > "$DEPS_DIR/$DEPS_IDX/config.yml"
 
 echo "Installing Datadog IOT Agent, Dogstatsd and Trace Agent"
 
