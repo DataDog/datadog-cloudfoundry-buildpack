@@ -7,30 +7,28 @@ BIN_DIR=$(cd $(dirname $0); pwd)
 ROOT_DIR=$(dirname ${BIN_DIR})
 BUILD_DIR=$1
 CACHE_DIR=$2
-ENV_DIR=$3
+DEPS_DIR=$3
+DEPS_IDX=$4
 DATADOG_DIR="${BUILD_DIR}/.datadog"
-
-RUBY_DIR="$DATADOG_DIR/tmp/ruby"
-RUBY_BIN="$RUBY_DIR/bin/ruby"
 
 mkdir -p "${DATADOG_DIR}/scripts"
 cp "${ROOT_DIR}/lib/scripts/update_agent_config.sh" "${DATADOG_DIR}/scripts/update_agent_config.sh"
 chmod +x "${DATADOG_DIR}/scripts/update_agent_config.sh"
 cp "${ROOT_DIR}/lib/scripts/get_tags.rb" "${DATADOG_DIR}/scripts/get_tags.rb"
 
-if [ -f "${ROOT_DIR}/lib/ruby_3.0.5.tgz" ]; then
-  cp "${ROOT_DIR}/lib/ruby_3.0.5.tgz" "${DATADOG_DIR}/ruby_3.0.5.tgz"
-fi
-
 if ! which ruby > /dev/null; then
-  echo "Preparing to install Ruby"
-  mkdir -p "${RUBY_DIR}"
-
   echo "Installing Ruby"
-  tar -xzf "${DATADOG_DIR}/ruby_3.0.5.tgz" -C "${RUBY_DIR}"
-else
-  RUBY_BIN=$(which ruby)
+  tar -xzf "${ROOT_DIR}/lib/ruby_3.0.5.tgz" -C "$DEPS_DIR/$DEPS_IDX" && echo "Ruby Install finished"
+  export PATH="$DEPS_DIR/$DEPS_IDX/bin/:$PATH"
 fi
+
+export PATH=/home/vcap/deps/$DEPS_IDX/bin:$PATH
+echo "export PATH=$PATH:\$PATH" >> "$DATADOG_DIR/.global_env"
+
+# for subsquent buildpacks and for buildpack metadata detection
+echo "config: {}
+name: datadog
+version: $(cat "${ROOT_DIR}/VERSION")" > "$DEPS_DIR/$DEPS_IDX/config.yml"
 
 echo "Installing Datadog IOT Agent, Dogstatsd and Trace Agent"
 
@@ -53,6 +51,13 @@ cp "${ROOT_DIR}/lib/scripts/update_tags.rb" "${DATADOG_DIR}/scripts/update_tags.
 
 cp "${ROOT_DIR}/lib/scripts/parse_env_vars.rb" "${DATADOG_DIR}/scripts/parse_env_vars.rb"
 cp "${ROOT_DIR}/lib/scripts/nc.rb" "${DATADOG_DIR}/scripts/nc.rb"
+
+chmod +x "${DATADOG_DIR}/scripts/get_tags.rb"
+chmod +x "${DATADOG_DIR}/scripts/create_logs_config.rb"
+chmod +x "${DATADOG_DIR}/scripts/update_tags.rb"
+chmod +x "${DATADOG_DIR}/scripts/parse_env_vars.rb"
+chmod +x "${DATADOG_DIR}/scripts/nc.rb"
+
 cp "${ROOT_DIR}/lib/scripts/utils.sh" "${DATADOG_DIR}/scripts/utils.sh"
 cp "${ROOT_DIR}/lib/scripts/check_datadog.sh" "${DATADOG_DIR}/scripts/check_datadog.sh"
 
@@ -83,8 +88,11 @@ chmod +x "${BUILD_DIR}/.profile.d/01-run-datadog.sh"
 # export DD environment variables
 dd_export_env "${DATADOG_DIR}/.raw_datadog_env"
 
+echo "ruby version check:"
+ruby -v
+
 # sanitize env vars and export a new a env file
-$RUBY_BIN "${DATADOG_DIR}/scripts/parse_env_vars.rb" "${DATADOG_DIR}/.raw_datadog_env" "${DATADOG_DIR}/.datadog_env"
+ruby "${DATADOG_DIR}/scripts/parse_env_vars.rb" "${DATADOG_DIR}/.raw_datadog_env" "${DATADOG_DIR}/.datadog_env"
 
 # export DD_TAGS for ddtrace
 export DD_TAGS=$(ruby "${DATADOG_DIR}"/scripts/get_tags.rb)
