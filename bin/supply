@@ -24,7 +24,10 @@ if ! which ruby > /dev/null; then
 fi
 
 export PATH=/home/vcap/deps/$DEPS_IDX/bin:$PATH
-echo "export PATH=$PATH:\$PATH" >> "$DATADOG_DIR/.global_env"
+echo "
+if ! which ruby > /dev/null; then
+  export PATH=$PATH:\$PATH
+fi" >> "$DATADOG_DIR/.global_env"
 
 # for subsquent buildpacks and for buildpack metadata detection
 echo "config: {}
