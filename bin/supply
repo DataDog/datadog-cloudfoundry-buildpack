@@ -10,7 +10,7 @@ DEPS_IDX=$4
 DATADOG_DIR="${BUILD_DIR}/.datadog"
 BUILDPACK_VERSION="$(cat "${ROOT_DIR}/VERSION")"
 
-echo "-----> DatadogBuildpack/supply version $BUILDPACK_VERSION"
+echo "-----> DatadogBuildpack/$(basename $0) version $BUILDPACK_VERSION"
 
 mkdir -p "${DATADOG_DIR}/scripts"
 cp "${ROOT_DIR}/lib/scripts/update_agent_config.sh" "${DATADOG_DIR}/scripts/update_agent_config.sh"
