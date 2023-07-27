@@ -20,6 +20,7 @@ cp "${ROOT_DIR}/lib/scripts/get_tags.rb" "${DATADOG_DIR}/scripts/get_tags.rb"
 
 RUBY_CMD=ruby
 
+# install ruby if needed (the case of cflinuxfs4 or custom stacks)
 if ! which ruby > /dev/null; then
   echo "Installing Ruby"
   tar -xzf "${ROOT_DIR}/lib/ruby_3.0.5.tgz" -C "$DEPS_DIR/$DEPS_IDX" && echo "Ruby Install finished"
@@ -27,6 +28,9 @@ if ! which ruby > /dev/null; then
   RUBY_CMD=$DEPS_DIR/$DEPS_IDX/bin/ruby
 fi
 
+# create a .global_env file to be sourced by external scripts
+# for now, it appends the buildpack deps/bin folder to the PATH env variable of the caller
+# this is needed for stacks where ruby is not installed since our scripts rely on it
 echo "if ! which ruby > /dev/null; then
   export PATH=\$PATH:/home/vcap/deps/$DEPS_IDX/bin
 fi" > "$DATADOG_DIR/.global_env"
@@ -88,6 +92,7 @@ chmod +x "${BUILD_DIR}/.profile.d/01-run-datadog.sh"
 # export DD environment variables
 dd_export_env "${DATADOG_DIR}/.raw_datadog_env"
 
+# for debugging purposes
 echo "ruby version check: $($RUBY_CMD -v)"
 
 # sanitize env vars and export a new a env file
@@ -95,5 +100,3 @@ $RUBY_CMD "${DATADOG_DIR}/scripts/parse_env_vars.rb" "${DATADOG_DIR}/.raw_datado
 
 # export DD_TAGS for ddtrace
 export DD_TAGS=$($RUBY_CMD "${DATADOG_DIR}"/scripts/get_tags.rb)
-
-echo "DD_TAGS=$DD_TAGS"
