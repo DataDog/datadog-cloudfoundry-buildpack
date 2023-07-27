@@ -24,7 +24,7 @@ if ! which ruby > /dev/null; then
   echo "Installing Ruby"
   tar -xzf "${ROOT_DIR}/lib/ruby_3.0.5.tgz" -C "$DEPS_DIR/$DEPS_IDX" && echo "Ruby Install finished"
   export PATH=$PATH:/home/vcap/deps/$DEPS_IDX/bin
-  RUBY_CMD=$DEPS_DIR/$DEPS_IDX/bin/
+  RUBY_CMD=$DEPS_DIR/$DEPS_IDX/bin/ruby
 fi
 
 echo "if ! which ruby > /dev/null; then
