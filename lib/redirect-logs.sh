@@ -11,6 +11,9 @@ DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 
 source "${DATADOG_DIR}/scripts/utils.sh"
 
+# source updated PATH
+. "$DATADOG_DIR/.global_env"
+
 DD_EU_API_SITE="https://api.datadoghq.eu/api/"
 DD_US_API_SITE="https://api.datadoghq.com/api/"
 DD_API_SITE=${DD_US_API_SITE}

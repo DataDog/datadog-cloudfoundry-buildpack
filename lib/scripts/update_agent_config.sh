@@ -7,6 +7,9 @@
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
 LOCK="${DATADOG_DIR}/update_agent_config.lock"
 
+# source updated PATH
+. "$DATADOG_DIR/.global_env"
+
 # import utils function such as log_message
 release_lock() {
     log_info "releasing lock '${LOCK}'"
@@ -15,7 +18,7 @@ release_lock() {
 
 write_tags_to_file() {
     export DD_TAGS=$(ruby "${DATADOG_DIR}"/scripts/get_tags.rb)
-    
+
     export LOGS_CONFIG_DIR="${DATADOG_DIR}/dist/conf.d/logs.d"
     export LOGS_CONFIG
 
@@ -60,7 +63,7 @@ main() {
     done
 
     log_info "acquired lock '${LOCK}'"
-   
+
     # ensures the lock is released on exit
     trap release_lock INT TERM EXIT
 
@@ -72,10 +75,10 @@ main() {
         sleep 2
     done
 
-    timeout 300s "${DATADOG_DIR}/scripts/check_datadog.sh" 
+    timeout 300s "${DATADOG_DIR}/scripts/check_datadog.sh"
     exit_code=$?
-    
-    # verify that check_datadog exited successfully 
+
+    # verify that check_datadog exited successfully
     if [ ${exit_code} -ne  0 ]; then
         log_error "could not find agent, aborting update script!"
         exit ${exit_code}

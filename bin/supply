@@ -1,20 +1,44 @@
 #!/usr/bin/env bash
 
-echo "-----> DatadogBuildpack/supply"
-
 
 BIN_DIR=$(cd $(dirname $0); pwd)
 ROOT_DIR=$(dirname ${BIN_DIR})
 BUILD_DIR=$1
 CACHE_DIR=$2
-ENV_DIR=$3
+DEPS_DIR=$3
+DEPS_IDX=$4
 DATADOG_DIR="${BUILD_DIR}/.datadog"
+BUILDPACK_VERSION="$(cat "${ROOT_DIR}/VERSION")"
+
+echo "-----> DatadogBuildpack/$(basename $0) version $BUILDPACK_VERSION"
 
 mkdir -p "${DATADOG_DIR}/scripts"
 cp "${ROOT_DIR}/lib/scripts/update_agent_config.sh" "${DATADOG_DIR}/scripts/update_agent_config.sh"
 chmod +x "${DATADOG_DIR}/scripts/update_agent_config.sh"
 cp "${ROOT_DIR}/lib/scripts/get_tags.rb" "${DATADOG_DIR}/scripts/get_tags.rb"
 
+
+RUBY_CMD=ruby
+
+# install ruby if needed (the case of cflinuxfs4 or custom stacks)
+if ! which ruby > /dev/null; then
+  echo "Installing Ruby"
+  tar -xzf "${ROOT_DIR}/lib/ruby_3.0.5.tgz" -C "$DEPS_DIR/$DEPS_IDX" && echo "Ruby Install finished"
+  export PATH=$PATH:/home/vcap/deps/$DEPS_IDX/bin
+  RUBY_CMD=$DEPS_DIR/$DEPS_IDX/bin/ruby
+fi
+
+# create a .global_env file to be sourced by external scripts
+# for now, it appends the buildpack deps/bin folder to the PATH env variable of the caller
+# this is needed for stacks where ruby is not installed since our scripts rely on it
+echo "if ! which ruby > /dev/null; then
+  export PATH=\$PATH:/home/vcap/deps/$DEPS_IDX/bin
+fi" > "$DATADOG_DIR/.global_env"
+
+# for subsquent buildpacks and for buildpack metadata detection
+echo "config: {}
+name: datadog
+version: ${BUILDPACK_VERSION}" > "$DEPS_DIR/$DEPS_IDX/config.yml"
 
 echo "Installing Datadog IOT Agent, Dogstatsd and Trace Agent"
 
@@ -37,6 +61,7 @@ cp "${ROOT_DIR}/lib/scripts/update_tags.rb" "${DATADOG_DIR}/scripts/update_tags.
 
 cp "${ROOT_DIR}/lib/scripts/parse_env_vars.rb" "${DATADOG_DIR}/scripts/parse_env_vars.rb"
 cp "${ROOT_DIR}/lib/scripts/nc.rb" "${DATADOG_DIR}/scripts/nc.rb"
+
 cp "${ROOT_DIR}/lib/scripts/utils.sh" "${DATADOG_DIR}/scripts/utils.sh"
 cp "${ROOT_DIR}/lib/scripts/check_datadog.sh" "${DATADOG_DIR}/scripts/check_datadog.sh"
 
@@ -67,8 +92,11 @@ chmod +x "${BUILD_DIR}/.profile.d/01-run-datadog.sh"
 # export DD environment variables
 dd_export_env "${DATADOG_DIR}/.raw_datadog_env"
 
+# for debugging purposes
+echo "ruby version check: $($RUBY_CMD -v)"
+
 # sanitize env vars and export a new a env file
-ruby "${DATADOG_DIR}/scripts/parse_env_vars.rb" "${DATADOG_DIR}/.raw_datadog_env" "${DATADOG_DIR}/.datadog_env"
+$RUBY_CMD "${DATADOG_DIR}/scripts/parse_env_vars.rb" "${DATADOG_DIR}/.raw_datadog_env" "${DATADOG_DIR}/.datadog_env"
 
 # export DD_TAGS for ddtrace
-export DD_TAGS=$(ruby "${DATADOG_DIR}"/scripts/get_tags.rb)
+export DD_TAGS=$($RUBY_CMD "${DATADOG_DIR}"/scripts/get_tags.rb)

@@ -9,11 +9,15 @@ SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 DD_ENABLE_CAPI_METADATA_COLLECTION="${DD_ENABLE_CAPI_METADATA_COLLECTION:-false}"
 LOCKFILE="${DATADOG_DIR}/lock"
 FIRST_RUN="${FIRST_RUN:-true}"
+USER_TAGS="${DD_TAGS}"
+
+. "${DATADOG_DIR}/scripts/utils.sh"
+
+# source updated PATH
+. "$DATADOG_DIR/.global_env"
 
 export DD_TAGS=$(ruby "${DATADOG_DIR}/scripts/get_tags.rb")
 echo "${DD_TAGS}" > "${DATADOG_DIR}/.dd_tags.txt"
-
-source "${DATADOG_DIR}/scripts/utils.sh"
 
 setup_datadog() {
   pushd "${DATADOG_DIR}"
@@ -231,7 +235,7 @@ main() {
       exec 9>&-
     fi
   fi
-  
+
   # wait for the trace agent startup
   if [ "${DD_WAIT_TRACE_AGENT}" = "true" ]; then
     timeout=120

@@ -1,8 +1,8 @@
+#!/usr/bin/env ruby
 # Unless explicitly stated otherwise all files in this repository are licensed under the Apache 2.0 License.
 # This product includes software developed at Datadog (https://www.datadoghq.com/).
 # Copyright 2022-Present Datadog, Inc.
 
-#!/usr/bin/env ruby
 
 DATADOG_DIR = ENV.fetch("DATADOG_DIR", "/home/vcap/app/.datadog")
 DD_UPDATE_SCRIPT_WARMUP = ENV.fetch("DD_UPDATE_SCRIPT_WARMUP", "180")

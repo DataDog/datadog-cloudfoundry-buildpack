@@ -53,6 +53,9 @@ dd_export_env() {
   if [ -n "${TAGS}" ]; then
     echo "export TAGS='${TAGS}'" >> "${env_file}"
   fi
+  if [ -n "${PATH}" ]; then
+    echo "export PATH='${PATH}'" >> "${env_file}"
+  fi
   if [ -n "${DD_UPDATE_SCRIPT_WARMUP}" ]; then
     echo "export DD_UPDATE_SCRIPT_WARMUP='${DD_UPDATE_SCRIPT_WARMUP}'" >> "${env_file}"
   fi
