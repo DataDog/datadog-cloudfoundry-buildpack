@@ -61,15 +61,15 @@ function cleanup() {
 function main() {
   trap cleanup EXIT
 
+  DOWNLOAD=${REFRESH_ASSETS:-"false"}
+
   if [ ! -f ${SRCDIR}/lib/dogstatsd ] || [ ! -f ${SRCDIR}/lib/trace-agent ]; then
     DOWNLOAD="true"
   elif [ ! -f ${SRCDIR}/lib/agent ]; then
     DOWNLOAD="true"
-  elif [ -n "${REFRESH_ASSETS:-}" ]; then
-    DOWNLOAD="true"
   fi
 
-  if [ -n "${DOWNLOAD:-}" ]; then
+  if [ -n "${DOWNLOAD}" ]; then
     # Delete the old ones
     rm -f ${SRCDIR}/lib/agent
     rm -f ${SRCDIR}/lib/dogstatsd
