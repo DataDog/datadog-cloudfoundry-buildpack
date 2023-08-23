@@ -151,7 +151,7 @@ start_datadog() {
       if [ "${DD_LOGS_ENABLED}" = "true" ] && [ "${DD_LOGS_VALID_ENDPOINT}" = "false" ]; then
         echo "Log endpoint not valid, not starting agent"
       else
-        export DD_LOG_FILE=agent.log
+        export DD_LOG_FILE="${DATADOG_DIR}/agent.log"
         export DD_IOT_HOST=false
 
         echo "Starting Datadog agent"
@@ -163,11 +163,11 @@ start_datadog() {
       fi
     else
       echo "Starting dogstatsd agent"
-      export DD_LOG_FILE=dogstatsd.log
+      export DD_LOG_FILE="${DATADOG_DIR}/dogstatsd.log"
       if [ "${SUPPRESS_DD_AGENT_OUTPUT}" = "true" ]; then
-        env -u DD_TAGS ./dogstatsd start --cfgpath dist/ > /dev/null 2>&1 &
+        env -u DD_TAGS ./dogstatsd start --cfgpath dist/datadog.yaml > /dev/null 2>&1 &
       else
-        env -u DD_TAGS ./dogstatsd start --cfgpath dist/ &
+        env -u DD_TAGS ./dogstatsd start --cfgpath dist/datadog.yaml &
       fi
       echo $! > run/dogstatsd.pid
     fi
