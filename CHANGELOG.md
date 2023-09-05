@@ -5,7 +5,6 @@
 * [Added] Bump embedded Datadog Agent version to 7.46.0. Read more about it [here](https://github.com/DataDog/datadog-agent/blob/main/CHANGELOG.rst#7460--6460).
 * [Added] Add support for cflinuxfs4 stack. See [#174](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/174).
 * [Added] Standardize DD_TAGS format. See [#162](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/162).
-* [Added] Bump embedded Datadog Agent version to 7.46.0. See [#176](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/176).
 * [Fixed] Fix missing tags in extra logs sources. See [#175](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/175).
 
 ## 4.36.0 / 2023-06-22
