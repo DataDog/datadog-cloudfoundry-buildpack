@@ -174,9 +174,9 @@ start_datadog() {
     if [ "${FIRST_RUN}" = "true" ]; then
       echo "Starting trace agent"
       if [ "${SUPPRESS_DD_AGENT_OUTPUT}" = "true" ]; then
-        env -u DD_TAGS ./trace-agent --config dist/datadog.yaml --pid run/trace-agent.pid > /dev/null 2>&1 &
+        env -u DD_TAGS ./trace-agent run --config dist/datadog.yaml --pid run/trace-agent.pid > /dev/null 2>&1 &
       else
-        env -u DD_TAGS ./trace-agent --config dist/datadog.yaml --pid run/trace-agent.pid &
+        env -u DD_TAGS ./trace-agent run --config dist/datadog.yaml --pid run/trace-agent.pid &
       fi
       FIRST_RUN=false
     fi
