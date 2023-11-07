@@ -123,7 +123,7 @@ setup_datadog() {
 
 start_datadog() {
   export DD_TAGS=$(ruby "${DATADOG_DIR}/scripts/get_tags.rb")
-  
+
   pushd "${DATADOG_DIR}"
     export DD_LOG_FILE="${DATADOG_DIR}/dogstatsd.log"
     export DD_API_KEY
@@ -174,9 +174,9 @@ start_datadog() {
     if [ "${FIRST_RUN}" = "true" ]; then
       echo "Starting trace agent"
       if [ "${SUPPRESS_DD_AGENT_OUTPUT}" = "true" ]; then
-        env -u DD_TAGS ./trace-agent --config dist/datadog.yaml --pid run/trace-agent.pid > /dev/null 2>&1 &
+        env -u DD_TAGS ./trace-agent run --config dist/datadog.yaml --pidfile run/trace-agent.pid > /dev/null 2>&1 &
       else
-        env -u DD_TAGS ./trace-agent --config dist/datadog.yaml --pid run/trace-agent.pid &
+        env -u DD_TAGS ./trace-agent run --config dist/datadog.yaml --pidfile run/trace-agent.pid &
       fi
       FIRST_RUN=false
     fi
