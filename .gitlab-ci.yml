@@ -1,0 +1,22 @@
+variables:
+    VERSION:
+      value: ""
+      description: "The buildpack version to release"
+    RELEASE_BUCKET:
+      value: "cloudfoundry.datadoghq.com/datadog-cloudfoundry-buildpack"
+      description: "Bucket where the buildpack release will be stored"
+    DRY_RUN:
+      value: "true"
+      description: "Set to true to do a dry run"
+    REPO_BRANCH:
+      value: "master"
+      description: "The branch to use"
+
+buildpack-bosh-prod-release:
+  stage: deploy
+  image: 486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/gitlab_agent_deploy:v6554890-8eae026
+  tags: ["runner:main"]
+  when: manual
+  script:
+    - 'export PRODUCTION=true'
+    - ./scripts/release.sh
