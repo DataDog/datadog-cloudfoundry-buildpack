@@ -25,6 +25,8 @@ if [ "$DRY_RUN" == "true" ]; then
   exit 0
 fi
 
+VERSION=$(cat VERSION)
+
 echo "publishing the buildpack artifact"
 
 if [ "$RELEASE_BUCKET" -a "$RELEASE_BUCKET" != "false" ]; then
