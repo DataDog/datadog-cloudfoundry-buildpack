@@ -4,11 +4,6 @@
 IFS=$'\n\t'
 set -euxo pipefail
 
-if [[ -z ${VERSION+x} ]]; then
-  echo "You must set a version"
-  exit 1
-fi
-
 # Make sure variables are set
 PRODUCTION=${PRODUCTION:-"false"}
 STAGING=${STAGING:-"false"}
@@ -24,7 +19,7 @@ git checkout $REPO_BRANCH
 REFRESH_ASSETS=1 ./scripts/prepare.sh
 
 # build the buildpack
-VERSION=$VERSION ./scripts/build.sh
+./scripts/build.sh
 
 if [ "$DRY_RUN" == "true" ]; then
   exit 0
