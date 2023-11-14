@@ -9,11 +9,14 @@ variables:
       value: "master"
       description: "The branch to use"
 
+
 buildpack-prod-release:
   stage: deploy
   image: 486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/gitlab_agent_deploy:v6554890-8eae026
   tags: ["runner:main"]
   when: manual
+  before_script:
+    - apt-get update -y && apt-get install -y zip
   script:
     - 'export PRODUCTION=true'
     - ./scripts/release.sh
