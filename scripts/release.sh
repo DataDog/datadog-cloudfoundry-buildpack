@@ -11,21 +11,21 @@ DRY_RUN=${DRY_RUN:-"true"}
 RELEASE_BUCKET=${RELEASE_BUCKET:-"false"}
 REPO_BRANCH=${REPO_BRANCH:-"master"}
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+VERSION=$(cat VERSION)
 
 git checkout $REPO_BRANCH
 
-# run the prepare script
+echo "Preparing the buildpack"
 REFRESH_ASSETS=1 ./scripts/prepare.sh
 
-# build the buildpack
+echo "Building the buildpack version $VERSION"
 ./scripts/build.sh
 
 if [ "$DRY_RUN" == "true" ]; then
   exit 0
 fi
 
-VERSION=$(cat VERSION)
 
 echo "publishing the buildpack artifact"
 
