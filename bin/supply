@@ -129,5 +129,13 @@ if [ "$ENABLE_APM_SSI" == "true" ]; then
     $PIP_CMD install ddtrace
   fi
 
+  if which npm > /dev/null; then
+    # nodejs version is <= 12
+    if [ "$(node -v | cut -d '.' -f 1 | sed 's/v//g')" -le 12 ]; then
+      npm install dd-trace@latest-node12
+    else
+      npm install dd-trace --save
+    fi
+  fi
 
 fi
