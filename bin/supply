@@ -100,3 +100,16 @@ $RUBY_CMD "${DATADOG_DIR}/scripts/parse_env_vars.rb" "${DATADOG_DIR}/.raw_datado
 
 # export DD_TAGS for ddtrace
 export DD_TAGS=$($RUBY_CMD "${DATADOG_DIR}"/scripts/get_tags.rb)
+
+if [ "$ENABLE_APM_SSI" == "true" ]; then
+  echo "Enabling Single Step APM Instrumentation"
+
+  # add all language buildpack bin folders to the PATH
+  for dir in $DEPS_DIR/*/; do
+    dir="${dir%/}" # remove trailing slash
+    if grep -q -E "name: (python|ruby|go|nodejs|java)" "$dir/config.yml" >/dev/null 2>&1; then
+      echo "Detected buildpack: $(grep 'name:' $dir/config.yml | sed 's/name: //g')"
+      export PATH=$PATH:$dir/bin
+    fi
+  done
+fi
