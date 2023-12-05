@@ -146,4 +146,10 @@ if [ "$ENABLE_APM_SSI" == "true" ]; then
     gem install ddtrace
   fi
 
+  # go
+  if which go > /dev/null; then
+    go get gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer
+    go get gopkg.in/DataDog/dd-trace-go.v1/profiler
+  fi
+
 fi
