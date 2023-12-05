@@ -138,4 +138,8 @@ if [ "$ENABLE_APM_SSI" == "true" ]; then
     fi
   fi
 
+  if which gem > /dev/null; then
+    gem install ddtrace
+  fi
+
 fi
