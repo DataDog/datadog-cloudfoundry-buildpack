@@ -224,6 +224,7 @@ monit_datadog() {
 }
 
 main() {
+  
   if [ "$ENABLE_APM_SSI" == "true" ]; then
     echo "Enabling Single Step APM Instrumentation"
 
@@ -252,6 +253,7 @@ main() {
     # install ddtrace
 
     echo "pip command: $PIP_CMD"
+
     # python
     if [ "$PIP_CMD" != "" ]; then
       $PIP_CMD install ddtrace
@@ -276,13 +278,6 @@ main() {
     if which gem > /dev/null; then
       gem install ddtrace
     fi
-
-    # go
-    if which go > /dev/null; then
-      go get gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer
-      go get gopkg.in/DataDog/dd-trace-go.v1/profiler
-    fi
-
   fi
 
   if [ -z "${DD_API_KEY}" ]; then
