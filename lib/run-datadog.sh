@@ -280,7 +280,7 @@ enable_apm_ssi() {
 
 main() {
   
-  if [ "$ENABLE_APM_SSI" == "true" ]; then
+  if [ "$DD_APM_INSTRUMENTATION_ENABLED" == "true" ]; then
     enable_apm_ssi
   fi
 
