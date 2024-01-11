@@ -223,7 +223,67 @@ monit_datadog() {
   done
 }
 
+enable_apm_ssi() {
+  echo "Enabling Single Step APM Instrumentation"
+
+  PIP_CMD=""
+  PYTHON_BUILDPACK_DIR=""
+
+  # add all language buildpack bin folders to the PATH
+  for dir in $DEPS_DIR/*/; do
+    dir="${dir%/}" # remove trailing slash
+    if grep -q -E "name: (python|ruby|go|nodejs|java)" "$dir/config.yml" >/dev/null 2>&1; then
+      buildpack_name=$(grep 'name:' $dir/config.yml | sed 's/name: //g')
+      echo "Detected buildpack: $buildpack_name"
+
+      if [ "$buildpack_name" = "python" ]; then
+        PYTHON_BUILDPACK_DIR="$dir"
+        # find the pip binary (pip, pip3, pip3.8, ...)
+        if ls $dir/bin/pip* > /dev/null 2>&1; then
+          PIP_CMD=$(basename $(ls $dir/bin/pip* | head -1))
+        fi
+        
+      fi
+      export PATH=$PATH:$dir/bin
+    fi
+  done
+
+  # install ddtrace
+
+  echo "pip command: $PIP_CMD"
+
+  # python
+  if [ "$PIP_CMD" != "" ]; then
+    $PIP_CMD install ddtrace
+    SITE_CUSTOMIZE_PATH=$(python -c "import ddtrace.bootstrap.sitecustomize as sc, os.path as op; print(op.abspath(op.dirname(sc.__file__)))")
+    echo "copying sitecustomize.py"
+    cp $SITE_CUSTOMIZE_PATH/sitecustomize.py $PYTHON_BUILDPACK_DIR
+  fi
+
+  # nodejs
+  if which npm > /dev/null; then
+    # nodejs version is <= 12
+    if [ "$(node -v | cut -d '.' -f 1 | sed 's/v//g')" -le 12 ]; then
+      npm install dd-trace@latest-node12
+    else
+      npm install dd-trace --save
+    fi
+
+    export NODE_OPTIONS=--require=dd-trace/init
+  fi
+
+  # ruby
+  if which gem > /dev/null; then
+    gem install ddtrace
+  fi
+}
+
 main() {
+  
+  if [ "$DD_APM_INSTRUMENTATION_ENABLED" != "" ] && [ "$DD_APM_INSTRUMENTATION_ENABLED" != "false" ]; then
+    enable_apm_ssi
+  fi
+
   if [ -z "${DD_API_KEY}" ]; then
     echo "Datadog API Key not set, not starting Datadog"
   else
