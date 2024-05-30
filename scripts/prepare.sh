@@ -31,9 +31,9 @@ function download_iot_agent() {
   local iot_version="${1:-${AGENT_DEFAULT_VERSION}}"
   local iot_agent_download_url="${IOT_AGENT_DOWNLOAD_URL}${iot_version}${DOWNLOAD_URL_TAIL}"
 
-  curl -L ${iot_agent_download_url} -o $TMPDIR/datadog-agent.deb
+  curl -L ${iot_agent_download_url} -o $TMPDIR/datadog-iot-agent.deb
   pushd ${TMPDIR}
-    dpkg -x datadog-agent.deb .
+    dpkg -x datadog-iot-agent.deb .
   popd
   cp ${TMPDIR}/opt/datadog-agent/bin/agent/agent ${SRCDIR}/lib/agent
 }
