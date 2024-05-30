@@ -11,10 +11,10 @@ DRY_RUN=${DRY_RUN:-"true"}
 RELEASE_BUCKET=${RELEASE_BUCKET:-"false"}
 REPO_BRANCH=${REPO_BRANCH:-"master"}
 
+git checkout $REPO_BRANCH
 
 VERSION=$(cat VERSION)
 
-git checkout $REPO_BRANCH
 
 echo "Preparing the buildpack"
 REFRESH_ASSETS=1 ./scripts/prepare.sh
