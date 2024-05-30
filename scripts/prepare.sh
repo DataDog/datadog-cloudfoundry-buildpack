@@ -33,7 +33,7 @@ function download_iot_agent() {
 
   curl -L ${iot_agent_download_url} -o $TMPDIR/datadog-iot-agent.deb
   pushd ${TMPDIR}
-    dpkg -x datadog-agent.deb .
+    dpkg -x datadog-iot-agent.deb .
   popd
   cp ${TMPDIR}/opt/datadog-agent/bin/agent/agent ${SRCDIR}/lib/agent
 }
