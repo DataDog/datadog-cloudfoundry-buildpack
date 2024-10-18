@@ -108,7 +108,7 @@ api_key:
 # Intervals are expressed in seconds. You can also set a provider's interval to 0
 # to disable it.
 metadata_collectors:
-  - name: 'resources'
+  - name: "resources"
     interval: 60
 
 # DogStatsd
@@ -167,6 +167,9 @@ metadata_collectors:
 # log_level: info
 log_file: AGENT_LOG_FILE
 
+logs_config:
+  run_path: /home/vcap/app/.datadog-agent/dist/conf.d/logs.d
+
 # Set to 'yes' to output logs in JSON format
 # log_format_json: no
 
@@ -196,7 +199,7 @@ log_file: AGENT_LOG_FILE
 # Trace Agent Specific Settings
 #
 apm_config:
-#   Whether or not the APM Agent should run
+  #   Whether or not the APM Agent should run
   enabled: true
   log_file: TRACE_LOG_FILE
 #   The environment tag that Traces should be tagged with
