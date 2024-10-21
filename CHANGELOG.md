@@ -2,7 +2,7 @@
 
 ## 4.41.0 / 2024-10-21
 
-* [Added] Bump embedded Datadog Agent version to 7.57.0. Read more about it [here](https://github.com/DataDog/datadog-agent/blob/main/CHANGELOG.rst#7570--6570).
+* [Added] Bump embedded Datadog Agent version to 7.57.0. Read more about it [here](https://github.com/DataDog/datadog-agent/blob/main/CHANGELOG.rst#7570).
 * [Added] Update default config for agent 7.57.0. See [#192](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/192).
 
 ## 4.40.0 / 2024-05-29
