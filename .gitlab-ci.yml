@@ -12,7 +12,7 @@ variables:
 
 buildpack-prod-release:
   stage: deploy
-  image: 486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-buildimages/gitlab_agent_deploy:v34815905-ae40295e
+  image: registry.ddbuild.io/ci/datadog-agent-buildimages/gitlab_agent_deploy:v48815877-9bfad02c
   tags: ["runner:main"]
   when: manual
   before_script:
