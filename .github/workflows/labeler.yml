@@ -6,7 +6,8 @@ jobs:
   triage:
     runs-on: ubuntu-latest
     permissions:
-        contents: write
+      contents: read
+      pull-requests: write
     steps:
       - uses: DataDog/labeler@glob-all
         with:
