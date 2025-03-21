@@ -6,4 +6,4 @@
 *                       @DataDog/platform-integrations
 
 # Documentation
-*.md                    @DataDog/documentation @DataDog/platform-integrations
+*.md                    @DataDog/platform-integrations
