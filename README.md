@@ -5,6 +5,25 @@ This is a [supply buildpack][1] for Cloud Foundry. It installs the following thr
 * Datadog Trace Agent for submitting APM traces from your application
 * Datadog IoT Agent for submitting your application logs
 
+## Basic Usage
+
+If you don't have this buildpack installed in your foundry, you can reference one
+of the GitHub .zip releases in your `manifest.yml`, like this:
+
+```
+---
+applications:
+- name: test-python-flask
+  random-route: true
+  buildpacks:
+    - https://github.com/DataDog/datadog-cloudfoundry-buildpack/releases/download/4.42.0/datadog-cloudfoundry-buildpack.zip
+    - python_buildpack
+  memory: 256M
+  stack: cflinuxfs4
+  env:
+    DD_API_KEY: <DATADOG_API_KEY>  
+```
+
 ## Installation
 
 ### Upload the buildpack to CF
