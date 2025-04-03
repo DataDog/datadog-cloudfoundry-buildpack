@@ -7,7 +7,7 @@ This is a [supply buildpack][1] for Cloud Foundry. It installs the following thr
 
 ## Basic Usage
 
-If you don't have this buildpack installed in your foundry, you can reference one
+If you don't have this buildpack uploaded in your foundation, you can reference one
 of the GitHub .zip releases in your `manifest.yml`, like this:
 
 ```
