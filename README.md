@@ -9,7 +9,7 @@ This is a [supply buildpack][1] for Cloud Foundry. It installs the following thr
 
 Since this is a supply buildpack, it has to be specified before any final buildpack in the list. See [Cloud Foundry documentation][4] for details about pushing an application with multiple buildpacks.
 
-### Option 1: Using a GitHub Release Packaged Zip File
+### Option 1: Using a GitHub release packaged as a ZIP File
 
 You can reference one of the GitHub release zip files directly in your `manifest.yml`:
 
