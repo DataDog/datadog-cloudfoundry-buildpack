@@ -11,7 +11,7 @@ Since this is a supply buildpack, it has to be specified before any final buildp
 
 ### Option 1: Using a GitHub release packaged as a ZIP File
 
-You can reference one of the GitHub release zip files directly in your `manifest.yml`:
+You can reference one of the GitHub release ZIP files directly in your `manifest.yml`:
 
 ```
 ---
