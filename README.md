@@ -27,7 +27,7 @@ applications:
     DD_API_KEY: <DATADOG_API_KEY>  
 ```
 
-### Option 2: Upload the buildpack to CF
+### Option 2: Upload the buildpack to Cloud Foundry
 
 Download the latest Datadog [buildpack release][2] or [build it][3] and upload it to your Cloud Foundry environment.
 
