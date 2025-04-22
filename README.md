@@ -40,7 +40,7 @@ Download the latest Datadog [buildpack release][2] or [build it][3] and upload i
     cf update-buildpack datadog-cloudfoundry-buildpack -p datadog-cloudfoundry-buildpack.zip
     ```
 
-Once it is available in your Cloud Foundry environment, configure your application to use the Datadog buildpack by specifying it in your application manifest.
+After it is available in your Cloud Foundry environment, configure your application to use the Datadog buildpack by specifying it in your application manifest.
 
 ## Configuration
 
