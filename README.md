@@ -7,7 +7,27 @@ This is a [supply buildpack][1] for Cloud Foundry. It installs the following thr
 
 ## Installation
 
-### Upload the buildpack to CF
+Since this is a supply buildpack, it has to be specified before any final buildpack in the list. See [Cloud Foundry documentation][4] for details about pushing an application with multiple buildpacks.
+
+### Option 1: Using a GitHub release packaged as a ZIP File
+
+You can reference one of the GitHub release ZIP files directly in your `manifest.yml`:
+
+```
+---
+applications:
+- name: test-python-flask
+  random-route: true
+  buildpacks:
+    - https://github.com/DataDog/datadog-cloudfoundry-buildpack/releases/download/4.42.0/datadog-cloudfoundry-buildpack-4.42.0.zip
+    - python_buildpack
+  memory: 256M
+  stack: cflinuxfs4
+  env:
+    DD_API_KEY: <DATADOG_API_KEY>  
+```
+
+### Option 2: Upload the buildpack to Cloud Foundry
 
 Download the latest Datadog [buildpack release][2] or [build it][3] and upload it to your Cloud Foundry environment.
 
@@ -19,9 +39,8 @@ Download the latest Datadog [buildpack release][2] or [build it][3] and upload i
     ```bash
     cf update-buildpack datadog-cloudfoundry-buildpack -p datadog-cloudfoundry-buildpack.zip
     ```
-Once it is available in your Cloud Foundry environment, configure your application to use the Datadog buildpack by specifying it in your application manifest.
 
-**Note**: Since this is a supply buildpack, it has to be specified before any final buildpack in the list. See [Cloud Foundry documentation][4] for details about pushing an application with multiple buildpacks.
+After it is available in your Cloud Foundry environment, configure your application to use the Datadog buildpack by specifying it in your application manifest.
 
 ## Configuration
 
