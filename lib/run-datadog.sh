@@ -100,7 +100,7 @@ setup_datadog() {
     # Create folder for storing PID files
     mkdir run
 
-    if [ -a ./agent ] && "${DD_DISABLE_CORE_AGENT}" != "true" ; then
+    if [ -a ./agent ] && [ "${DD_DISABLE_CORE_AGENT}" != "true" ]; then
       export DD_LOG_FILE=${DATADOG_DIR}/agent.log
       export DD_IOT_HOST=false
       sed -i "s~log_file: AGENT_LOG_FILE~log_file: ${DD_LOG_FILE}~" dist/datadog.yaml
@@ -144,7 +144,7 @@ start_datadog() {
       fi
     fi
 
-    if [ -a ./agent ] && "${DD_DISABLE_CORE_AGENT}" != "true" ; then
+    if [ -a ./agent ] && [ "${DD_DISABLE_CORE_AGENT}" != "true" ]; then
       if [ "${DD_LOGS_ENABLED}" = "true" ] && [ "${DD_LOGS_VALID_ENDPOINT}" = "false" ]; then
         echo "Log endpoint not valid"
       fi
