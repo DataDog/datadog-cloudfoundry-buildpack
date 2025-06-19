@@ -99,14 +99,10 @@ setup_datadog() {
     # Create folder for storing PID files
     mkdir run
 
-    if [ -a ./agent ] && { [ "${DD_LOGS_ENABLED}" = "true" ] || [ "${DD_ENABLE_CHECKS}" = "true" ]; }; then
-      if [ "${DD_LOGS_ENABLED}" = "true" -a "${DD_LOGS_VALID_ENDPOINT}" = "false" ]; then
-        echo "Log endpoint not valid, not starting agent"
-      else
-        export DD_LOG_FILE=${DATADOG_DIR}/agent.log
-        export DD_IOT_HOST=false
-        sed -i "s~log_file: AGENT_LOG_FILE~log_file: ${DD_LOG_FILE}~" dist/datadog.yaml
-      fi
+    if [ -a ./agent ]; then
+      export DD_LOG_FILE=${DATADOG_DIR}/agent.log
+      export DD_IOT_HOST=false
+      sed -i "s~log_file: AGENT_LOG_FILE~log_file: ${DD_LOG_FILE}~" dist/datadog.yaml
     else
       export DD_LOG_FILE=${DATADOG_DIR}/dogstatsd.log
       sed -i "s~log_file: AGENT_LOG_FILE~log_file: ${DD_LOG_FILE}~" dist/datadog.yaml
@@ -147,21 +143,21 @@ start_datadog() {
       fi
     fi
 
-    if [ -a ./agent ] && { [ "${DD_LOGS_ENABLED}" = "true" ] || [ "${DD_ENABLE_CHECKS}" = "true" ]; }; then
+    if [ -a ./agent ]; then
       if [ "${DD_LOGS_ENABLED}" = "true" ] && [ "${DD_LOGS_VALID_ENDPOINT}" = "false" ]; then
-        echo "Log endpoint not valid, not starting agent"
-      else
-        export DD_LOG_FILE="${DATADOG_DIR}/agent.log"
-        export DD_IOT_HOST=false
-
-        echo "Starting Datadog agent"
-        if [ "${SUPPRESS_DD_AGENT_OUTPUT}" = "true" ]; then
-          env -u DD_TAGS ./agent run --cfgpath dist/ --pidfile run/agent.pid > /dev/null 2>&1 &
-        else
-          env -u DD_TAGS ./agent run --cfgpath dist/ --pidfile run/agent.pid &
-        fi
+        echo "Log endpoint not valid"
       fi
-    else
+
+      export DD_LOG_FILE="${DATADOG_DIR}/agent.log"
+      export DD_IOT_HOST=false
+
+      echo "Starting Datadog agent"
+      if [ "${SUPPRESS_DD_AGENT_OUTPUT}" = "true" ]; then
+        env -u DD_TAGS ./agent run --cfgpath dist/ --pidfile run/agent.pid > /dev/null 2>&1 &
+      else
+        env -u DD_TAGS ./agent run --cfgpath dist/ --pidfile run/agent.pid &
+      fi
+    elif [ -a ./dogstatsd ]; then
       echo "Starting dogstatsd agent"
       export DD_LOG_FILE="${DATADOG_DIR}/dogstatsd.log"
       if [ "${SUPPRESS_DD_AGENT_OUTPUT}" = "true" ]; then
