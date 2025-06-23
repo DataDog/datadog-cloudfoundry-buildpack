@@ -202,6 +202,7 @@ apm_config:
   #   Whether or not the APM Agent should run
   enabled: true
   log_file: TRACE_LOG_FILE
+  receiver_socket: "/home/app/.datadog/run/apm.socket"
 #   The environment tag that Traces should be tagged with
 #   Will inherit from "env" tag if none is applied here
 #   env: none
