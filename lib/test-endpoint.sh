@@ -5,7 +5,7 @@
 # Copyright 2017-Present Datadog, Inc.
 
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
-DD_SKIP_LOGS_VALIDATION=${DD_SKIP_LOGS_VALIDATION:true}
+DD_SKIP_LOGS_VALIDATION=${DD_SKIP_LOGS_VALIDATION:-true}
 
 # source updated PATH
 . "$DATADOG_DIR/.global_env"
