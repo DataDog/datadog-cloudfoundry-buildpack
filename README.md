@@ -123,7 +123,6 @@ The following environment variables are used to configure log collection.
 | `LOGS_CONFIG`              | Use this option to configure the Agent to listen to a local TCP port and set the value for the `service` and `source` parameters. The port specified in the configuration must be the same as specified in the environment variable `STD_LOG_COLLECTION_PORT`. |
 | `SUPPRESS_DD_AGENT_OUTPUT` | Use this option to see the Datadog agent, Trace agent and DogStatsD logs in the `cf logs` output.                                                                                                                                                              |
 | `DD_SPARSE_APP_LOGS`       | Use this option to avoid losing log lines when app sparsely writes to STDOUT.                                                                                                                                                                                  |
-| `DD_SKIP_LOGS_VALIDATION`  | Use this option to skip to logs endpoint validation script on startup. Default: true                                                                                                                                                                           |
 
 **Example**
 
