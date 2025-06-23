@@ -1,8 +1,13 @@
 # Changelog
 
+## 4.44.0 / 2025-06-23
+
+* [Added] Decouple agent startup from DD_LOGS_ENABLED. See [#200](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/200).
+* [Fixed] Fix DD_SITE handling in the logs endpoint testing script. See [#202](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/202).
+* [Fixed] Fix `apm_config.receiver_socket` default path. See [#201](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/201).
+
 ## 4.43.0 / 2025-04-22
 
-* [Added] Bump embedded Datadog Agent version to 7.64.2. Read more about it [here](https://github.com/DataDog/datadog-agent/blob/main/CHANGELOG.rst#7642--6642).
 * [Added] Bump embedded Datadog Agent version to 7.64.2. Read more about it [here](https://github.com/DataDog/datadog-agent/blob/main/CHANGELOG.rst#7642--6642).
 * [Added] Bump embedded Datadog Agent version to 7.64.2. Read more about it [here](https://github.com/DataDog/datadog-agent/blob/main/CHANGELOG.rst#7642).
 
