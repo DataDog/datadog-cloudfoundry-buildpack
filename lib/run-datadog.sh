@@ -245,12 +245,9 @@ enable_apm_ssi() {
     fi
   done
 
-  # install ddtrace
-
-  echo "pip command: $PIP_CMD"
-
   # python
   if [ "$PIP_CMD" != "" ]; then
+    echo "detected pip command: $PIP_CMD"
     $PIP_CMD install ddtrace
     SITE_CUSTOMIZE_PATH=$(python -c "import ddtrace.bootstrap.sitecustomize as sc, os.path as op; print(op.abspath(op.dirname(sc.__file__)))")
     echo "copying sitecustomize.py"
@@ -276,7 +273,6 @@ enable_apm_ssi() {
 }
 
 main() {
-  
   if [ "$DD_APM_INSTRUMENTATION_ENABLED" != "" ] && [ "$DD_APM_INSTRUMENTATION_ENABLED" != "false" ]; then
     enable_apm_ssi
   fi
