@@ -1,0 +1,5 @@
+build/com/*
+*.jar
+cf_vars.yaml
+.DS_Store
+target
