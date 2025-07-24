@@ -1,0 +1,23 @@
+{
+  "name": "cf-nodejs-sample-app",
+  "version": "1.0.0",
+  "description": "sample nodejs app",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DataDog/cf-nodejs-sample-app.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DataDog/cf-nodejs-sample-app/issues"
+  },
+  "homepage": "https://github.com/DataDog/cf-nodejs-sample-app#readme",
+  "dependencies": {
+    "dd-trace": "^3.16.0",
+    "hot-shots": "^10.0.0"
+  }
+}
