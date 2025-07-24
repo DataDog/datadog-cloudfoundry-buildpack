@@ -1,4 +1,4 @@
-# A sample Cloud Foundry App
+# A sample Cloud Foundry App in NodeJS
 
 This App is an example of how to use the [Datadog Cloudfoundry Buildpack](https://github.com/datadog/datadog-cloudfoundry-buildpack).
 

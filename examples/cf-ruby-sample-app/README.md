@@ -1,4 +1,4 @@
-# A sample Cloud Foundry App with Ruby
+# A sample Cloud Foundry App in Ruby
 
 This App is an example of how to use the [Datadog Cloudfoundry Buildpack](https://github.com/datadog/datadog-cloudfoundry-buildpack).
 
