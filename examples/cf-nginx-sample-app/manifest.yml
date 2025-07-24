@@ -1,0 +1,46 @@
+---
+applications:
+  - name: nginx-sample-app
+    memory: 128M
+    instances: 8
+    buildpacks:
+      - datadog_application_monitoring
+      - nginx_buildpack
+    env:
+      DD_API_KEY: ((DD_API_KEY))
+      DD_VERSION: "1.0.0"
+      DD_SERVICE: "nginx-sample-app"
+      AD_DATADOGHQ_COM: '{
+        "nginx_app_endpoint": {
+          "check_names": ["nginx", "http_check"],
+          "init_configs": [{}, {}],
+          "instances": [
+            {
+              "nginx_status_url": "http://%%host%%:8080/nginx_status",
+              "metrics": ["*"],
+              "tags": ["env:pcf-((ENV))","scope:testing","service:nginx-sample-app"]
+            },
+            {
+              "name": "nginx app HTTP check",
+              "url": "http://%%host%%:8080/nginx_status",
+              "tags": ["env:pcf-((ENV))","scope:testing","service:nginx-sample-app"]
+            }
+          ]
+        }
+      }'
+      DD_ENV: pcf-((ENV))
+      DD_LOGS_ENABLED: true
+      STD_LOG_COLLECTION_PORT: 10514
+      LOGS_CONFIG: '[{"type":"tcp","port":"10514","source":"nginx","service":"nginx-sample-app"}]'
+      DD_ENABLE_CAPI_METADATA_COLLECTION: "true"
+      TEST[KEY]: VALUE
+    metadata:
+      labels:
+        tags.datadoghq.com/service: nginx-sample-app
+        tags.datadoghq.com/env: pcf-((ENV))
+        tags.datadoghq.com/version: 1.0.0
+    sidecars:
+    - name: traffic_generator
+      process_types:
+      - web
+      command: './traffic'
