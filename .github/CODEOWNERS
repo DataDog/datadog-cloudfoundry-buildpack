@@ -6,4 +6,4 @@
 *                       @DataDog/agent-integrations
 
 # Documentation
-*.md                    @DataDog/agent-integrations @DataDog/documentation
+*.md                    @DataDog/agent-integrations
