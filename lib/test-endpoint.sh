@@ -10,7 +10,7 @@ DD_SKIP_LOGS_VALIDATION=${DD_SKIP_LOGS_VALIDATION:-true}
 # source updated PATH
 . "$DATADOG_DIR/.global_env"
 
-if [ "${DD_SKIP_LOGS_VALIDATION}" == "true"]; then
+if [ "${DD_SKIP_LOGS_VALIDATION}" = "true" ]; then
   echo "Skipping log endpoint validation: DD_SKIP_LOGS_VALIDATION is set to true."
   return
 fi
@@ -41,7 +41,6 @@ if [ "${DD_LOGS_CONFIG_USE_HTTP}" = true ]; then
   fi
 else
     DEFAULT_LOGS_ENDPOINT="${DD_DEFAULT_TCP_EU_ENDPOINT}"
-  fi
 fi
 
 if [ -z "${DD_LOGS_CONFIG_LOGS_DD_URL}" ]; then
