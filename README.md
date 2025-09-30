@@ -110,7 +110,7 @@ env:
   # Redirect Container Stdout/Stderr to a local port so the agent can collect the logs
   STD_LOG_COLLECTION_PORT: <PORT>
   # Configure the agent to collect logs from the wanted port and set the value for source and service
-  LOGS_CONFIG: '[{"type":"tcp","port":"<PORT>","source":"<SOURCE>","service":"<SERVICE>"}]'
+  LOGS_CONFIG: '[{"type":"tcp","port": <PORT>,"source":"<SOURCE>","service":"<SERVICE>"}]'
 ```
 
 **Configure log collection**
@@ -134,7 +134,7 @@ env:
   DD_LOGS_ENABLED: true
   DD_ENABLE_CHECKS: false
   STD_LOG_COLLECTION_PORT: 10514
-  LOGS_CONFIG: '[{"type":"tcp","port":"10514","source":"java","service":"app01"}]'
+  LOGS_CONFIG: '[{"type":"tcp","port": 10514,"source":"java","service":"app01"}]'
 ```
 
 ### Unified Service Tagging

@@ -30,6 +30,9 @@ end
 
 if !logs_config.nil?
   config["logs"] = JSON.parse(logs_config)
+  
+  # convert every port field in every config in config["logs"] to an int
+  config["logs"].each { |conf| conf["port"] = conf["port"].to_i }
 
   tags_list = []
 
