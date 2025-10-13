@@ -9,6 +9,6 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: DataDog/labeler@glob-all
+      - uses: DataDog/labeler@5170395583c7f7ec92989fd24faffc5b6154b866 # glob-all
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
