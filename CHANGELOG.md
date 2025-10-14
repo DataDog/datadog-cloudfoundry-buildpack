@@ -1,5 +1,14 @@
 # Changelog
 
+## 4.44.0 / 2025-10-14
+
+* [Added] Bump embedded Datadog Agent version to 7.70.2. Read more about it [here](https://github.com/DataDog/datadog-agent/blob/main/CHANGELOG.rst#7702--6702).
+* [Changed] [SINT-3848] 🔒 Pin GitHub Actions to specific SHA versions for enhanced security. See [#210](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/210).
+* [Changed] Fix logs_config validation for agent 7.65+. See [#209](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/209).
+* [Changed] Fix test-endpoint.sh errors. See [#208](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/208).
+* [Changed] Print pip command log message only when detected. See [#205](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/205).
+* [Changed] Update CODEOWNERS. See [#204](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/204).
+
 ## 4.44.0 / 2025-06-23
 
 * [Added] Decouple agent startup from DD_LOGS_ENABLED. See [#200](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/200).
