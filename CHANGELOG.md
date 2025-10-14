@@ -1,6 +1,6 @@
 # Changelog
 
-## 4.44.0 / 2025-10-14
+## 4.45.0 / 2025-10-14
 
 * [Added] Bump embedded Datadog Agent version to 7.70.2. Read more about it [here](https://github.com/DataDog/datadog-agent/blob/main/CHANGELOG.rst#7702--6702).
 * [Changed] Fix logs_config validation for agent 7.65+. See [#209](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/209).
