@@ -21,7 +21,7 @@ applications:
               "tags": ["env:pcf-((ENV))","scope:testing","service:nginx-sample-app"]
             },
             {
-              "name": "nginx app HTTP check",
+              "name": "NGINX app HTTP check",
               "url": "http://%%host%%:8080/nginx_status",
               "tags": ["env:pcf-((ENV))","scope:testing","service:nginx-sample-app"]
             }
