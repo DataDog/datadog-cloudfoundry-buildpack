@@ -173,6 +173,19 @@ You can enable the collection of your application metadata (labels and annotatio
 
 If you're running Docker on Cloud Foundry, review the [`docker` directory][9] to adapt this buildpack to use in a `dockerfile`.
 
+## Examples
+
+For further information and configuration examples, check out the `examples` folder. It contains sample applications demonstrating how to use the Datadog Cloud Foundry buildpack with different programming languages and frameworks:
+
+- **cf-go-sample-app**: Sample Go application
+- **cf-java-sample-app**: Sample Java application
+- **cf-nginx-sample-app**: Sample NGINX application
+- **cf-nodejs-sample-app**: Sample Node.js application
+- **cf-python-sample-app**: Sample Python application
+- **cf-ruby-sample-app**: Sample Ruby application
+
+Each sample application includes a complete example with manifest configuration, application code, and deployment instructions.
+
 [1]: https://docs.cloudfoundry.org/buildpacks/understand-buildpacks.html#supply-script
 [2]: https://github.com/DataDog/datadog-cloudfoundry-buildpack/releases/latest/download/datadog-cloudfoundry-buildpack.zip
 [3]: /DEVELOPMENT.md#building

@@ -1,0 +1,36 @@
+---
+applications:
+  - name: java-sample-app
+    memory: 1G
+    instances: 1
+    path: target/app-sample.jar
+    buildpacks:
+      - datadog_application_monitoring
+      - https://github.com/cloudfoundry/java-buildpack.git
+    env:
+      DD_API_KEY: ((DD_API_KEY))
+      DD_VERSION: '1.0.0'
+      DD_SERVICE: java-sample-app
+      DD_ENV: pcf-((ENV))
+      DD_LOGS_ENABLED: true
+      DD_LOGS_INJECTION: true
+      DD_ENABLE_CAPI_METADATA_COLLECTION: 'true'
+      DD_PROFILING_ENABLED: true
+      LOGS_CONFIG: '[{"type":"tcp","port":"10514","source":"java","service":"java-sample-app"}]'
+      STD_LOG_COLLECTION_PORT: 10514
+      JBP_CONFIG_OPEN_JDK_JRE: '{ jre: { version: 17.+ } }'
+      JBP_CONFIG_SPRING_AUTO_RECONFIGURATION: '{enabled: false}'
+      TEST[KEY]: VALUE
+    metadata:
+      labels:
+        tags.datadoghq.com/service: java-sample-app
+        tags.datadoghq.com/env: pcf-((ENV))
+        tags.datadoghq.com/version: 1.0.0
+        tags.datadoghq.com/metadata_key: metadata_value
+        tags.datadoghq.com/label_key: label_value
+        tags.datadoghq.com/foo: bar
+    sidecars:
+      - name: traffic_generator
+        process_types:
+          - web
+        command: './traffic'

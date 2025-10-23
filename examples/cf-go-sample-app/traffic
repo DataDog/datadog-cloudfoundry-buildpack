@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set +e
+
+PORT=${PORT:-8080}
+LOCKFILE="/home/vcap/app/traffic_lock"
+
+main() {
+    exec 8> "${LOCKFILE}" || exit 1
+    if flock -x -n 8; then
+        while ! nc -z localhost $PORT; do
+            echo "Waiting for the server to start on $PORT"
+            sleep 2
+        done
+
+        while true; do
+            curl localhost:$PORT >/dev/null
+            sleep 5
+        done
+        exec 8>&-
+    fi
+}
+
+main "$@" > /home/vcap/app/traffic.log 2>&1 

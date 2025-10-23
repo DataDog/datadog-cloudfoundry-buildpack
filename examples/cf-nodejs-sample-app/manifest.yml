@@ -1,0 +1,33 @@
+---
+applications:
+  - name: nodejs-sample-app
+    memory: 512M
+    instances: 1
+    command: node main.js
+    buildpacks:
+      - datadog_application_monitoring
+      - nodejs_buildpack
+    env:
+      DD_API_KEY: ((DD_API_KEY))
+      DD_VERSION: '1.0.0'
+      DD_SERVICE: 'nodejs-sample-app'
+      DD_ENV: pcf-((ENV))
+      DD_LOGS_ENABLED: true
+      DD_PROFILING_ENABLED: true
+      STD_LOG_COLLECTION_PORT: 10514
+      LOGS_CONFIG: '[{"type":"tcp","port":"10514","source":"node","service":"nodejs-sample-app"}]'
+      DD_ENABLE_CAPI_METADATA_COLLECTION: 'true'
+      TEST[KEY]: VALUE
+    metadata:
+      labels:
+        tags.datadoghq.com/service: nodejs-sample-app
+        tags.datadoghq.com/env: pcf-((ENV))
+        tags.datadoghq.com/version: 1.0.0
+        tags.datadoghq.com/metadata_key: metadata_value
+        tags.datadoghq.com/label_key: label_value
+        tags.datadoghq.com/foo: bar
+    sidecars:
+      - name: traffic_generator
+        process_types:
+          - web
+        command: './traffic'

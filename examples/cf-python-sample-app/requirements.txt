@@ -1,0 +1,4 @@
+Flask==2.1.2
+ddtrace
+datadog
+Werkzeug==2.2.2
