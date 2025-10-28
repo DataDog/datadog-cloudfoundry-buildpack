@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.46.0 / 2025-10-28
+
+* [Added] Bump embedded Datadog Agent version to 7.71.2. Read more about it [here](https://github.com/DataDog/datadog-agent/blob/main/CHANGELOG.rst#7712).
+* [Changed] Add sample Cloud Foundry apps. See [#213](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/213).
+
 ## 4.45.0 / 2025-10-14
 
 * [Added] Bump embedded Datadog Agent version to 7.70.2. Read more about it [here](https://github.com/DataDog/datadog-agent/blob/main/CHANGELOG.rst#7702--6702).
