@@ -1,0 +1,35 @@
+name: Validate
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  pull_request:
+    branches:
+      - master
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+
+      - name: Run prepare script
+        run: ./scripts/prepare.sh
+
+      - name: Run build script
+        env:
+          VERSION: 0.0.0-ci-test
+        run: ./scripts/build.sh
+
+      - name: Verify build artifact
+        run: |
+          if [ ! -f datadog-cloudfoundry-buildpack-0.0.0-ci-test.zip ]; then
+            echo "Build artifact not found!"
+            exit 1
+          fi
+          echo "Build successful! Artifact: datadog-cloudfoundry-buildpack-0.0.0-ci-test.zip"
+          ls -lh datadog-cloudfoundry-buildpack-*.zip
