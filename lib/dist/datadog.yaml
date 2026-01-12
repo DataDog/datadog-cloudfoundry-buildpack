@@ -168,7 +168,7 @@ metadata_collectors:
 log_file: AGENT_LOG_FILE
 
 logs_config:
-  run_path: /home/vcap/app/.datadog-agent/dist/conf.d/logs.d
+  run_path: /home/vcap/app/.datadog/dist/conf.d/logs.d
 
 # Set to 'yes' to output logs in JSON format
 # log_format_json: no
