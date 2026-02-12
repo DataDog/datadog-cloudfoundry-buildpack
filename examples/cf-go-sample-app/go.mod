@@ -1,6 +1,6 @@
 module github.com/DataDog/cf-go-sample-app
 
-go 1.18
+go 1.25.7
 
 require (
 	github.com/DataDog/datadog-go/v5 v5.1.1
