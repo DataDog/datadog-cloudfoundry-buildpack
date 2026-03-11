@@ -1,4 +1,4 @@
-const tracer = require('dd-trace').init();
+const tracer = require('dd-trace').init({ profiling: true });
 var http = require("http");
 var StatsD = require('hot-shots');
 var dogstatsd = new StatsD();
