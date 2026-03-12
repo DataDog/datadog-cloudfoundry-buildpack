@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/DataDog/cf-nodejs-sample-app#readme",
   "dependencies": {
-    "dd-trace": "^3.16.0",
+    "dd-trace": "^5.0.0",
     "hot-shots": "^10.0.0"
   }
 }
