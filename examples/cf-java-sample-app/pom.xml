@@ -30,7 +30,7 @@
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<version>1.2.9</version>
+			<version>1.2.13</version>
 		</dependency>
 
 		<dependency>
@@ -42,7 +42,7 @@
 		<dependency>
 			<groupId>com.datadoghq</groupId>
 			<artifactId>java-dogstatsd-client</artifactId>
-			<version>4.2.0</version>
+			<version>4.4.5</version>
 		</dependency>
 	</dependencies>
 
