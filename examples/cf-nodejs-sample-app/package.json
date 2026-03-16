@@ -16,6 +16,9 @@
     "url": "https://github.com/DataDog/cf-nodejs-sample-app/issues"
   },
   "homepage": "https://github.com/DataDog/cf-nodejs-sample-app#readme",
+  "engines": {
+    "node": "22.x"
+  },
   "dependencies": {
     "dd-trace": "^5.0.0",
     "hot-shots": "^10.0.0"
