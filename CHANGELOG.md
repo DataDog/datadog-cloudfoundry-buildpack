@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.47.0 / 2026-03-13
+
+* [Added] Bump embedded Datadog Agent version to 7.76.3. Read more about it [here](https://github.com/DataDog/datadog-agent/blob/main/CHANGELOG.rst#7763).
 ## 4.46.0 / 2025-10-28
 
 * [Added] Bump embedded Datadog Agent version to 7.71.2. Read more about it [here](https://github.com/DataDog/datadog-agent/blob/main/CHANGELOG.rst#7712).
