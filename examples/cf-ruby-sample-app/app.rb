@@ -1,7 +1,8 @@
 require 'sinatra'
-require 'ddtrace'
+require 'datadog'
 
 Datadog.configure do |c|
+  c.profiling.enabled = true
   c.tracing.instrument :sinatra
 end
 
