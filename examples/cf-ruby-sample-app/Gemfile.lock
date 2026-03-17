@@ -11,6 +11,7 @@ GEM
       logger
       msgpack
     datadog-ruby_core_source (3.5.2)
+    dogstatsd-ruby (5.7.1)
     ffi (1.17.3)
     libdatadog (25.0.0.1.0)
     libdatadog (25.0.0.1.0-x86_64-linux)
@@ -51,6 +52,7 @@ PLATFORMS
 
 DEPENDENCIES
   datadog (~> 2.0)
+  dogstatsd-ruby
   puma
   rackup
   sinatra
