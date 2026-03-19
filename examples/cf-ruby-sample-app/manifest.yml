@@ -4,7 +4,7 @@ applications:
     memory: 256M
     instances: 1
     path: .
-    command: ruby app.rb
+    command: ddprofrb exec ruby app.rb
     buildpacks:
       - datadog_application_monitoring
       - ruby_buildpack
@@ -16,6 +16,7 @@ applications:
       DD_LOGS_ENABLED: true
       STD_LOG_COLLECTION_PORT: 10514
       LOGS_CONFIG: '[{"type":"tcp","port":"10514","source":"ruby","service":"ruby-sample-app"}]'
+      DD_PROFILING_ENABLED: 'true'
       DD_ENABLE_CAPI_METADATA_COLLECTION: 'true'
       TEST[KEY]: VALUE
     metadata:
