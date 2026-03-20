@@ -13,7 +13,7 @@ variables:
 buildpack-prod-release:
   stage: deploy
   image: registry.ddbuild.io/ci/datadog-agent-buildimages/gitlab_agent_deploy:v102144341-64dad9f8
-  tags: ["runner:main"]
+  tags: ["arch:amd64"]
   when: manual
   before_script:
     - apt-get update -y && apt-get install -y zip
