@@ -2,6 +2,8 @@ module github.com/DataDog/cf-go-sample-app
 
 go 1.18
 
+toolchain go1.26.1
+
 require (
 	github.com/DataDog/datadog-go/v5 v5.1.1
 	gopkg.in/DataDog/dd-trace-go.v1 v1.46.1
