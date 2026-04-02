@@ -21,7 +21,7 @@
     "npm": "10.x"
   },
   "dependencies": {
-    "dd-trace": "^5.0.0",
-    "hot-shots": "^10.0.0"
+    "dd-trace": "^5.93.0",
+    "hot-shots": "^10.2.1"
   }
 }
