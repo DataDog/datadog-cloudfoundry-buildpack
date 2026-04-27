@@ -6,10 +6,11 @@ This sample Go application for Cloud Foundry sends metrics, logs, and traces to 
 
 ### How to push the app
 
-1. Edit the `manifest.yml` with your Datadog credentials.
-2. Run `cf push --var DD_API_KEY=<API_KEY> --var ENV=<ENV_NAME>`, substituting `<API_KEY>` with your Datadog API key value.
+1. Run `./build.sh` to vendor dependencies into a local `vendor/` folder so the app can be staged on offline Cloud Foundry environments.
+2. Edit the `manifest.yml` with your Datadog credentials.
+3. Run `cf push --var DD_API_KEY=<API_KEY> --var ENV=<ENV_NAME>`, substituting `<API_KEY>` with your Datadog API key value.
 
 ### How to run locally
 
-1. Build the app: `./build.sh`. This creates a `main` binary.
+1. Build the app: `./build.sh`. This vendors dependencies and creates a `main` binary.
 2. Run the app with `./main`.
