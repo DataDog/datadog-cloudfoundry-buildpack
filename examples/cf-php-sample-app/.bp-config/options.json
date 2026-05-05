@@ -1,0 +1,6 @@
+{
+    "WEB_SERVER": "php-server",
+    "PHP_VERSION": "{PHP_82_LATEST}",
+    "PHP_EXTENSIONS": ["curl", "openssl"],
+    "WEBDIR": "htdocs"
+}
