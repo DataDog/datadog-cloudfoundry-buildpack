@@ -15,4 +15,4 @@ examples/*/node_modules/
 examples/*/.bundle/
 examples/cf-go-sample-app/main
 examples/cf-java-sample-app/target/
-examples/cf-php-sample-app/extensions/
+examples/*/extensions/
