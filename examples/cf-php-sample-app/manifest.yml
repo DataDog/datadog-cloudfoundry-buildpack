@@ -1,7 +1,7 @@
 ---
 applications:
   - name: php-sample-app
-    memory: 256M
+    memory: 1024M
     instances: 1
     path: .
     command: $HOME/php/bin/php -S 0.0.0.0:$PORT -t htdocs
