@@ -18,22 +18,19 @@ chmod +x "${DATADOG_DIR}/scripts/update_agent_config.sh"
 cp "${ROOT_DIR}/lib/scripts/get_tags.rb" "${DATADOG_DIR}/scripts/get_tags.rb"
 
 
-RUBY_CMD=ruby
+RUBY_CMD=$DEPS_DIR/$DEPS_IDX/bin/ruby
 
-# install ruby if needed (the case of cflinuxfs4 or custom stacks)
-if ! which ruby > /dev/null; then
+# Install the bundled Ruby for our scripts. Always done so the buildpack
+# stops relying on the app's Ruby (which may not exist, or may be a
+# different version on the chained ruby_buildpack).
+if [ ! -x "${RUBY_CMD}" ]; then
   echo "Installing Ruby"
   tar -xzf "${ROOT_DIR}/lib/ruby_3.0.5.tgz" -C "$DEPS_DIR/$DEPS_IDX" && echo "Ruby Install finished"
-  export PATH=$PATH:/home/vcap/deps/$DEPS_IDX/bin
-  RUBY_CMD=$DEPS_DIR/$DEPS_IDX/bin/ruby
 fi
 
-# create a .global_env file to be sourced by external scripts
-# for now, it appends the buildpack deps/bin folder to the PATH env variable of the caller
-# this is needed for stacks where ruby is not installed since our scripts rely on it
-echo "if ! which ruby > /dev/null; then
-  export PATH=\$PATH:/home/vcap/deps/$DEPS_IDX/bin
-fi" > "$DATADOG_DIR/.global_env"
+# Expose the bundled Ruby to runtime scripts via an absolute path rather
+# than mutating PATH, so we don't shadow the app's own ruby/gem/bundle.
+echo "export DD_RUBY=/home/vcap/deps/$DEPS_IDX/bin/ruby" > "$DATADOG_DIR/.global_env"
 
 # for subsquent buildpacks and for buildpack metadata detection
 echo "config: {}
