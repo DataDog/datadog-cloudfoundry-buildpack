@@ -229,7 +229,7 @@ enable_apm_ssi() {
   # add all language buildpack bin folders to the PATH
   for dir in $DEPS_DIR/*/; do
     dir="${dir%/}" # remove trailing slash
-    if grep -q -E "name: (python|ruby|go|nodejs|java)" "$dir/config.yml" >/dev/null 2>&1; then
+    if grep -q -E "name: (python|ruby|go|nodejs|java|php)" "$dir/config.yml" >/dev/null 2>&1; then
       buildpack_name=$(grep 'name:' $dir/config.yml | sed 's/name: //g')
       echo "Detected buildpack: $buildpack_name"
 
