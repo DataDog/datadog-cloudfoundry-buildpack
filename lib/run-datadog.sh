@@ -60,9 +60,9 @@ setup_datadog() {
     # set logs, traces and metrics hostname to the VM hostname
     if [ "${DD_ENABLE_CHECKS}" != "true" ]; then
       sed -i "s~# enable_metadata_collection: true~enable_metadata_collection: false~" dist/datadog.yaml
-      host "${CF_INSTANCE_IP}"
+      host "${CF_INSTANCE_IP:-}"
       if [ $? -eq 0 ]; then
-          IFS=. read -a VM_HOSTNAME <<< $(host ${CF_INSTANCE_IP} | awk '{print $5}')
+          IFS=. read -a VM_HOSTNAME <<< $(host "${CF_INSTANCE_IP:-}" | awk '{print $5}')
           sed -i "s~# hostname: mymachine.mydomain~hostname: ${VM_HOSTNAME}~" dist/datadog.yaml
       fi
     else
@@ -227,7 +227,7 @@ enable_apm_ssi() {
   PYTHON_BUILDPACK_DIR=""
 
   # add all language buildpack bin folders to the PATH
-  for dir in $DEPS_DIR/*/; do
+  for dir in "${DEPS_DIR:-}"/*/; do
     dir="${dir%/}" # remove trailing slash
     if grep -q -E "name: (python|ruby|go|nodejs|java)" "$dir/config.yml" >/dev/null 2>&1; then
       buildpack_name=$(grep 'name:' $dir/config.yml | sed 's/name: //g')
@@ -277,7 +277,7 @@ main() {
     enable_apm_ssi
   fi
 
-  if [ -z "${DD_API_KEY}" ]; then
+  if [ -z "${DD_API_KEY:-}" ]; then
     echo "Datadog API Key not set, not starting Datadog"
   else
     exec 9> "${LOCKFILE}" || exit 1
