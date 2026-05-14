@@ -202,7 +202,7 @@ stop_datadog() {
 
 monit_datadog() {
   while true; do
-    if ! kill -0 $$; then
+    if ! kill -0 $$ 2>/dev/null; then
       echo "main process exited, stopping agent"
       for pidfile in "${DATADOG_DIR}"/run/*; do
         kill "$(cat "${pidfile}")"
