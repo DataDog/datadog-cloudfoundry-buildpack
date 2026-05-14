@@ -32,7 +32,7 @@ setup_datadog() {
     export LOGS_CONFIG
 
     # create and configure set /conf.d if integrations are enabled
-    if [ "${DD_ENABLE_CHECKS}" = "true" ] || [ -n "${LOGS_CONFIG}" ] ; then
+    if [ "${DD_ENABLE_CHECKS}" = "true" ] || [ -n "${LOGS_CONFIG:-}" ] ; then
       mkdir dist/conf.d
     fi
 
@@ -42,8 +42,8 @@ setup_datadog() {
     fi
 
     # add logs configs
-    if [ -n "${LOGS_CONFIG}" ]; then
-      mkdir -p ${LOGS_CONFIG_DIR}
+    if [ -n "${LOGS_CONFIG:-}" ]; then
+      mkdir -p "${LOGS_CONFIG_DIR}"
       echo "creating logs config"
       ruby "${DATADOG_DIR}/scripts/create_logs_config.rb"
     fi
@@ -53,7 +53,7 @@ setup_datadog() {
     # so they must be grabbed separately
     sed -i "s~log_file: TRACE_LOG_FILE~log_file: ${DATADOG_DIR}/trace.log~" dist/datadog.yaml
 
-    if [ -n "${DD_SKIP_SSL_VALIDATION}" ]; then
+    if [ -n "${DD_SKIP_SSL_VALIDATION:-}" ]; then
       sed -i "s~# skip_ssl_validation: no~skip_ssl_validation: yes~" dist/datadog.yaml
     fi
 
@@ -69,31 +69,31 @@ setup_datadog() {
       sed -i "s~# hostname: mymachine.mydomain~hostname: $(hostname)~" dist/datadog.yaml
     fi
 
-    if [ -n "${DD_HTTP_PROXY}" ]; then
+    if [ -n "${DD_HTTP_PROXY:-}" ]; then
       sed -i "s~# proxy:~proxy:~" dist/datadog.yaml
       sed -i "s~#   http: HTTP_PROXY~  http: ${DD_HTTP_PROXY}~" dist/datadog.yaml
     else
-      if [ -n "${HTTP_PROXY}" ]; then
+      if [ -n "${HTTP_PROXY:-}" ]; then
         sed -i "s~# proxy:~proxy:~" dist/datadog.yaml
         sed -i "s~#   http: HTTP_PROXY~  http: ${HTTP_PROXY}~" dist/datadog.yaml
       fi
     fi
-    if [ -n "${DD_HTTPS_PROXY}" ]; then
+    if [ -n "${DD_HTTPS_PROXY:-}" ]; then
       sed -i "s~# proxy:~proxy:~" dist/datadog.yaml
       sed -i "s~#   https: HTTPS_PROXY~  https: ${DD_HTTPS_PROXY}~" dist/datadog.yaml
     else
-      if [ -n "${HTTPS_PROXY}" ]; then
+      if [ -n "${HTTPS_PROXY:-}" ]; then
         sed -i "s~# proxy:~proxy:~" dist/datadog.yaml
         sed -i "s~#   https: HTTPS_PROXY~  https: ${HTTPS_PROXY}~" dist/datadog.yaml
       fi
     fi
 
     #Override default EXPVAR Port
-    if [ -n "${DD_EXPVAR_PORT}" ]; then
+    if [ -n "${DD_EXPVAR_PORT:-}" ]; then
       sed -i "s~# expvar_port: 5000~expvar_port: ${DD_EXPVAR_PORT}~" dist/datadog.yaml
     fi
     #Override default CMD Port
-    if [ -n "${DD_CMD_PORT}" ]; then
+    if [ -n "${DD_CMD_PORT:-}" ]; then
       sed -i "s~# cmd_port: 5001~cmd_port: ${DD_CMD_PORT}~" dist/datadog.yaml
     fi
 
