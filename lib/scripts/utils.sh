@@ -120,7 +120,7 @@ wait_pid() {
 
   if [ -e "/proc/${pid}" ] || [ -n "${ps_out}" ]; then
     if [ "${try_kill}" = "1" ]; then
-      log_message "$0" "Killing ${pidfile}: ${pid}"
+      log_info "Killing ${pidfile}: ${pid}"
       kill "${pid}"
     fi
     while [ -e "/proc/${pid}" ]; do
@@ -130,7 +130,7 @@ wait_pid() {
         if [ "${countdown}" -eq 0 ]; then
           if [ "${force}" = "1" ]; then
             echo
-            log_message "$0" "Kill timed out, using kill -9 on ${pid} ..."
+            log_info "Kill timed out, using kill -9 on ${pid} ..."
             kill -9 "${pid}"
             sleep 0.5
           fi
@@ -141,12 +141,12 @@ wait_pid() {
       fi
     done
     if [ -e "/proc/${pid}" ]; then
-      log_message "$0" "Timed Out"
+      log_info "Timed Out"
     else
-      log_message "$0" "Stopped ${pid}"
+      log_info "Stopped ${pid}"
     fi
   else
-    log_message "$0" "Process ${pid} is not running"
+    log_info "Process ${pid} is not running"
   fi
 }
 
@@ -171,7 +171,7 @@ wait_pidfile() {
     wait_pid "${pidfile}" "${pid}" "${try_kill}" "${timeout}" "${force}"
     rm -f "${pidfile}"
   else
-    printf_log "Pidfile ${pidfile} doesn't exist"
+    log_info "Pidfile ${pidfile} doesn't exist"
   fi
 }
 
@@ -195,7 +195,7 @@ find_pid_kill_and_wait() {
   local pidfile="$2"
   local pid=$(find_pid "${find_command}")
   if [ -z "${pid}" ] || [ "${pid}" = "" ] ||  [ "${pid}" = "None" ]; then
-    log_message "$0" "No such PID ${pid} exists, skipping the hard kill"
+    log_info "No such PID ${pid} exists, skipping the hard kill"
   else
     local timeout="${3:-25}"
     local force="${4:-1}"
