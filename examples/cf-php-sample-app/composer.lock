@@ -748,7 +748,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.2"
+        "php": "8.2.*"
     },
     "platform-dev": {},
     "platform-overrides": {
