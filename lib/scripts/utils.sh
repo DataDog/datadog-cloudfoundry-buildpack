@@ -206,22 +206,22 @@ find_pid_kill_and_wait() {
 # redirect forwards all standard inputs to a TCP socket listening on port STD_LOG_COLLECTION_PORT.
 redirect() {
   while kill -0 $$; do
-    if [ "${DD_SPARSE_APP_LOGS}" = "true" ]; then
-        ruby "${DATADOG_DIR}/scripts/nc.rb" "${STD_LOG_COLLECTION_PORT}" || sleep 0.5
+    if [ "${DD_SPARSE_APP_LOGS:-}" = "true" ]; then
+        ruby "${DATADOG_DIR}/scripts/nc.rb" "${STD_LOG_COLLECTION_PORT:-}" || sleep 0.5
     else
-        nc localhost "${STD_LOG_COLLECTION_PORT}" || sleep 0.5
+        nc localhost "${STD_LOG_COLLECTION_PORT:-}" || sleep 0.5
     fi
     log_info "Resetting buildpack log redirection"
-    if [ "${DD_DEBUG_STD_REDIRECTION}" = "true" ]; then
-      HTTP_PROXY=${DD_HTTP_PROXY} HTTPS_PROXY=${DD_HTTPS_PROXY} NO_PROXY=${DD_NO_PROXY} curl \
+    if [ "${DD_DEBUG_STD_REDIRECTION:-}" = "true" ]; then
+      HTTP_PROXY=${DD_HTTP_PROXY:-} HTTPS_PROXY=${DD_HTTPS_PROXY:-} NO_PROXY=${DD_NO_PROXY:-} curl \
       -X POST -H "Content-type: application/json" \
       -d "{
             \"title\": \"Resetting buildpack log redirection\",
-            \"text\": \"TCP socket on port ${STD_LOG_COLLECTION_PORT} for log redirection closed. Restarting it.\",
+            \"text\": \"TCP socket on port ${STD_LOG_COLLECTION_PORT:-} for log redirection closed. Restarting it.\",
             \"priority\": \"normal\",
-            \"tags\": $(LEGACY_TAGS_FORMAT=true ruby ${DATADOG_DIR}/scripts/get_tags.rb),
+            \"tags\": $(LEGACY_TAGS_FORMAT=true ruby "${DATADOG_DIR}/scripts/get_tags.rb"),
             \"alert_type\": \"info\"
-      }" "${DD_API_SITE}v1/events?api_key=${DD_API_KEY}"
+      }" "${DD_API_SITE:-}v1/events?api_key=${DD_API_KEY:-}"
     fi
   done
 }

@@ -145,7 +145,7 @@ start_datadog() {
     fi
 
     if [ -a ./agent ] && [ "${DD_RUN_AGENT}" != "false" ]; then
-      if [ "${DD_LOGS_ENABLED}" = "true" ] && [ "${DD_LOGS_VALID_ENDPOINT}" = "false" ]; then
+      if [ "${DD_LOGS_ENABLED:-}" = "true" ] && [ "${DD_LOGS_VALID_ENDPOINT:-}" = "false" ]; then
         echo "Log endpoint not valid"
       fi
 
@@ -305,5 +305,3 @@ main() {
   fi
 }
 main "$@"
-
-
