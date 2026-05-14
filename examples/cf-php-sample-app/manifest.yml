@@ -5,7 +5,6 @@ applications:
     disk_quota: 2048M
     instances: 1
     path: .
-    command: $HOME/php/bin/php -S 0.0.0.0:$PORT -t htdocs
     buildpacks:
       - datadog_application_monitoring
       - php_buildpack
