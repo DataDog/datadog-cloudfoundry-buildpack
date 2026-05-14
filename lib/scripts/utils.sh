@@ -93,8 +93,8 @@ log_debug() {
 log_message() {
   local component="${1#/home/vcap/app/}"
   local pid="$2"
-  local message="$3"
-  local log_level="$4"
+  local message="${3:-}"
+  local log_level="${4:-}"
   echo "$(date +'%d-%m-%Y %H:%M:%S') - [${component}][PID:${pid}] - ${log_level} - ${message}"
 }
 
