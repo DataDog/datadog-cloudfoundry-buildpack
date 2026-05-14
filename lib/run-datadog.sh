@@ -17,7 +17,7 @@ DD_RUN_AGENT="${DD_RUN_AGENT:-true}"
 # source updated PATH
 . "$DATADOG_DIR/.global_env"
 
-export DD_TAGS=$(ruby "${DATADOG_DIR}/scripts/get_tags.rb")
+export DD_TAGS=$("$DD_RUBY" "${DATADOG_DIR}/scripts/get_tags.rb")
 echo "${DD_TAGS}" > "${DATADOG_DIR}/.dd_tags.txt"
 
 setup_datadog() {
@@ -45,7 +45,7 @@ setup_datadog() {
     if [ -n "${LOGS_CONFIG}" ]; then
       mkdir -p ${LOGS_CONFIG_DIR}
       echo "creating logs config"
-      ruby "${DATADOG_DIR}/scripts/create_logs_config.rb"
+      "$DD_RUBY" "${DATADOG_DIR}/scripts/create_logs_config.rb"
     fi
 
     # The yaml file requires the tags to be an array,
@@ -111,7 +111,7 @@ setup_datadog() {
   popd
 
   # update datadog config
-  ruby "${DATADOG_DIR}/scripts/update_datadog_config.rb"
+  "$DD_RUBY" "${DATADOG_DIR}/scripts/update_datadog_config.rb"
 
   # mark the script as finished, useful to sync the update_agent_config script
   touch "${DATADOG_DIR}/.setup_completed"
@@ -119,7 +119,7 @@ setup_datadog() {
 }
 
 start_datadog() {
-  export DD_TAGS=$(ruby "${DATADOG_DIR}/scripts/get_tags.rb")
+  export DD_TAGS=$("$DD_RUBY" "${DATADOG_DIR}/scripts/get_tags.rb")
 
   pushd "${DATADOG_DIR}"
     export DD_LOG_FILE="${DATADOG_DIR}/dogstatsd.log"

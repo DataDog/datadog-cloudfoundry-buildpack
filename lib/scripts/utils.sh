@@ -207,7 +207,7 @@ find_pid_kill_and_wait() {
 redirect() {
   while kill -0 $$; do
     if [ "${DD_SPARSE_APP_LOGS}" = "true" ]; then
-        ruby "${DATADOG_DIR}/scripts/nc.rb" "${STD_LOG_COLLECTION_PORT}" || sleep 0.5
+        "$DD_RUBY" "${DATADOG_DIR}/scripts/nc.rb" "${STD_LOG_COLLECTION_PORT}" || sleep 0.5
     else
         nc localhost "${STD_LOG_COLLECTION_PORT}" || sleep 0.5
     fi
@@ -219,7 +219,7 @@ redirect() {
             \"title\": \"Resetting buildpack log redirection\",
             \"text\": \"TCP socket on port ${STD_LOG_COLLECTION_PORT} for log redirection closed. Restarting it.\",
             \"priority\": \"normal\",
-            \"tags\": $(LEGACY_TAGS_FORMAT=true ruby ${DATADOG_DIR}/scripts/get_tags.rb),
+            \"tags\": $(LEGACY_TAGS_FORMAT=true "$DD_RUBY" "${DATADOG_DIR}/scripts/get_tags.rb"),
             \"alert_type\": \"info\"
       }" "${DD_API_SITE}v1/events?api_key=${DD_API_KEY}"
     fi
