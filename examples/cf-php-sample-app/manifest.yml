@@ -17,6 +17,7 @@ applications:
       STD_LOG_COLLECTION_PORT: 10514
       LOGS_CONFIG: '[{"type":"tcp","port":"10514","source":"php","service":"php-sample-app"}]'
       DD_PROFILING_ENABLED: 'true'
+      DD_APM_INSTRUMENTATION_ENABLED: 'true'
       DD_ENABLE_CAPI_METADATA_COLLECTION: 'true'
       TEST[KEY]: VALUE
     metadata:
