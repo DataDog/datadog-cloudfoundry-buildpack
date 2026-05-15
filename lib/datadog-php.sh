@@ -22,6 +22,10 @@ dd_php_main() {
   fi
 
   local has_php_buildpack=""
+  if [ -z "${DEPS_DIR:-}" ]; then
+    return 0
+  fi
+
   for dir in "${DEPS_DIR}"/*/; do
     dir="${dir%/}"
     if grep -q -E '^name: php$' "${dir}/config.yml" >/dev/null 2>&1; then
