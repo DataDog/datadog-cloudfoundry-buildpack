@@ -92,8 +92,11 @@ Download and import the [relevant libraries][6] to send data. To learn more, che
 
 | Variable                         | Description                                                                                                                                                                                                                                              |
 | -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `DD_APM_INSTRUMENTATION_ENABLED` | Use this option to automatically instrument your application, without any additional installation or configuration steps. See [Single Step APM Instrumentation](https://docs.datadoghq.com/tracing/trace_collection/single-step-apm/?tab=linuxhostorvm). |
+| `DD_APM_INSTRUMENTATION_ENABLED` | Use this option to automatically instrument your application, without any additional installation or configuration steps. See [Single Step APM Instrumentation](https://docs.datadoghq.com/tracing/trace_collection/single-step-apm/?tab=linuxhostorvm). Supported runtimes: Python, Ruby, Node.js, Java, and PHP 8.0–8.5 (via dd-library-php 1.19.2). |
+| `DD_APM_INSTRUMENTATION_STRICT`  | PHP only. Set to `true` to fail the app start if the bundled dd-library-php does not include a build for the running PHP API version. Default is best-effort (warn and continue uninstrumented), matching other runtimes.                              |
 | `DD_WAIT_TRACE_AGENT`            | Use this option to delay the startup of the application until the Trace Agent is ready. This option is especially useful for Golang apps.                                                                                                                |
+
+**PHP disk quota:** The bundled `dd-library-php` payload covers PHP 8.0–8.5 and adds ~232 MB to the droplet. PHP apps using SSI typically need `disk_quota: 2048M` (or higher) in `manifest.yml` — the default 1 GB is not enough to also stage `php_buildpack`'s runtime.
 
 ### Log collection
 

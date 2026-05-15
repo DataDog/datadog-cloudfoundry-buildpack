@@ -225,11 +225,13 @@ enable_apm_ssi() {
 
   PIP_CMD=""
   PYTHON_BUILDPACK_DIR=""
+  NODEJS_BUILDPACK_DETECTED=""
+  RUBY_BUILDPACK_DETECTED=""
 
   # add all language buildpack bin folders to the PATH
   for dir in "${DEPS_DIR:-}"/*/; do
     dir="${dir%/}" # remove trailing slash
-    if grep -q -E "name: (python|ruby|go|nodejs|java)" "$dir/config.yml" >/dev/null 2>&1; then
+    if grep -q -E "name: (python|ruby|go|nodejs|java|php)" "$dir/config.yml" >/dev/null 2>&1; then
       buildpack_name=$(grep 'name:' $dir/config.yml | sed 's/name: //g')
       echo "Detected buildpack: $buildpack_name"
 
@@ -239,7 +241,11 @@ enable_apm_ssi() {
         if ls $dir/bin/pip* > /dev/null 2>&1; then
           PIP_CMD=$(basename $(ls $dir/bin/pip* | head -1))
         fi
-        
+
+      elif [ "$buildpack_name" = "nodejs" ]; then
+        NODEJS_BUILDPACK_DETECTED="true"
+      elif [ "$buildpack_name" = "ruby" ]; then
+        RUBY_BUILDPACK_DETECTED="true"
       fi
       export PATH=$PATH:$dir/bin
     fi
@@ -255,7 +261,10 @@ enable_apm_ssi() {
   fi
 
   # nodejs
-  if which npm > /dev/null; then
+  # Gate on the nodejs buildpack being detected, not just the presence of npm:
+  # this buildpack installs its own Ruby (and may pick up other interpreters)
+  # which leaves npm/gem on PATH for apps that don't use that language.
+  if [ -n "$NODEJS_BUILDPACK_DETECTED" ] && which npm > /dev/null; then
     # nodejs version is <= 12
     if [ "$(node -v | cut -d '.' -f 1 | sed 's/v//g')" -le 12 ]; then
       npm install dd-trace@latest-node12
@@ -267,7 +276,9 @@ enable_apm_ssi() {
   fi
 
   # ruby
-  if which gem > /dev/null; then
+  # Same gating rationale as nodejs above — `which gem` is always true on
+  # cflinuxfs4 because this buildpack installs its own Ruby in bin/supply.
+  if [ -n "$RUBY_BUILDPACK_DETECTED" ] && which gem > /dev/null; then
     gem install ddtrace
   fi
 }
