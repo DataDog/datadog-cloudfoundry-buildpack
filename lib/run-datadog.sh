@@ -9,7 +9,7 @@ SUPPRESS_DD_AGENT_OUTPUT="${SUPPRESS_DD_AGENT_OUTPUT:-true}"
 DD_ENABLE_CAPI_METADATA_COLLECTION="${DD_ENABLE_CAPI_METADATA_COLLECTION:-false}"
 LOCKFILE="${DATADOG_DIR}/lock"
 FIRST_RUN="${FIRST_RUN:-true}"
-USER_TAGS="${DD_TAGS}"
+USER_TAGS="${DD_TAGS:-}"
 DD_RUN_AGENT="${DD_RUN_AGENT:-true}"
 
 . "${DATADOG_DIR}/scripts/utils.sh"
@@ -32,7 +32,7 @@ setup_datadog() {
     export LOGS_CONFIG
 
     # create and configure set /conf.d if integrations are enabled
-    if [ "${DD_ENABLE_CHECKS}" = "true" ] || [ -n "${LOGS_CONFIG}" ] ; then
+    if [ "${DD_ENABLE_CHECKS}" = "true" ] || [ -n "${LOGS_CONFIG:-}" ] ; then
       mkdir dist/conf.d
     fi
 
@@ -42,8 +42,8 @@ setup_datadog() {
     fi
 
     # add logs configs
-    if [ -n "${LOGS_CONFIG}" ]; then
-      mkdir -p ${LOGS_CONFIG_DIR}
+    if [ -n "${LOGS_CONFIG:-}" ]; then
+      mkdir -p "${LOGS_CONFIG_DIR}"
       echo "creating logs config"
       ruby "${DATADOG_DIR}/scripts/create_logs_config.rb"
     fi
@@ -53,47 +53,47 @@ setup_datadog() {
     # so they must be grabbed separately
     sed -i "s~log_file: TRACE_LOG_FILE~log_file: ${DATADOG_DIR}/trace.log~" dist/datadog.yaml
 
-    if [ -n "${DD_SKIP_SSL_VALIDATION}" ]; then
+    if [ -n "${DD_SKIP_SSL_VALIDATION:-}" ]; then
       sed -i "s~# skip_ssl_validation: no~skip_ssl_validation: yes~" dist/datadog.yaml
     fi
 
     # set logs, traces and metrics hostname to the VM hostname
     if [ "${DD_ENABLE_CHECKS}" != "true" ]; then
       sed -i "s~# enable_metadata_collection: true~enable_metadata_collection: false~" dist/datadog.yaml
-      host "${CF_INSTANCE_IP}"
+      host "${CF_INSTANCE_IP:-}"
       if [ $? -eq 0 ]; then
-          IFS=. read -a VM_HOSTNAME <<< $(host ${CF_INSTANCE_IP} | awk '{print $5}')
+          IFS=. read -a VM_HOSTNAME <<< $(host "${CF_INSTANCE_IP:-}" | awk '{print $5}')
           sed -i "s~# hostname: mymachine.mydomain~hostname: ${VM_HOSTNAME}~" dist/datadog.yaml
       fi
     else
       sed -i "s~# hostname: mymachine.mydomain~hostname: $(hostname)~" dist/datadog.yaml
     fi
 
-    if [ -n "${DD_HTTP_PROXY}" ]; then
+    if [ -n "${DD_HTTP_PROXY:-}" ]; then
       sed -i "s~# proxy:~proxy:~" dist/datadog.yaml
       sed -i "s~#   http: HTTP_PROXY~  http: ${DD_HTTP_PROXY}~" dist/datadog.yaml
     else
-      if [ -n "${HTTP_PROXY}" ]; then
+      if [ -n "${HTTP_PROXY:-}" ]; then
         sed -i "s~# proxy:~proxy:~" dist/datadog.yaml
         sed -i "s~#   http: HTTP_PROXY~  http: ${HTTP_PROXY}~" dist/datadog.yaml
       fi
     fi
-    if [ -n "${DD_HTTPS_PROXY}" ]; then
+    if [ -n "${DD_HTTPS_PROXY:-}" ]; then
       sed -i "s~# proxy:~proxy:~" dist/datadog.yaml
       sed -i "s~#   https: HTTPS_PROXY~  https: ${DD_HTTPS_PROXY}~" dist/datadog.yaml
     else
-      if [ -n "${HTTPS_PROXY}" ]; then
+      if [ -n "${HTTPS_PROXY:-}" ]; then
         sed -i "s~# proxy:~proxy:~" dist/datadog.yaml
         sed -i "s~#   https: HTTPS_PROXY~  https: ${HTTPS_PROXY}~" dist/datadog.yaml
       fi
     fi
 
     #Override default EXPVAR Port
-    if [ -n "${DD_EXPVAR_PORT}" ]; then
+    if [ -n "${DD_EXPVAR_PORT:-}" ]; then
       sed -i "s~# expvar_port: 5000~expvar_port: ${DD_EXPVAR_PORT}~" dist/datadog.yaml
     fi
     #Override default CMD Port
-    if [ -n "${DD_CMD_PORT}" ]; then
+    if [ -n "${DD_CMD_PORT:-}" ]; then
       sed -i "s~# cmd_port: 5001~cmd_port: ${DD_CMD_PORT}~" dist/datadog.yaml
     fi
 
@@ -145,7 +145,7 @@ start_datadog() {
     fi
 
     if [ -a ./agent ] && [ "${DD_RUN_AGENT}" != "false" ]; then
-      if [ "${DD_LOGS_ENABLED}" = "true" ] && [ "${DD_LOGS_VALID_ENDPOINT}" = "false" ]; then
+      if [ "${DD_LOGS_ENABLED:-}" = "true" ] && [ "${DD_LOGS_VALID_ENDPOINT:-}" = "false" ]; then
         echo "Log endpoint not valid"
       fi
 
@@ -202,7 +202,7 @@ stop_datadog() {
 
 monit_datadog() {
   while true; do
-    if ! kill -0 $$; then
+    if ! kill -0 $$ 2>/dev/null; then
       echo "main process exited, stopping agent"
       for pidfile in "${DATADOG_DIR}"/run/*; do
         kill "$(cat "${pidfile}")"
@@ -227,7 +227,7 @@ enable_apm_ssi() {
   PYTHON_BUILDPACK_DIR=""
 
   # add all language buildpack bin folders to the PATH
-  for dir in $DEPS_DIR/*/; do
+  for dir in "${DEPS_DIR:-}"/*/; do
     dir="${dir%/}" # remove trailing slash
     if grep -q -E "name: (python|ruby|go|nodejs|java)" "$dir/config.yml" >/dev/null 2>&1; then
       buildpack_name=$(grep 'name:' $dir/config.yml | sed 's/name: //g')
@@ -273,11 +273,11 @@ enable_apm_ssi() {
 }
 
 main() {
-  if [ "$DD_APM_INSTRUMENTATION_ENABLED" != "" ] && [ "$DD_APM_INSTRUMENTATION_ENABLED" != "false" ]; then
+  if [ "${DD_APM_INSTRUMENTATION_ENABLED:-}" != "" ] && [ "${DD_APM_INSTRUMENTATION_ENABLED:-}" != "false" ]; then
     enable_apm_ssi
   fi
 
-  if [ -z "${DD_API_KEY}" ]; then
+  if [ -z "${DD_API_KEY:-}" ]; then
     echo "Datadog API Key not set, not starting Datadog"
   else
     exec 9> "${LOCKFILE}" || exit 1
@@ -290,7 +290,7 @@ main() {
   fi
 
   # wait for the trace agent startup
-  if [ "${DD_WAIT_TRACE_AGENT}" = "true" ]; then
+  if [ "${DD_WAIT_TRACE_AGENT:-}" = "true" ]; then
     timeout=120
     while ! nc -z localhost 8126 && [ $timeout -ge 0 ]; do
       echo "Waiting for the trace agent to start on 8126..."
@@ -305,5 +305,3 @@ main() {
   fi
 }
 main "$@"
-
-

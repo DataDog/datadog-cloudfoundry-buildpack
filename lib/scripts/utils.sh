@@ -26,40 +26,40 @@ export DD_UPDATE_SCRIPT_LOG_LEVEL="${DD_UPDATE_SCRIPT_LOG_LEVEL:-"INFO"}"
 dd_export_env() {
   local env_file="$1"
 
-  if [ -n "${DD_ENABLE_CAPI_METADATA_COLLECTION}" ]; then
+  if [ -n "${DD_ENABLE_CAPI_METADATA_COLLECTION:-}" ]; then
     echo "export DD_ENABLE_CAPI_METADATA_COLLECTION='${DD_ENABLE_CAPI_METADATA_COLLECTION}'" > "${env_file}"
   fi
-  if [ -n "${DD_TAGS}" ]; then
+  if [ -n "${DD_TAGS:-}" ]; then
     echo "export DD_TAGS='${DD_TAGS}'" >> "${env_file}"
   fi
-  if [ -n "${DD_DOGSTATSD_TAGS}" ]; then
+  if [ -n "${DD_DOGSTATSD_TAGS:-}" ]; then
     echo "export DD_DOGSTATSD_TAGS='${DD_DOGSTATSD_TAGS}'">> "${env_file}"
   fi
-  if [ -n "${LOGS_CONFIG_DIR}" ]; then
+  if [ -n "${LOGS_CONFIG_DIR:-}" ]; then
     echo "export LOGS_CONFIG_DIR='${LOGS_CONFIG_DIR}'" >> "${env_file}"
   fi
-  if [ -n "${LOGS_CONFIG}" ]; then
+  if [ -n "${LOGS_CONFIG:-}" ]; then
     echo "export LOGS_CONFIG='${LOGS_CONFIG}'" >> "${env_file}"
   fi
-  if [ -n "${VCAP_APPLICATION}" ]; then
+  if [ -n "${VCAP_APPLICATION:-}" ]; then
   echo "export VCAP_APPLICATION='${VCAP_APPLICATION}'" >> "${env_file}"
   fi
-  if [ -n "${CF_INSTANCE_IP}" ]; then
+  if [ -n "${CF_INSTANCE_IP:-}" ]; then
     echo "export CF_INSTANCE_IP='${CF_INSTANCE_IP}'" >> "${env_file}"
   fi
-  if [ -n "${CF_INSTANCE_GUID}" ]; then
+  if [ -n "${CF_INSTANCE_GUID:-}" ]; then
     echo "export CF_INSTANCE_GUID='${CF_INSTANCE_GUID}'" >> "${env_file}"
   fi
-  if [ -n "${TAGS}" ]; then
+  if [ -n "${TAGS:-}" ]; then
     echo "export TAGS='${TAGS}'" >> "${env_file}"
   fi
-  if [ -n "${PATH}" ]; then
+  if [ -n "${PATH:-}" ]; then
     echo "export PATH='${PATH}'" >> "${env_file}"
   fi
-  if [ -n "${DD_UPDATE_SCRIPT_WARMUP}" ]; then
+  if [ -n "${DD_UPDATE_SCRIPT_WARMUP:-}" ]; then
     echo "export DD_UPDATE_SCRIPT_WARMUP='${DD_UPDATE_SCRIPT_WARMUP}'" >> "${env_file}"
   fi
-  if [ -n "${DD_UPDATE_SCRIPT_LOG_LEVEL}" ]; then
+  if [ -n "${DD_UPDATE_SCRIPT_LOG_LEVEL:-}" ]; then
     echo "export DD_UPDATE_SCRIPT_LOG_LEVEL='${DD_UPDATE_SCRIPT_LOG_LEVEL}'" >> "${env_file}"
   fi
 }
@@ -93,8 +93,8 @@ log_debug() {
 log_message() {
   local component="${1#/home/vcap/app/}"
   local pid="$2"
-  local message="$3"
-  local log_level="$4"
+  local message="${3:-}"
+  local log_level="${4:-}"
   echo "$(date +'%d-%m-%Y %H:%M:%S') - [${component}][PID:${pid}] - ${log_level} - ${message}"
 }
 
@@ -120,7 +120,7 @@ wait_pid() {
 
   if [ -e "/proc/${pid}" ] || [ -n "${ps_out}" ]; then
     if [ "${try_kill}" = "1" ]; then
-      log_message "$0" "Killing ${pidfile}: ${pid}"
+      log_info "Killing ${pidfile}: ${pid}"
       kill "${pid}"
     fi
     while [ -e "/proc/${pid}" ]; do
@@ -130,7 +130,7 @@ wait_pid() {
         if [ "${countdown}" -eq 0 ]; then
           if [ "${force}" = "1" ]; then
             echo
-            log_message "$0" "Kill timed out, using kill -9 on ${pid} ..."
+            log_info "Kill timed out, using kill -9 on ${pid} ..."
             kill -9 "${pid}"
             sleep 0.5
           fi
@@ -141,12 +141,12 @@ wait_pid() {
       fi
     done
     if [ -e "/proc/${pid}" ]; then
-      log_message "$0" "Timed Out"
+      log_info "Timed Out"
     else
-      log_message "$0" "Stopped ${pid}"
+      log_info "Stopped ${pid}"
     fi
   else
-    log_message "$0" "Process ${pid} is not running"
+    log_info "Process ${pid} is not running"
   fi
 }
 
@@ -171,7 +171,7 @@ wait_pidfile() {
     wait_pid "${pidfile}" "${pid}" "${try_kill}" "${timeout}" "${force}"
     rm -f "${pidfile}"
   else
-    printf_log "Pidfile ${pidfile} doesn't exist"
+    log_info "Pidfile ${pidfile} doesn't exist"
   fi
 }
 
@@ -195,7 +195,7 @@ find_pid_kill_and_wait() {
   local pidfile="$2"
   local pid=$(find_pid "${find_command}")
   if [ -z "${pid}" ] || [ "${pid}" = "" ] ||  [ "${pid}" = "None" ]; then
-    log_message "$0" "No such PID ${pid} exists, skipping the hard kill"
+    log_info "No such PID ${pid} exists, skipping the hard kill"
   else
     local timeout="${3:-25}"
     local force="${4:-1}"
@@ -205,23 +205,23 @@ find_pid_kill_and_wait() {
 
 # redirect forwards all standard inputs to a TCP socket listening on port STD_LOG_COLLECTION_PORT.
 redirect() {
-  while kill -0 $$; do
-    if [ "${DD_SPARSE_APP_LOGS}" = "true" ]; then
-        ruby "${DATADOG_DIR}/scripts/nc.rb" "${STD_LOG_COLLECTION_PORT}" || sleep 0.5
+  while kill -0 $$ 2>/dev/null; do
+    if [ "${DD_SPARSE_APP_LOGS:-}" = "true" ]; then
+        ruby "${DATADOG_DIR}/scripts/nc.rb" "${STD_LOG_COLLECTION_PORT:-}" || sleep 0.5
     else
-        nc localhost "${STD_LOG_COLLECTION_PORT}" || sleep 0.5
+        nc localhost "${STD_LOG_COLLECTION_PORT:-}" || sleep 0.5
     fi
     log_info "Resetting buildpack log redirection"
-    if [ "${DD_DEBUG_STD_REDIRECTION}" = "true" ]; then
-      HTTP_PROXY=${DD_HTTP_PROXY} HTTPS_PROXY=${DD_HTTPS_PROXY} NO_PROXY=${DD_NO_PROXY} curl \
+    if [ "${DD_DEBUG_STD_REDIRECTION:-}" = "true" ]; then
+      HTTP_PROXY=${DD_HTTP_PROXY:-} HTTPS_PROXY=${DD_HTTPS_PROXY:-} NO_PROXY=${DD_NO_PROXY:-} curl \
       -X POST -H "Content-type: application/json" \
       -d "{
             \"title\": \"Resetting buildpack log redirection\",
-            \"text\": \"TCP socket on port ${STD_LOG_COLLECTION_PORT} for log redirection closed. Restarting it.\",
+            \"text\": \"TCP socket on port ${STD_LOG_COLLECTION_PORT:-} for log redirection closed. Restarting it.\",
             \"priority\": \"normal\",
-            \"tags\": $(LEGACY_TAGS_FORMAT=true ruby ${DATADOG_DIR}/scripts/get_tags.rb),
+            \"tags\": $(LEGACY_TAGS_FORMAT=true ruby "${DATADOG_DIR}/scripts/get_tags.rb"),
             \"alert_type\": \"info\"
-      }" "${DD_API_SITE}v1/events?api_key=${DD_API_KEY}"
+      }" "${DD_API_SITE:-}v1/events?api_key=${DD_API_KEY:-}"
     fi
   done
 }
