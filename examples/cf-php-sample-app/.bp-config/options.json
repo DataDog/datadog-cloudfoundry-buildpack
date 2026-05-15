@@ -1,0 +1,5 @@
+{
+    "WEB_SERVER": "httpd",
+    "PHP_VERSION": "{PHP_82_LATEST}",
+    "WEBDIR": "htdocs"
+}
