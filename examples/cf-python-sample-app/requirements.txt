@@ -1,4 +1,4 @@
 Flask==2.1.2
-ddtrace==2.21.12
-datadog==0.52.1
-Werkzeug==2.2.2
+ddtrace
+datadog
+Werkzeug==3.1.8
