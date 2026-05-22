@@ -275,24 +275,20 @@ enable_apm_ssi() {
   fi
 
   # php
-  if [ -n "$PHP_BUILDPACK_DIR" ] && [ -d "${DATADOG_DIR}/dd-library-php" ]; then
+  if [ -n "$PHP_BUILDPACK_DIR" ]; then
     PHP_BIN="${PHP_BUILDPACK_DIR}/php/bin/php"
-    PHP_API=$("$PHP_BIN" -i 2>/dev/null | sed -n 's/^PHP API => //p' | head -1 | tr -d '[:space:]')
-    TRACER_SO="${DATADOG_DIR}/dd-library-php/trace/ext/${PHP_API}/ddtrace.so"
-    if [ -n "$PHP_API" ] && [ -f "$TRACER_SO" ]; then
-      PHP_INI_DIR="${DATADOG_DIR}/php/php.ini.d"
-      mkdir -p "$PHP_INI_DIR"
-      echo "extension=${TRACER_SO}" > "${PHP_INI_DIR}/datadog.ini"
-      PROFILER_SO="${DATADOG_DIR}/dd-library-php/profiling/ext/${PHP_API}/datadog-profiling.so"
-      if [ "${DD_PROFILING_ENABLED:-}" = "true" ] && [ -f "$PROFILER_SO" ]; then
-        echo "extension=${PROFILER_SO}" >> "${PHP_INI_DIR}/datadog.ini"
+    if [ -x "$PHP_BIN" ]; then
+      DD_TRACE_PHP_VERSION="${DD_TRACE_PHP_VERSION:-1.19.2}"
+      INSTALLER="${DATADOG_DIR}/datadog-setup.php"
+      if curl -fsSL "https://github.com/DataDog/dd-trace-php/releases/download/${DD_TRACE_PHP_VERSION}/datadog-setup.php" -o "${INSTALLER}"; then
+        INSTALLER_ARGS="--php-bin=${PHP_BIN}"
+        if [ "${DD_PROFILING_ENABLED:-}" = "true" ]; then
+          INSTALLER_ARGS="${INSTALLER_ARGS} --enable-profiling"
+        fi
+        "$PHP_BIN" "$INSTALLER" $INSTALLER_ARGS
+      else
+        echo "ddtrace skipped: failed to download datadog-setup.php"
       fi
-      if [ -d "${DATADOG_DIR}/dd-library-php/trace/src" ]; then
-        echo "datadog.trace.sources_path=${DATADOG_DIR}/dd-library-php/trace/src" >> "${PHP_INI_DIR}/datadog.ini"
-      fi
-      export PHP_INI_SCAN_DIR="${PHP_INI_SCAN_DIR:-}:${PHP_INI_DIR}"
-    else
-      echo "ddtrace skipped: PHP API='${PHP_API}', tracer .so missing or unresolvable"
     fi
   fi
 }

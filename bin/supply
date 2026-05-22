@@ -68,9 +68,6 @@ cp "${ROOT_DIR}/lib/scripts/check_datadog.sh" "${DATADOG_DIR}/scripts/check_data
 cp -r "${ROOT_DIR}/lib/test-endpoint.sh" "${BUILD_DIR}/.profile.d/00-test-endpoint.sh" # Make sure this is sourced first
 cp "${ROOT_DIR}/lib/run-datadog.sh" "${BUILD_DIR}/.profile.d/01-run-datadog.sh"
 cp "${ROOT_DIR}/lib/redirect-logs.sh" "${BUILD_DIR}/.profile.d/02-redirect-logs.sh"
-if [ -d "${ROOT_DIR}/lib/dd-library-php" ]; then
-  cp -r "${ROOT_DIR}/lib/dd-library-php" "${DATADOG_DIR}/dd-library-php"
-fi
 
 cp "${ROOT_DIR}/VERSION" "${DATADOG_DIR}/VERSION"
 
