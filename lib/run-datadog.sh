@@ -225,6 +225,7 @@ enable_apm_ssi() {
 
   PIP_CMD=""
   PYTHON_BUILDPACK_DIR=""
+  PHP_BUILDPACK_DIR=""
   NODEJS_BUILDPACK_DETECTED=""
   RUBY_BUILDPACK_DETECTED=""
 
@@ -246,6 +247,8 @@ enable_apm_ssi() {
         NODEJS_BUILDPACK_DETECTED="true"
       elif [ "$buildpack_name" = "ruby" ]; then
         RUBY_BUILDPACK_DETECTED="true"
+      elif [ "$buildpack_name" = "php" ]; then
+        PHP_BUILDPACK_DIR="$dir"
       fi
       export PATH=$PATH:$dir/bin
     fi
@@ -276,10 +279,32 @@ enable_apm_ssi() {
   fi
 
   # ruby
-  # Same gating rationale as nodejs above — `which gem` is always true on
+  # Same gating rationale as nodejs above. `which gem` is always true on
   # cflinuxfs4 because this buildpack installs its own Ruby in bin/supply.
   if [ -n "$RUBY_BUILDPACK_DETECTED" ] && which gem > /dev/null; then
     gem install ddtrace
+  fi
+
+  # php
+  if [ -n "$PHP_BUILDPACK_DIR" ] && [ -d "${DATADOG_DIR}/dd-library-php" ]; then
+    PHP_BIN="${PHP_BUILDPACK_DIR}/php/bin/php"
+    PHP_API=$("$PHP_BIN" -i 2>/dev/null | sed -n 's/^PHP API => //p' | head -1 | tr -d '[:space:]')
+    TRACER_SO="${DATADOG_DIR}/dd-library-php/trace/ext/${PHP_API}/ddtrace.so"
+    if [ -n "$PHP_API" ] && [ -f "$TRACER_SO" ]; then
+      PHP_INI_DIR="${DATADOG_DIR}/php/php.ini.d"
+      mkdir -p "$PHP_INI_DIR"
+      echo "extension=${TRACER_SO}" > "${PHP_INI_DIR}/datadog.ini"
+      PROFILER_SO="${DATADOG_DIR}/dd-library-php/profiling/ext/${PHP_API}/datadog-profiling.so"
+      if [ "${DD_PROFILING_ENABLED:-}" = "true" ] && [ -f "$PROFILER_SO" ]; then
+        echo "extension=${PROFILER_SO}" >> "${PHP_INI_DIR}/datadog.ini"
+      fi
+      if [ -d "${DATADOG_DIR}/dd-library-php/trace/src" ]; then
+        echo "datadog.trace.sources_path=${DATADOG_DIR}/dd-library-php/trace/src" >> "${PHP_INI_DIR}/datadog.ini"
+      fi
+      export PHP_INI_SCAN_DIR="${PHP_INI_SCAN_DIR:-}:${PHP_INI_DIR}"
+    else
+      echo "ddtrace skipped: PHP API='${PHP_API}', tracer .so missing or unresolvable"
+    fi
   fi
 }
 
