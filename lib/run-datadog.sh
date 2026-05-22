@@ -226,8 +226,6 @@ enable_apm_ssi() {
   PIP_CMD=""
   PYTHON_BUILDPACK_DIR=""
   PHP_BUILDPACK_DIR=""
-  NODEJS_BUILDPACK_DETECTED=""
-  RUBY_BUILDPACK_DETECTED=""
 
   # add all language buildpack bin folders to the PATH
   for dir in "${DEPS_DIR:-}"/*/; do
@@ -243,10 +241,6 @@ enable_apm_ssi() {
           PIP_CMD=$(basename $(ls $dir/bin/pip* | head -1))
         fi
 
-      elif [ "$buildpack_name" = "nodejs" ]; then
-        NODEJS_BUILDPACK_DETECTED="true"
-      elif [ "$buildpack_name" = "ruby" ]; then
-        RUBY_BUILDPACK_DETECTED="true"
       elif [ "$buildpack_name" = "php" ]; then
         PHP_BUILDPACK_DIR="$dir"
       fi
@@ -264,10 +258,7 @@ enable_apm_ssi() {
   fi
 
   # nodejs
-  # Gate on the nodejs buildpack being detected, not just the presence of npm:
-  # this buildpack installs its own Ruby (and may pick up other interpreters)
-  # which leaves npm/gem on PATH for apps that don't use that language.
-  if [ -n "$NODEJS_BUILDPACK_DETECTED" ] && which npm > /dev/null; then
+  if which npm > /dev/null; then
     # nodejs version is <= 12
     if [ "$(node -v | cut -d '.' -f 1 | sed 's/v//g')" -le 12 ]; then
       npm install dd-trace@latest-node12
@@ -279,9 +270,7 @@ enable_apm_ssi() {
   fi
 
   # ruby
-  # Same gating rationale as nodejs above. `which gem` is always true on
-  # cflinuxfs4 because this buildpack installs its own Ruby in bin/supply.
-  if [ -n "$RUBY_BUILDPACK_DETECTED" ] && which gem > /dev/null; then
+  if which gem > /dev/null; then
     gem install ddtrace
   fi
 
