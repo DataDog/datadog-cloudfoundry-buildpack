@@ -225,12 +225,11 @@ enable_apm_ssi() {
 
   PIP_CMD=""
   PYTHON_BUILDPACK_DIR=""
-  PHP_BUILDPACK_DIR=""
 
   # add all language buildpack bin folders to the PATH
   for dir in "${DEPS_DIR:-}"/*/; do
     dir="${dir%/}" # remove trailing slash
-    if grep -q -E "name: (python|ruby|go|nodejs|java|php)" "$dir/config.yml" >/dev/null 2>&1; then
+    if grep -q -E "name: (python|ruby|go|nodejs|java)" "$dir/config.yml" >/dev/null 2>&1; then
       buildpack_name=$(grep 'name:' $dir/config.yml | sed 's/name: //g')
       echo "Detected buildpack: $buildpack_name"
 
@@ -240,9 +239,7 @@ enable_apm_ssi() {
         if ls $dir/bin/pip* > /dev/null 2>&1; then
           PIP_CMD=$(basename $(ls $dir/bin/pip* | head -1))
         fi
-
-      elif [ "$buildpack_name" = "php" ]; then
-        PHP_BUILDPACK_DIR="$dir"
+        
       fi
       export PATH=$PATH:$dir/bin
     fi
@@ -272,24 +269,6 @@ enable_apm_ssi() {
   # ruby
   if which gem > /dev/null; then
     gem install ddtrace
-  fi
-
-  # php
-  if [ -n "$PHP_BUILDPACK_DIR" ]; then
-    PHP_BIN="${PHP_BUILDPACK_DIR}/php/bin/php"
-    if [ -x "$PHP_BIN" ]; then
-      DD_TRACE_PHP_VERSION="${DD_TRACE_PHP_VERSION:-1.19.2}"
-      INSTALLER="${DATADOG_DIR}/datadog-setup.php"
-      if curl -fsSL "https://github.com/DataDog/dd-trace-php/releases/download/${DD_TRACE_PHP_VERSION}/datadog-setup.php" -o "${INSTALLER}"; then
-        INSTALLER_ARGS="--php-bin=${PHP_BIN}"
-        if [ "${DD_PROFILING_ENABLED:-}" = "true" ]; then
-          INSTALLER_ARGS="${INSTALLER_ARGS} --enable-profiling"
-        fi
-        "$PHP_BIN" "$INSTALLER" $INSTALLER_ARGS
-      else
-        echo "ddtrace skipped: failed to download datadog-setup.php"
-      fi
-    fi
   fi
 }
 
