@@ -29,9 +29,19 @@ if [ -z "$php_buildpack_found" ]; then
   return 0
 fi
 
-if ! command -v php >/dev/null 2>&1; then
-  echo "[datadog-php] php not on PATH, skipping ddtrace install"
+php_bin=""
+if command -v php >/dev/null 2>&1; then
+  php_bin="$(command -v php)"
+elif [ -x "${HOME}/php/bin/php" ]; then
+  php_bin="${HOME}/php/bin/php"
+fi
+if [ -z "$php_bin" ]; then
+  echo "[datadog-php] php binary not found on PATH or at \$HOME/php/bin/php, skipping ddtrace install"
   return 0
+fi
+
+if [ -d "${HOME}/php/lib" ]; then
+  export LD_LIBRARY_PATH="${HOME}/php/lib:${LD_LIBRARY_PATH:-}"
 fi
 
 DATADOG_DIR="${DATADOG_DIR:-/home/vcap/app/.datadog}"
@@ -44,9 +54,10 @@ if ! curl -fsSL "$INSTALLER_URL" -o "$INSTALLER"; then
   return 0
 fi
 
-installer_args="--php-bin=$(command -v php)"
+echo "[datadog-php] running installer with --php-bin=${php_bin}"
+installer_args="--php-bin=${php_bin}"
 if [ "${DD_PROFILING_ENABLED:-}" = "true" ]; then
   installer_args="${installer_args} --enable-profiling"
 fi
 
-php "$INSTALLER" $installer_args
+"$php_bin" "$INSTALLER" $installer_args
