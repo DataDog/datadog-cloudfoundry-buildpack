@@ -17,23 +17,23 @@ release_lock() {
 }
 
 write_tags_to_file() {
-    export DD_TAGS=$(ruby "${DATADOG_DIR}"/scripts/get_tags.rb)
+    export DD_TAGS=$("$DD_RUBY" "${DATADOG_DIR}"/scripts/get_tags.rb)
 
     export LOGS_CONFIG_DIR="${DATADOG_DIR}/dist/conf.d/logs.d"
     export LOGS_CONFIG
 
     log_info "Updating node_agent_tags.txt"
-    ruby "${DATADOG_DIR}/scripts/update_tags.rb"
+    "$DD_RUBY" "${DATADOG_DIR}/scripts/update_tags.rb"
 
     # update datadog config
-    ruby "${DATADOG_DIR}/scripts/update_datadog_config.rb"
+    "$DD_RUBY" "${DATADOG_DIR}/scripts/update_datadog_config.rb"
 
     if [ "${DD_ENABLE_CAPI_METADATA_COLLECTION}" = "true" ]; then
         # update logs configs
         if [ -n "${LOGS_CONFIG}" ]; then
             mkdir -p "${LOGS_CONFIG_DIR}"
             log_info "Updating logs config"
-            ruby "${DATADOG_DIR}/scripts/create_logs_config.rb"
+            "$DD_RUBY" "${DATADOG_DIR}/scripts/create_logs_config.rb"
         fi
     fi
 
