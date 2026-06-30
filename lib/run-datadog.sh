@@ -303,6 +303,7 @@ enable_apm_ssi() {
     if [ -z "${PHP_BIN}" ]; then
       echo "PHP buildpack detected but no php binary found; skipping PHP SSI install"
     else
+      echo "detected php binary: $PHP_BIN"
       DD_TRACE_PHP_VERSION="${DD_TRACE_PHP_VERSION:-1.19.2}"
       # .profile.d is sourced once per process (web + each sidecar). The web
       # process and any sidecars race here. We need three states, not two:
@@ -332,9 +333,11 @@ enable_apm_ssi() {
           if [ -x "${HOME}/.bp/bin/rewrite" ] && command -v python3 > /dev/null 2>&1; then
             PYTHONPATH="${HOME}/.bp/lib" python3 "${HOME}/.bp/bin/rewrite" "${HOME}/php/etc"
           fi
+          DD_SETUP_URL="https://github.com/DataDog/dd-trace-php/releases/download/${DD_TRACE_PHP_VERSION}/datadog-setup.php"
+          echo "PHP SSI: fetching $DD_SETUP_URL"
           curl -fL --retry 3 --retry-delay 2 --connect-timeout 10 --max-time 60 \
             -o "$tmp/datadog-setup.php" \
-            "https://github.com/DataDog/dd-trace-php/releases/download/${DD_TRACE_PHP_VERSION}/datadog-setup.php"
+            "$DD_SETUP_URL"
           PROFILING_FLAG=""
           if [ "${DD_PROFILING_ENABLED:-}" = "true" ]; then
             PROFILING_FLAG="--enable-profiling"
