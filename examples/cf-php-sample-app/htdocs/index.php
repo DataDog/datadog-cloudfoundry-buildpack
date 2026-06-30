@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/../lib/vendor/autoload.php';
 
 use Slim\Factory\AppFactory;
 use DataDog\DogStatsd;

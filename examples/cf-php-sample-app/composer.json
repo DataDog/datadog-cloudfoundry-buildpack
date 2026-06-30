@@ -10,6 +10,7 @@
             "php": "8.2",
             "ext-sockets": "8.2"
         },
-        "sort-packages": true
+        "sort-packages": true,
+        "vendor-dir": "lib/vendor"
     }
 }
