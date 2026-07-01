@@ -7,5 +7,5 @@ set -euo pipefail
 # Datadog Cloud Foundry buildpack itself when DD_APM_INSTRUMENTATION_ENABLED
 # is set.
 
-rm -rf vendor
+rm -rf lib/vendor
 composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader

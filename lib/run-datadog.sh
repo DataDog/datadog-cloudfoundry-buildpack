@@ -225,11 +225,14 @@ enable_apm_ssi() {
 
   PIP_CMD=""
   PYTHON_BUILDPACK_DIR=""
+  NODEJS_BUILDPACK_DETECTED=""
+  RUBY_BUILDPACK_DETECTED=""
+  PHP_BUILDPACK_DETECTED=""
 
   # add all language buildpack bin folders to the PATH
   for dir in "${DEPS_DIR:-}"/*/; do
     dir="${dir%/}" # remove trailing slash
-    if grep -q -E "name: (python|ruby|go|nodejs|java)" "$dir/config.yml" >/dev/null 2>&1; then
+    if grep -q -E "name: (python|ruby|go|nodejs|java|php)" "$dir/config.yml" >/dev/null 2>&1; then
       buildpack_name=$(grep 'name:' $dir/config.yml | sed 's/name: //g')
       echo "Detected buildpack: $buildpack_name"
 
@@ -239,7 +242,13 @@ enable_apm_ssi() {
         if ls $dir/bin/pip* > /dev/null 2>&1; then
           PIP_CMD=$(basename $(ls $dir/bin/pip* | head -1))
         fi
-        
+
+      elif [ "$buildpack_name" = "nodejs" ]; then
+        NODEJS_BUILDPACK_DETECTED="true"
+      elif [ "$buildpack_name" = "ruby" ]; then
+        RUBY_BUILDPACK_DETECTED="true"
+      elif [ "$buildpack_name" = "php" ]; then
+        PHP_BUILDPACK_DETECTED="true"
       fi
       export PATH=$PATH:$dir/bin
     fi
@@ -255,7 +264,10 @@ enable_apm_ssi() {
   fi
 
   # nodejs
-  if which npm > /dev/null; then
+  # Gate on the nodejs buildpack being detected, not just the presence of npm:
+  # this buildpack installs its own Ruby (and may pick up other interpreters)
+  # which leaves npm/gem on PATH for apps that don't use that language.
+  if [ -n "$NODEJS_BUILDPACK_DETECTED" ] && which npm > /dev/null; then
     # nodejs version is <= 12
     if [ "$(node -v | cut -d '.' -f 1 | sed 's/v//g')" -le 12 ]; then
       npm install dd-trace@latest-node12
@@ -267,8 +279,98 @@ enable_apm_ssi() {
   fi
 
   # ruby
-  if which gem > /dev/null; then
+  # Same gating rationale as nodejs above — `which gem` is always true on
+  # cflinuxfs4 because this buildpack installs its own Ruby in bin/supply.
+  if [ -n "$RUBY_BUILDPACK_DETECTED" ] && which gem > /dev/null; then
     gem install ddtrace
+  fi
+
+  # php
+  # PHP lives at $HOME/php/bin/php once php_buildpack has staged the app — it
+  # is not under DEPS_DIR. Install via datadog-setup.php in a subshell so a
+  # network or installer failure cannot abort the rest of enable_apm_ssi /
+  # main (matches the best-effort behavior of the other tracers above).
+  if [ -n "$PHP_BUILDPACK_DETECTED" ]; then
+    PHP_BIN=""
+    # Prefer the php_buildpack-staged binary over PATH so PHPRC derivation
+    # (below) lands at the runtime ini dir rather than a system PHP's.
+    if [ -x "${HOME}/php/bin/php" ]; then
+      PHP_BIN="${HOME}/php/bin/php"
+    elif command -v php > /dev/null 2>&1; then
+      PHP_BIN=$(command -v php)
+    fi
+
+    if [ -z "${PHP_BIN}" ]; then
+      echo "PHP buildpack detected but no php binary found; skipping PHP SSI install"
+    else
+      echo "detected php binary: $PHP_BIN"
+      DD_TRACE_PHP_VERSION="${DD_TRACE_PHP_VERSION:-1.19.2}"
+      # .profile.d is sourced once per process (web + each sidecar). The web
+      # process and any sidecars race here. We need three states, not two:
+      #   - installing (lock dir held by the winner for the install duration)
+      #   - installed  (success marker; the winner sets this when done)
+      #   - failed     (no success marker after lock release)
+      # Losers MUST block until the winner finishes, otherwise PHP-FPM in the
+      # losing process exec()s before ddtrace.so is in place and runs without
+      # the extension loaded.
+      mkdir -p "${HOME}/.datadog"
+      PHP_SSI_LOCK_DIR="${HOME}/.datadog/php-ssi.installing"
+      PHP_SSI_DONE="${HOME}/.datadog/php-ssi.installed"
+      PHP_SSI_WAIT_TIMEOUT=120
+
+      if [ -f "${PHP_SSI_DONE}" ]; then
+        echo "PHP SSI: tracer already installed; skipping"
+      elif mkdir "${PHP_SSI_LOCK_DIR}" 2>/dev/null; then
+        echo "Installing dd-library-php ${DD_TRACE_PHP_VERSION} via datadog-setup.php (php=${PHP_BIN})"
+        if (
+          set -e
+          tmp=$(mktemp -d)
+          trap 'rm -rf "$tmp"' EXIT
+          # php_buildpack ships php.ini with @{HOME}/@{TMPDIR} placeholders that
+          # its finalize_rewrite.sh substitutes at app start. We source before
+          # that script, so run the rewrite ourselves; the later run is a no-op
+          # once placeholders are gone.
+          if [ -x "${HOME}/.bp/bin/rewrite" ] && command -v python3 > /dev/null 2>&1; then
+            PYTHONPATH="${HOME}/.bp/lib" python3 "${HOME}/.bp/bin/rewrite" "${HOME}/php/etc"
+          fi
+          DD_SETUP_URL="https://github.com/DataDog/dd-trace-php/releases/download/${DD_TRACE_PHP_VERSION}/datadog-setup.php"
+          echo "PHP SSI: fetching $DD_SETUP_URL"
+          curl -fL --retry 3 --retry-delay 2 --connect-timeout 10 --max-time 60 \
+            -o "$tmp/datadog-setup.php" \
+            "$DD_SETUP_URL"
+          PROFILING_FLAG=""
+          if [ "${DD_PROFILING_ENABLED:-}" = "true" ]; then
+            PROFILING_FLAG="--enable-profiling"
+          fi
+          # PHPRC points at the runtime php.ini so datadog-setup.php's `php -i`
+          # discovery succeeds (php_buildpack bakes a build-time path into the
+          # binary and leaves PHPRC unset). --install-dir picks a writable path
+          # under the app home; the default /opt/datadog isn't writable as vcap.
+          PHPRC="$(dirname "${PHP_BIN}")/../etc" \
+            "${PHP_BIN}" "$tmp/datadog-setup.php" \
+              --php-bin="${PHP_BIN}" \
+              --install-dir="${HOME}/.datadog/dd-library-php" \
+              $PROFILING_FLAG
+        ); then
+          touch "${PHP_SSI_DONE}"
+        else
+          echo "PHP SSI: install failed, app will start uninstrumented"
+        fi
+        rmdir "${PHP_SSI_LOCK_DIR}" 2>/dev/null
+      else
+        echo "PHP SSI: install in progress on another process; waiting up to ${PHP_SSI_WAIT_TIMEOUT}s"
+        WAITED=0
+        while [ -d "${PHP_SSI_LOCK_DIR}" ] && [ "${WAITED}" -lt "${PHP_SSI_WAIT_TIMEOUT}" ]; do
+          sleep 1
+          WAITED=$((WAITED + 1))
+        done
+        if [ -f "${PHP_SSI_DONE}" ]; then
+          echo "PHP SSI: install completed by another process"
+        else
+          echo "PHP SSI: install did not complete within ${PHP_SSI_WAIT_TIMEOUT}s; app may start uninstrumented"
+        fi
+      fi
+    fi
   fi
 }
 
