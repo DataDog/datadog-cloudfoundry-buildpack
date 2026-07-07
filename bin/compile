@@ -25,7 +25,7 @@ RUBY_CMD=$DEPS_DIR/$DEPS_IDX/bin/ruby
 # different version on the chained ruby_buildpack).
 if [ ! -x "${RUBY_CMD}" ]; then
   echo "Installing Ruby"
-  tar -xzf "${ROOT_DIR}/lib/ruby_3.0.5.tgz" -C "$DEPS_DIR/$DEPS_IDX" && echo "Ruby Install finished"
+  tar -xzf "${ROOT_DIR}/lib/ruby_3.4.7.tgz" -C "$DEPS_DIR/$DEPS_IDX" && echo "Ruby Install finished"
 fi
 
 # Expose the bundled Ruby to runtime scripts via an absolute path rather

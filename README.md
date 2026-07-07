@@ -92,7 +92,8 @@ Download and import the [relevant libraries][6] to send data. To learn more, che
 
 | Variable                         | Description                                                                                                                                                                                                                                              |
 | -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `DD_APM_INSTRUMENTATION_ENABLED` | Use this option to automatically instrument your application, without any additional installation or configuration steps. See [Single Step APM Instrumentation](https://docs.datadoghq.com/tracing/trace_collection/single-step-apm/?tab=linuxhostorvm). |
+| `DD_APM_INSTRUMENTATION_ENABLED` | Use this option to automatically instrument your application, without any additional installation or configuration steps. See [Single Step APM Instrumentation](https://docs.datadoghq.com/tracing/trace_collection/single-step-apm/?tab=linuxhostorvm). Supported runtimes: Python, Ruby, Node.js, and PHP. |
+| `DD_TRACE_PHP_VERSION`           | Pin the PHP tracer version installed by SSI. Defaults to `1.19.2`.                                                                                                                                                                                       |
 | `DD_WAIT_TRACE_AGENT`            | Use this option to delay the startup of the application until the Trace Agent is ready. This option is especially useful for Golang apps.                                                                                                                |
 
 ### Log collection

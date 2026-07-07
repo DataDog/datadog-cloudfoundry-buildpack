@@ -51,7 +51,7 @@ function download_dogstatsd() {
 }
 
 function download_ruby() {
-  curl -LS "https://buildpacks.cloudfoundry.org/dependencies/ruby/ruby_3.0.5_linux_x64_cflinuxfs3_098393c3.tgz" -o  ${SRCDIR}/lib/ruby_3.0.5.tgz
+  curl -LS "https://buildpacks.cloudfoundry.org/dependencies/ruby/ruby_3.4.7_linux_x64_cflinuxfs3_72757c9c.tgz" -o  ${SRCDIR}/lib/ruby_3.4.7.tgz
 }
 
 function cleanup() {
@@ -74,7 +74,7 @@ function main() {
     rm -f ${SRCDIR}/lib/agent
     rm -f ${SRCDIR}/lib/dogstatsd
     rm -f ${SRCDIR}/lib/trace-agent
-    rm -f ${SRCDIR}/lib/ruby_3.0.5.tgz
+    rm -f ${SRCDIR}/lib/ruby_3.4.7.tgz
 
     # Download the new ones
     download_trace_agent ${VERSION}
