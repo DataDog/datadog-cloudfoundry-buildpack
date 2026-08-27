@@ -96,6 +96,12 @@ Download and import the [relevant libraries][6] to send data. To learn more, che
 | `DD_TRACE_PHP_VERSION`           | Pin the PHP tracer version installed by SSI. Defaults to `1.19.2`.                                                                                                                                                                                       |
 | `DD_WAIT_TRACE_AGENT`            | Use this option to delay the startup of the application until the Trace Agent is ready. This option is especially useful for Golang apps.                                                                                                                |
 
+**PHP SSI notes:**
+
+- **Disk quota:** PHP apps using SSI typically need `disk_quota: 2048M` (or higher) in `manifest.yml`. The default 1 GB is often not enough to stage `php_buildpack`'s runtime plus the tracer installed at container start.
+- **Runtime network:** Unlike other SSI runtimes, PHP downloads `datadog-setup.php` from GitHub on each container start. Outbound access to `github.com` is required unless you provide an alternate install path.
+- **Startup delay:** The PHP tracer is installed when `.profile.d` scripts run. Web processes and sidecars may contend on a lock during install, which can add up to 120 seconds to startup on the first process start.
+
 ### Log collection
 
 **Enable log collection**
