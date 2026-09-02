@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.48.0 / 2026-09-01
+
+* [Added] Bump embedded Datadog Agent version to 7.80.4. Read more about it [here](https://github.com/DataDog/datadog-agent/blob/main/CHANGELOG.rst#7804).
+* [Changed] chore(ruby): bump embedded Ruby to 3.4.7. See [#262](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/262).
+* [Changed] Add PHP single-step APM instrumentation support. See [#257](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/257).
+
 ## 4.47.1 / 2026-05-15
 
 * [Fixed] Fix unbound variable errors under java_buildpack 5.x. See [#258](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/258).
