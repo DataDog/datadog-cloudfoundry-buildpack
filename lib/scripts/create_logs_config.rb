@@ -63,7 +63,7 @@ config = config.to_json
 path = "#{logs_config_dir}/logs.yaml"
 
 begin
-  Dir.mkdir(logs_config_dir) unless File.exists?(logs_config_dir)
+  Dir.mkdir(logs_config_dir) unless File.exist?(logs_config_dir)
   File.open(path, 'w') do |f|
     puts "writing #{config} to #{path}"
     f.write(config)
