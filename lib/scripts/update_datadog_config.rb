@@ -18,7 +18,7 @@ end
 
 def read_yaml_file(file_path)
   yaml_file = File.read(file_path)
-  return YAML.load(yaml_file)
+  return YAML.load(yaml_file, aliases: true)
 end
 
 def write_yaml_file(file_path, data)
