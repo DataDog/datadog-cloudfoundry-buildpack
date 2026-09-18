@@ -60,4 +60,4 @@ def main
     File.write(node_agent_tags_file, tags.join(","))
 end
 
-main
+main if __FILE__ == $PROGRAM_NAME

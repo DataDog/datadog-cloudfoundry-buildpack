@@ -11,6 +11,22 @@ on:
       - main
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          # Keep in sync with the embedded Ruby in scripts/prepare.sh so the
+          # runtime scripts are tested on the version the buildpack ships.
+          ruby-version: '3.4.7'
+
+      - name: Run runtime script unit tests
+        run: ruby test/scripts_test.rb
+
   build:
     runs-on: ubuntu-latest
     steps:

@@ -59,4 +59,4 @@ def main
   end
 end
 
-main
+main if __FILE__ == $PROGRAM_NAME
