@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.48.1 / 2026-09-24
+
+* [Fixed] Fix Ruby 3.4 compatibility in agent config scripts. See [#289](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/289).
+
 ## 4.48.0 / 2026-09-01
 
 * [Added] Bump embedded Datadog Agent version to 7.80.4. Read more about it [here](https://github.com/DataDog/datadog-agent/blob/main/CHANGELOG.rst#7804).
