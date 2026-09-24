@@ -2,24 +2,7 @@
 
 ## 4.48.1 / 2026-09-24
 
-* [Changed] fix(scripts): restore Ruby 3.4 compatibility in agent config scripts. See [#289](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/289).
-* [Changed] chore(deps): golang.org/x/crypto (minor → v0.57.0) [examples/cf-go-sample-app/go.mod]. See [#288](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/288).
-* [Changed] fix(deps): vuln js-yaml (patch → 4.3.2) [examples/cf-nodejs-sample-app/package.json]. See [#287](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/287).
-* [Changed] fix(deps): vuln minor: golang.org/x/crypto, golang.org/x/mod · patch: github.com/klauspost/compress [examples/cf-go-sample-app/go.mod]. See [#286](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/286).
-* [Changed] fix(deps): first-party vuln github.com/DataDog/dd-trace-go/v2 (minor → v2.10.1) [examples/cf-go-sample-app/go.mod]. See [#285](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/285).
-* [Changed] Release 4.48.0. See [#284](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/284).
-* [Changed] chore(ruby): bump embedded Ruby to 3.4.7. See [#262](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/262).
-* [Changed] Fix unbound variable errors under java_buildpack 5.x. See [#258](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/258).
-* [Changed] Add PHP single-step APM instrumentation support. See [#257](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/257).
-* [Changed] fix(deps): vuln ch.qos.logback:logback-classic (minor → 1.5.32) [examples/cf-java-sample-app]. See [#256](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/256).
-* [Changed] Add PHP sample app with APM tracing and profiling. See [#255](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/255).
-* [Changed] Vendor deps in Ruby sample app for offline CF. See [#253](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/253).
-* [Changed] Vendor deps in Python sample app and align other READMEs. See [#252](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/252).
-* [Changed] Migrate deprecated GitLab runner tags. See [#240](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/240).
-* [Changed] Vendor deps and enable profiling for Ruby sample app. See [#238](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/238).
-* [Changed] Add build script and pin versions for Node.js sample app. See [#237](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/237).
-* [Changed] Vendor dependencies in Go sample app build script. See [#236](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/236).
-* [Changed] [ARTSEC-INT] Update datadog-agent-buildimages to v102144341-64dad9f8. See [#235](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/235).
+* [Fixed] Fix Ruby 3.4 compatibility in agent config scripts. See [#289](https://github.com/DataDog/datadog-cloudfoundry-buildpack/pull/289).
 
 ## 4.48.0 / 2026-09-01
 
